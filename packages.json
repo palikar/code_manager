@@ -248,7 +248,7 @@
             "download": "git",
             "URL": "https://github.com/opencv/opencv",
             "install": "cmake",
-            "cmake_args": "-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${HOME}/core.d/usr/",
+            "cmake_args": "-DCMAKE_BUILD_TYPE=Release",
             "make_args": "-j4",
             "dependencies": [
                 "opencv-contrib"

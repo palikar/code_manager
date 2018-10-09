@@ -21,20 +21,23 @@ def flatten(xs):
     
 class Installer:
 
-    def __init__(self):
+    def __init__(self, usr_dir, noinstall=True):
         self.installers = dict()
         self.installers["script"] = self.install_with_script
         self.installers["command"] = self.install_with_command
         self.installers["cmake"] = self.install_with_cmake
+        self.usr_dir = usr_dir
+        self.noinstall = noinstall
 
         
 
     def install(self, name, package, reinstall=False):
+        if self.noinstall:
+            return 0
         if package["install"] not in self.installers.keys():
             print(f'Unknown installer {package["install"]} for package {name}')
             return -1
         else:
-            print(package["install"])
             return self.installers[package["install"]](name, package, reinstall=False)
 
 
@@ -54,6 +57,7 @@ class Installer:
         cmd_args = os.path.expanduser(cmd_args)
         cmd_args = os.path.expandvars(cmd_args)
         cmd_args = cmd_args + (" -r" if reinstall else "")
+        cmd_args = cmd_args + f"-p {self.usr_dir}"
         print(f'Command: sh {script} {cmd_args}')
         # os.system(f'sh {script} ' + cmd_args)
 
@@ -80,6 +84,8 @@ class Installer:
         cmake_args = package["cmake_args"] if "cmake_args" in package.keys() else ""
         cmake_args = os.path.expanduser(cmake_args)
         cmake_args = os.path.expandvars(cmake_args)
+        if "DCMAKE_INSTALL_PREFIX" not in cmake_args:
+            cmake_args = cmake_args + f" -DCMAKE_INSTALL_PREFIX={self.usr_dir}"
         make_args = package["make_args"] if "make_args" in package.keys() else ""
         make_args = os.path.expanduser(make_args)
         make_args = os.path.expandvars(make_args)
@@ -91,32 +97,16 @@ class Installer:
         print(f"Command: cmake .. {cmake_args}")
         print(f"Command: cmake --build ./ -- {make_args}")
         print(f"Command:sudo make install")
-        os.system(f"cmake .. {cmd_args}")
-        os.system(f"cmake --build ./ -- {make_args}")
-        os.system(f"sudo make install")
+        # os.system(f"cmake .. {cmd_args}")
+        # os.system(f"cmake --build ./ -- {make_args}")
+        # os.system(f"sudo make install")
         os.chdir(curr_dir)
+
+
+
+
+
         
-    
-    
-
-
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def main():
     pass
 if __name__ == '__main__':

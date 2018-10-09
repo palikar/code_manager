@@ -14,7 +14,7 @@ import configparser
 
 
 install_cache = list()
-inst = Installer()
+inst = None
 
 def install_package(name, config, directory, reinstall=False):
     global install_cache
@@ -41,7 +41,7 @@ def install_package(name, config, directory, reinstall=False):
 
     if not os.path.isdir(package_dir):
         if reinstall:
-            print(f"Reinstalling but there is no directory. Install first!")
+            print(f"Reinstalling {name} but there is no directory. Install first!")
             exit(1)
         os.makedirs(package_dir)
     
@@ -69,7 +69,10 @@ def install_package(name, config, directory, reinstall=False):
             os.system(f"wget -q {package['URL']} .")
         
 
-    inst.install(name, package, reinstall=False)
+    res = inst.install(name, package, reinstall=False)
+    if res != 0:
+        print(f"Package {name} could not be installed")
+        exit(1)
     
     os.chdir(last_edit)
 
@@ -78,6 +81,8 @@ def install_package(name, config, directory, reinstall=False):
 
 
 def install(config, directory, packages):
+    if packages is None:
+        return
     flat = flatten(config["packages_list"])
     for pack in packages:
         if pack not in flat:
@@ -86,13 +91,32 @@ def install(config, directory, packages):
             install_package(pack, config, directory)
 
             
+def reinstall(config, directory, packages):
+    if packages is None:
+        return
+    flat = flatten(config["packages_list"])
+    for pack in packages:
+        if pack not in flat:
+            print(f"Package {pack} is not in the config file")
+        else:
+            install_package(pack, config, directory, reinstall=True)
+
+            
 def install_all(config, directory,group=None):
     packages = config["packages_list"]
     if group is not None and group > 0 and group < len(packages):
         packages = packages[group]
     print(f"Installing: {packages}")
     
-    # install(config, directory, packages)
+    install(config, directory, packages)
+
+def reinstall_all(config, directory,group=None):
+    packages = config["packages_list"]
+    if group is not None and group > 0 and group < len(packages):
+        packages = packages[group]
+    print(f"Installing: {packages}")
+    
+    reinstall(config, directory, packages)
 
 
 def main():
@@ -115,8 +139,11 @@ def main():
 
     parser.add_argument('--install-all', dest='all', action='store', type=int,
                         help='Install all packages in --packages from the given group')
+    parser.add_argument('--reinstall-all', dest='reall', action='store', type=int,
+                        help='Reinstall all packages in --packages from the given group')
 
-
+    parser.add_argument('--no-install', dest='noinstall', action='store_true', default=False,
+                        help='If present, packages will only be downloaded')
 
     args = parser.parse_args()    
     opt = configparser.ConfigParser()
@@ -130,14 +157,16 @@ def main():
     packages_file = opt["Set"]["packages_file"]
     code_dir = opt["Set"]["code"]
     usr_dir = opt["Set"]["usr"]
+
     
-    code_dir = os.path.expanduser(os.path.expandvars(code_dir))
-    usr_dir = os.path.expanduser(os.path.expandvars(usr_dir))
-    packages_file = os.path.expanduser(os.path.expandvars(packages_file))
     
-    code_dir = os.path.expanduser(args.code_dir) if args.code_dir is not None else code_dir
-    usr_dir = os.path.expanduser(args.usr_dir) if args.usr_dir is not None else usr_dir
-    packages_file = os.path.expanduser(args.packages_file) if args.packages_file is not None else packages_file
+    code_dir = os.path.abspath(os.path.expanduser(os.path.expandvars(code_dir)))
+    usr_dir = os.path.abspath(os.path.expanduser(os.path.expandvars(usr_dir)))
+    packages_file = os.path.abspath(os.path.expanduser(os.path.expandvars(packages_file)))
+    
+    code_dir = os.path.abspath(os.path.expanduser(args.code_dir)) if args.code_dir is not None else code_dir
+    usr_dir = os.path.abspath(os.path.expanduser(args.usr_dir)) if args.usr_dir is not None else usr_dir
+    packages_file = os.path.abspath(os.path.expanduser(args.packages_file)) if args.packages_file is not None else packages_file
 
     
     config = None
@@ -149,11 +178,17 @@ def main():
 
     if not os.path.isdir(usr_dir):
         os.makedirs(usr_dir)
+
+    global inst
+    inst = Installer(usr_dir, args.noinstall)
     
     if args.all is not None:
         install_all(config, code_dir, group=args.all)
+    elif args.reall is not None:
+        reinstall_all(config, code_dir, group=args.reall)
     else:
         install(config, code_dir, args.packages)
+        reinstall(config, code_dir, args.reinstall)
 
 
 
