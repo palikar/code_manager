@@ -120,6 +120,9 @@ def reinstall_all(config, directory,group=None):
 
 
 def main():
+    #this is awesome
+    # best shit evaaaaar!
+    
     parser = argparse.ArgumentParser(description='Installs system packages from the INTERNET!!')
 
     parser.add_argument('--install', dest='packages',

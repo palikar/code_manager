@@ -28,7 +28,6 @@ class Installer:
         self.installers["cmake"] = self.install_with_cmake
         self.usr_dir = usr_dir
         self.noinstall = noinstall
-
         
 
     def install(self, name, package, reinstall=False):
@@ -39,7 +38,6 @@ class Installer:
             return -1
         else:
             return self.installers[package["install"]](name, package, reinstall=False)
-
 
 
     def install_with_script(self, name, package, reinstall=False):
@@ -59,9 +57,7 @@ class Installer:
         cmd_args = cmd_args + (" -r" if reinstall else "")
         cmd_args = cmd_args + f"-p {self.usr_dir}"
         print(f'Command: sh {script} {cmd_args}')
-        # os.system(f'sh {script} ' + cmd_args)
-
-
+        return os.system(f'sh {script} ' + cmd_args)
 
 
     def install_with_command(self, name, package, reinstall=False):
@@ -74,10 +70,7 @@ class Installer:
         command = os.path.expanduser(command)
         command = os.path.expandvars(command)
         print(f"Command: sh {command}")
-        # os.system(f"{command}")
-        pass
-
-
+        return os.system(f"{command}")
 
 
     def install_with_cmake(self, name, package, reinstall=False):
@@ -97,11 +90,8 @@ class Installer:
         print(f"Command: cmake .. {cmake_args}")
         print(f"Command: cmake --build ./ -- {make_args}")
         print(f"Command:sudo make install")
-        # os.system(f"cmake .. {cmd_args}")
-        # os.system(f"cmake --build ./ -- {make_args}")
-        # os.system(f"sudo make install")
-        os.chdir(curr_dir)
-
+        res = os.system(f"cmake .. {cmd_args} && cmake --build ./ -- {make_args} && sudo make install")
+        return res
 
 
 

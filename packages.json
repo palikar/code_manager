@@ -18,7 +18,8 @@
             "scripts",
             "smarthomeworks",
             "smart_memory_location",
-            "urxvt-perls"
+            "urxvt-perls",
+            "arffpar"
         ],
         [
             "i3-gaps",
@@ -29,7 +30,15 @@
             "xkblayout-state",
             "rxvt-unicode",
             "opencv",
-            "opencv-contrib"
+            "opencv-contrib",
+            "easyloggingpp"
+        ],
+        [
+            "scull",
+            "edward",
+            "facebook-chat-api",
+            "fbash",
+            "speech_recognition"
         ]
     ],
     "packages": {
@@ -260,6 +269,51 @@
             "install": "command",
             "command": "make && sudo make install",
             "reinstall_command": "make clean && make && sudo make install"
+        },
+        "easyloggingpp": {
+            "download": "git",
+            "URL": "https://github.com/muflihun/easyloggingpp",
+            "install": "cmake",
+            "cmake_args": "",
+            "make_args": "-j2"
+        },        
+        "scull": {
+            "download": "git",
+            "URL": "https://github.com/starpos/scull",
+            "install": "command",
+            "command": "echo 'No installation' ",
+            "reinstall_command": "echo 'No installation' "
         }
+        ,        
+        "edward": {
+            "download": "git",
+            "URL": "https://github.com/blei-lab/edward",
+            "install": "command",
+            "command": "echo 'No installation' ",
+            "reinstall_command": "echo 'No installation' "
+        },
+        "facebook-chat-api": {
+            "download": "git",
+            "URL": "https://github.com/Schmavery/facebook-chat-api",
+            "install": "command",
+            "command": "npm install",
+            "reinstall_command": "echo 'No installation' "
+        },
+        "fbash": {
+            "download": "git",
+            "URL": "https://github.com/avikj/fbash",
+            "install": "command",
+            "command": "npm install",
+            "reinstall_command": "echo 'No installation' "
+        }
+        ,
+        "speech_recognition": {
+            "download": "git",
+            "URL": "https://github.com/Uberi/speech_recognition",
+            "install": "command",
+            "command": "python setup.py install",
+            "reinstall_command": "python setup.py install"
+        }
+        
     }
 }
