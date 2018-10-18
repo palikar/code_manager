@@ -41,6 +41,15 @@
             "speech_recognition"
         ]
     ],
+    "debian_packages":[
+        ["libboost-all-dev","build-essential", "git", "cmake", "cmake-curses-gui",
+         "krb5-config", "krb5-user", "libfile-homedir-perl", "libpath-class-perl",
+        "libswitch-perl", "virtualenv", "htop", "gitk", "ssh", "ntp", "ntpdate",
+         "ntpstat", "sudo", "net-tools", "inetutils-ping", "curl", "wget","libglew-dev",
+         "libxt-dev","libgtk-3-dev"],
+        ["feh","i3blocks","i3lock","dmunu","rofi", "ibus",
+         "libgtk2.0-dev"]
+    ],
     "packages": {
         "arnaud-framer": {
             "download": "git",
@@ -209,28 +218,38 @@
             "install": "script",
             "script": "$DOTFILES_DIR/install_scripts/install_i3gaps.sh",
             "script_args": "",
-            "dependencies": []
+            "dependencies": [],
+            "deb_packages": ["libxcb1-dev", "libxcb-keysyms1-dev", "libpango1.0-dev",
+                             "libxcb-util0-dev", "libxcb-icccm4-dev", "libyajl-dev",
+                             "libstartup-notification0-dev", "libxcb-randr0-dev",
+                             "libev-dev libxcb-cursor-dev", "libxcb-xinerama0-dev", 
+                             "libxcb-xkb-dev", "libxkbcommon-dev" ,"libxkbcommon-x11-dev", "autoconf", "libxcb-xrm-dev"]
         },
         "mons": {
             "download": "git",
             "URL": "https://github.com/Ventto/mons.git",
             "install": "command",
             "command": "sudo make install",
-            "reinstall_command": "sudo make install"
+            "reinstall_command": "sudo make install",
+            "deb_packages": ["xorg-xrandr"]
         },
         "pamixer": {
             "download": "git",
             "URL": "https://github.com/cdemoulins/pamixer.git",
             "install": "command",
             "command": "make && sudo make install",
-            "reinstall_command": "sudo make"
+            "reinstall_command": "sudo make",
+            "deb_packages": ["libpulse"]
         },
         "ranger": {
             "download": "git",
             "URL": "https://github.com/ranger/ranger",
             "install": "command",
             "command": "sudo python setup.py install --optimize=1 --record=install_log.txt",
-            "reinstall_command": "sudo python setup.py install --optimize=1 --record=install_log.txt"
+            "reinstall_command": "sudo python setup.py install --optimize=1 --record=install_log.txt",
+            "deb_packages": ["file", "sudo", "w3m", "caca-utils",
+                             "pygmentize","atool","lynx","mediainfo",
+                             "odt2txt"]
         },
         "networkmanager-dmenu": {
             "download": "git",
@@ -261,7 +280,11 @@
             "make_args": "-j4",
             "dependencies": [
                 "opencv-contrib"
-            ]
+            ],
+            "deb_packages": ["gcc","cmake","pkg-config", "libgtk2.0-dev", "ffmpeg",
+                             "libtbb-dev","libdc1394",
+                             "libjpeg-dev", "libpng-dev", "libtiff-dev", "libjasper-dev",
+                             "libdc1394-22-dev"]
         },
         "opencv-contrib": {
             "download": "git",
@@ -313,6 +336,14 @@
             "install": "command",
             "command": "python setup.py install",
             "reinstall_command": "python setup.py install"
+        },
+        "jwtxx": {
+            "download": "git",
+            "URL": "https://github.com/madf/jwtxx",
+            "install": "cmake",
+            "cmake_args": "-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fPIC",
+            "make_args": "-j2",
+            "deb_packages": ["libjansson-dev", "openssl", "libssl-dev"]
         }
         
     }

@@ -5,6 +5,7 @@ import os, sys, argparse, json
 import subprocess
 from installer import Installer
 from downloader import Downloader
+from deb_dependency import Depender
 from utils import flatten 
 import configparser
 
@@ -17,6 +18,8 @@ import configparser
 install_cache = list()
 inst = None
 down = None
+deb_dep = None
+
 
 def install_package(name, config, directory, reinstall=False):
     global install_cache
@@ -72,6 +75,12 @@ def install_package(name, config, directory, reinstall=False):
         print(f"Downloading {name}")
         down.download(name, config)
 
+
+    #resolve dependencies
+    if "deb_packages" in package.keys():
+        deb_dep.install_deb_packages(package["deb_packages"])
+
+        
     res = inst.install(name, package, reinstall=False)
 
     if res != 0:
@@ -178,6 +187,7 @@ def main():
     global inst,down
     inst = Installer(usr_dir, args.noinstall)
     down = Downloader()
+    deb_dep = Depender()
     
     if args.inst_all is not None:
         install_all(config, code_dir, group=args.inst_all)
