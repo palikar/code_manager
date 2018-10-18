@@ -3,7 +3,8 @@
 
 import os, sys, argparse, json
 import subprocess
-from utils import Installer
+from installer import Installer
+from downloader import Downloader
 from utils import flatten 
 import configparser
 
@@ -15,6 +16,7 @@ import configparser
 
 install_cache = list()
 inst = None
+down = None
 
 def install_package(name, config, directory, reinstall=False):
     global install_cache
@@ -33,8 +35,20 @@ def install_package(name, config, directory, reinstall=False):
                install_package(dep, config, directory, reinstall=reinstall)
     install_cache.remove(name)
 
+
+    # ckeck cache
+    cached = False
+    with open("/home/arnaud/code/code_manager/cache", "r") as cache:
+        if name in cache.read().splitlines():
+            cached = True
+
+    print(f"{name}:{cached}")
+    if cached:
+        print(f"{name} is already installed (it\'s in the cache).")
+        return 0
+        
     
-    print(f"Installing {name}")
+    print(f"Installing \'{name}\'.")
     
     last_edit = os.curdir
     package_dir = os.path.join(directory, name)
@@ -48,81 +62,55 @@ def install_package(name, config, directory, reinstall=False):
     if len(os.listdir(package_dir)) != 0 and reinstall == False:
         print(f"The direcory ({package_dir}) is not empty and the package (name) is not in cache")
         print("Deleting direcotry\'s contents")
-        os.system(f"rm -rf {package_dir}/* {package_dir}/.* 2> /dev/null")
+        exit(1)
+        # os.system(f"rm -rf {package_dir}/* {package_dir}/.* 2> /dev/null")
+
 
     os.chdir(package_dir)
-    
+
     if not reinstall:
         print(f"Downloading {name}")
-        if package["download"] == "git":
-            print(f"Using git and cloning from {package['URL']}")
-            print(f"Cloning into {os.path.abspath('.')}")
-            url = package['URL']
-            os.system(f"git clone -q {url} .")
-        elif package["download"] == "curl":
-            print(f"Using curl and downloading from {package['URL']}")
-            print(f"Downloading into {os.path.abspath(package_dir)}")
-            os.system(f"curl -LOs {package['URL']} .")
-        elif package["download"] == "wget":
-            print(f"Using wget and downloading from {package['URL']}")
-            print(f"Downloading into {os.path.abspath(package_dir)}")
-            os.system(f"wget -q {package['URL']} .")
-        
+        down.download(name, config)
 
     res = inst.install(name, package, reinstall=False)
+
     if res != 0:
         print(f"Package {name} could not be installed")
         exit(1)
     
     os.chdir(last_edit)
-
-    
+    with open("/home/arnaud/code/code_manager/cache", "a") as cache:
+        print(name)
+        cache.write(name + "\n")
+        
     print("##############################")
+    return res
+    
 
 
-def install(config, directory, packages):
+def install(config, directory, packages, reinstall=False):
     if packages is None:
         return
+    packages = flatten(packages)
     flat = flatten(config["packages_list"])
     for pack in packages:
         if pack not in flat:
             print(f"Package {pack} is not in the config file")
-        else:
-            install_package(pack, config, directory)
+        else: 
+            install_package(pack, config, directory, reinstall=reinstall)
 
             
-def reinstall(config, directory, packages):
-    if packages is None:
-        return
-    flat = flatten(config["packages_list"])
-    for pack in packages:
-        if pack not in flat:
-            print(f"Package {pack} is not in the config file")
-        else:
-            install_package(pack, config, directory, reinstall=True)
-
-            
-def install_all(config, directory,group=None):
+def install_all(config, directory,group=None, reinstall=False):
     packages = config["packages_list"]
     if group is not None and group > 0 and group < len(packages):
         packages = packages[group]
     print(f"Installing: {packages}")
-    
-    install(config, directory, packages)
 
-def reinstall_all(config, directory,group=None):
-    packages = config["packages_list"]
-    if group is not None and group > 0 and group < len(packages):
-        packages = packages[group]
-    print(f"Installing: {packages}")
-    
-    reinstall(config, directory, packages)
+    install(config, directory, packages, reinstall=reinstall)
 
 
 def main():
-    #this is awesome
-    # best shit evaaaaar!
-    
+
     parser = argparse.ArgumentParser(description='Installs system packages from the INTERNET!!')
 
     parser.add_argument('--install', dest='packages',
@@ -140,10 +128,11 @@ def main():
     parser.add_argument('--packages-file', dest='packages_file', action='store',
                         help='File to read the packages from')
 
-    parser.add_argument('--install-all', dest='all', action='store', type=int,
-                        help='Install all packages in --packages from the given group')
-    parser.add_argument('--reinstall-all', dest='reall', action='store', type=int,
-                        help='Reinstall all packages in --packages from the given group')
+    parser.add_argument('--install-all', dest='inst_all', action='store', type=int, default=None, nargs='?',
+                        const=-1, help='Install all packages in --packages from the given group')
+
+    parser.add_argument('--reinstall-all', dest='reall', action='store', type=int, default=None, nargs='?',
+                        const=-1, help='Reinstall all packages in --packages from the given group')
 
     parser.add_argument('--no-install', dest='noinstall', action='store_true', default=False,
                         help='If present, packages will only be downloaded')
@@ -182,16 +171,21 @@ def main():
     if not os.path.isdir(usr_dir):
         os.makedirs(usr_dir)
 
-    global inst
+    if not os.path.isfile("./cache"):
+        f = open("./cache",  "w+")
+        f.close()
+
+    global inst,down
     inst = Installer(usr_dir, args.noinstall)
+    down = Downloader()
     
-    if args.all is not None:
-        install_all(config, code_dir, group=args.all)
+    if args.inst_all is not None:
+        install_all(config, code_dir, group=args.inst_all)
     elif args.reall is not None:
-        reinstall_all(config, code_dir, group=args.reall)
+        install_all(config, code_dir, group=args.reall, reinstall=True)
     else:
         install(config, code_dir, args.packages)
-        reinstall(config, code_dir, args.reinstall)
+        install(config, code_dir, args.reinstall, reinstall=True)
 
 
 
