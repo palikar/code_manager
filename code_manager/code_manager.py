@@ -1,17 +1,13 @@
 #!/usr/bin/python
 
-
 import os, sys, argparse, json
-import subprocess
-from installer import Installer
-from downloader import Downloader
-from deb_dependency import Depender
-from utils import flatten 
-import configparser
+import subprocess, configparser
 
 
-
-
+from code_manager.installer import Installer
+from code_manager.downloader import Downloader
+from code_manager.deb_dependency import Depender
+from code_manager.utils import flatten 
 
 
 
