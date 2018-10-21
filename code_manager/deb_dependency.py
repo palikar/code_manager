@@ -23,7 +23,7 @@ class Depender:
                 print(f"'{deb}' is already installed")
             else:
                 print(f"{deb} is not there")
-                # self.install(deb)
+                self.install(deb)
                 
     def install(self, deb):
         print(f"Installing {deb}")

@@ -23,7 +23,7 @@ class Downloader:
 
     def download_curl(self, package):
         print(f"Using curl and downloading from {package['URL']}")
-        print(f"Downloading into {os.path.abspath(package_dir)}")
+        print(f"Downloading into {os.path.abspath('package_dir')}")
         os.system(f"curl -LOs {package['URL']} .")
 
 

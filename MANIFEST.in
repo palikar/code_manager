@@ -1,0 +1,5 @@
+include packages.json
+include cache
+include conf
+
+recursive-include install_scripts

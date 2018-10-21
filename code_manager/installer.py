@@ -3,13 +3,14 @@ import collections
 
 class Installer:
 
-    def __init__(self, usr_dir, noinstall=True):
+    def __init__(self, usr_dir, install_scripts_dir, noinstall=True):
         self.installers = dict()
         self.installers["script"] = self.install_with_script
         self.installers["command"] = self.install_with_command
         self.installers["cmake"] = self.install_with_cmake
         self.usr_dir = usr_dir
         self.noinstall = noinstall
+        self.install_scripts_dir = install_scripts_dir
         
 
     def install(self, name, package, reinstall=False):
@@ -28,7 +29,7 @@ class Installer:
         if "script" not in package:
             print("'script' field missing in the node form {name}")
             return -1
-        script = package["script"]
+        script = os.path.join(self.install_scripts_dir, package["script"])
         script = os.path.expanduser(script)
         script = os.path.expandvars(script)
         script = os.path.abspath(script)

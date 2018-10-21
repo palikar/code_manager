@@ -2,6 +2,7 @@
 
 import sys, os
 import setuptools
+from distutils.core import setup
 
 import code_manager
 
@@ -12,16 +13,10 @@ if sys.version_info < (3, 3):
 
 exec(open('code_manager/version.py').read())
 
-setuptools.setup(
+setup(
     name="CodeManager",
     version=__version__,
-    package_data={
-            'ranger': [
-                'data/*',
-                'config/rc.conf',
-                'config/rifle.conf',
-            ],
-        },
+    package_data={'code_manager': ['data/*','install_scripts/*'],},
     include_package_data=True,
     author="Stanislav Arnaudov",
     author_email="stanislav_ts@abv.bg",
@@ -30,14 +25,13 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
     license="GNU General Public License v3.0",
-    keywords="code manager utility installation downloading compiling",
+    keywords="package code manager utility installation downloading compiling",
     url="https://github.com/palikar/code_manager",
     entry_points={
         'console_scripts': [
             'code-manager = code_manager.code_manager:main'
         ]
     },
-    # data_files=[('config', ['packages.json', 'cache', 'conf'])],
     classifiers=[
         "Development Status :: 1 - Proof of concept",
         "Intended Audience :: Developers",

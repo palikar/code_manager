@@ -1,9 +1,15 @@
 
-import os, sys, argparse, json
-import subprocess, configparser
 
 
-from code_manager.installer import Installer
-from code_manager.downloader import Downloader
-from code_manager.deb_dependency import Depender
-from code_manager.utils import flatten 
+import os, sys
+
+
+# Information
+__license__ = 'GNU GPL v3'
+__release__ = False
+__author__ = __maintainer__ = 'Stanislav Arnaudov'
+__email__ = 'stanislav_ts@abv.b'
+
+# Setup constants
+CMDIR = os.path.dirname(__file__)
+CONFDIR = os.path.expanduser('~/.config/code_manager')

@@ -2,122 +2,42 @@
 
 import os, sys, argparse, json
 import subprocess, configparser
+import locale
+from shutil import copyfile
+import shutil
 
 
-from code_manager.installer import Installer
-from code_manager.downloader import Downloader
-from code_manager.deb_dependency import Depender
-from code_manager.utils import flatten 
+import code_manager
+from code_manager.core import Core
+from code_manager.utils import flatten
+from code_manager.version import VERSION
 
-
-
-install_cache = list()
-inst = None
-down = None
-deb_dep = None
-
-
-def install_package(name, config, directory, reinstall=False):
-    global install_cache
-    package = config["packages"][name]
-
-    #Check dependencies
-    install_cache.append(name)
-    if "dependencies" in package:
-        for dep in package["dependencies"]:
-           if dep in install_cache:
-               print("Thers is a cirlucar dependency between packages. This is not allowed!")
-               print(f"{name} depends on {dep} and the other way around.")
-               exit(1)
-           else:
-               print(f"Dependency: {name} -> {dep}")
-               install_package(dep, config, directory, reinstall=reinstall)
-    install_cache.remove(name)
-
-
-    # ckeck cache
-    cached = False
-    with open("/home/arnaud/code/code_manager/cache", "r") as cache:
-        if name in cache.read().splitlines():
-            cached = True
-
-    print(f"{name}:{cached}")
-    if cached:
-        print(f"{name} is already installed (it\'s in the cache).")
-        return 0
-        
-    
-    print(f"Installing \'{name}\'.")
-    
-    last_edit = os.curdir
-    package_dir = os.path.join(directory, name)
-
-    if not os.path.isdir(package_dir):
-        if reinstall:
-            print(f"Reinstalling {name} but there is no directory. Install first!")
-            exit(1)
-        os.makedirs(package_dir)
-    
-    if len(os.listdir(package_dir)) != 0 and reinstall == False:
-        print(f"The direcory ({package_dir}) is not empty and the package (name) is not in cache")
-        print("Deleting direcotry\'s contents")
-        exit(1)
-        # os.system(f"rm -rf {package_dir}/* {package_dir}/.* 2> /dev/null")
-
-
-    os.chdir(package_dir)
-
-    if not reinstall:
-        print(f"Downloading {name}")
-        down.download(name, config)
-
-
-    #resolve dependencies
-    if "deb_packages" in package.keys():
-        deb_dep.install_deb_packages(package["deb_packages"])
-
-        
-    res = inst.install(name, package, reinstall=False)
-
-    if res != 0:
-        print(f"Package {name} could not be installed")
-        exit(1)
-    
-    os.chdir(last_edit)
-    with open("/home/arnaud/code/code_manager/cache", "a") as cache:
-        print(name)
-        cache.write(name + "\n")
-        
-    print("##############################")
-    return res
-    
-
-
-def install(config, directory, packages, reinstall=False):
-    if packages is None:
-        return
-    packages = flatten(packages)
-    flat = flatten(config["packages_list"])
-    for pack in packages:
-        if pack not in flat:
-            print(f"Package {pack} is not in the config file")
-        else: 
-            install_package(pack, config, directory, reinstall=reinstall)
-
-            
-def install_all(config, directory,group=None, reinstall=False):
-    packages = config["packages_list"]
-    if group is not None and group > 0 and group < len(packages):
-        packages = packages[group]
-    print(f"Installing: {packages}")
-
-    install(config, directory, packages, reinstall=reinstall)
-
+VERSION_MSG = [
+    'code-manager version: {0}'.format(VERSION),
+    'Python version: {0}'.format(' '.join(line.strip() for line in sys.version.splitlines())),
+    'Locale: {0}'.format('.'.join(str(s) for s in locale.getlocale())),
+]
 
 def main():
 
-    parser = argparse.ArgumentParser(description='Installs system packages from the INTERNET!!')
+    parser = argparse.ArgumentParser(
+        prog="code-mamanger",
+        description='Installs system packages from the INTERNET!!')
 
+
+
+    parser.add_argument('--version', '-v', action="version", version=('\n'.join(VERSION_MSG)),
+                    help='Print veriosn inormation')
+
+    parser.add_argument('--setup-only', dest='setup', action="store_true", default=False,
+                        help='Only copy the config files if needed')
+
+    parser.add_argument('--list-packages', dest='list_pack', action="store_true", default=False,
+                        help='List the available packages in the packages.json file')
+
+    parser.add_argument('--clear-cache', dest='clear_cache', action="store_true", default=False,
+                        help='Clears the entries in the cach file')
+    
     parser.add_argument('--install', dest='packages',
                         help='Packages to install', nargs='+')
 
@@ -145,53 +65,98 @@ def main():
     args = parser.parse_args()    
     opt = configparser.ConfigParser()
 
-
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-
-    
-    opt.read(os.path.join(script_dir,'conf'))
-
-    packages_file = opt["Set"]["packages_file"]
-    code_dir = opt["Set"]["code"]
-    usr_dir = opt["Set"]["usr"]
-
     
     
-    code_dir = os.path.abspath(os.path.expanduser(os.path.expandvars(code_dir)))
-    usr_dir = os.path.abspath(os.path.expanduser(os.path.expandvars(usr_dir)))
-    packages_file = os.path.abspath(os.path.expanduser(os.path.expandvars(packages_file)))
+    private_data_dir = os.path.join(code_manager.CMDIR,"data")
     
-    code_dir = os.path.abspath(os.path.expanduser(args.code_dir)) if args.code_dir is not None else code_dir
-    usr_dir = os.path.abspath(os.path.expanduser(args.usr_dir)) if args.usr_dir is not None else usr_dir
-    packages_file = os.path.abspath(os.path.expanduser(args.packages_file)) if args.packages_file is not None else packages_file
+    if not os.path.isdir(code_manager.CONFDIR):
+        os.mkdir(code_manager.CONFDIR)
+    if not os.path.isfile(os.path.join(code_manager.CONFDIR, "packages.json")):
+        copyfile(os.path.join(private_data_dir, "packages.json"),
+                 os.path.join(code_manager.CONFDIR, "packages.json"))
 
+    if not os.path.isfile(os.path.join(code_manager.CONFDIR, "cache")):
+        copyfile(os.path.join(private_data_dir, "cache"),
+                 os.path.join(code_manager.CONFDIR, "cache"))
+
+    if not os.path.isfile(os.path.join(code_manager.CONFDIR, "conf")):
+        copyfile(os.path.join(private_data_dir, "conf"),
+                 os.path.join(code_manager.CONFDIR, "conf"))
+
+    if not os.path.isdir(os.path.join(code_manager.CONFDIR, "install_scripts")):
+        shutil.copytree(os.path.join(code_manager.CMDIR, "install_scripts"),
+                 os.path.join(code_manager.CONFDIR, "install_scripts"))
+
+    install_scripts_dir = os.path.join(code_manager.CONFDIR, "install_scripts")
+
+        
+        
+
+    opt.read(os.path.join(os.path.join(code_manager.CONFDIR, "conf")))
+        
     
-    config = None
-    with open(os.path.join(script_dir, packages_file)) as config_file:
-        config = json.load(config_file)
+    if args.code_dir is not None:
+        code_dir = os.path.abspath(os.path.expanduser(args.code_dir))
+    else:
+        code_dir = os.path.abspath(
+            os.path.expanduser(os.path.expandvars(opt["Config"]["code"])))
 
-    if not os.path.isdir(code_dir):
-        os.makedirs(code_dir)
+    if args.usr_dir is not None:
+        usr_dir = os.path.abspath(os.path.expanduser(args.usr_dir))
+    else:
+        usr_dir = os.path.abspath(
+            os.path.expanduser(os.path.expandvars(opt["Config"]["usr"])))
+
+    if args.packages_file is not None:
+        packages_file = os.path.abspath(os.path.expanduser(args.packages_file))
+    else:
+        packages_file = os.path.join(code_manager.CONFDIR,"packages.json")
+
+    cache = os.path.join(code_manager.CONFDIR,"cache")
+    if not os.path.isfile(os.path.isfile(cache)):
+        f = open(cache,  "w+")
+        f.close()
 
     if not os.path.isdir(usr_dir):
         os.makedirs(usr_dir)
+    if not os.path.isdir(code_dir):
+        os.makedirs(code_dir)    
+        
+    print(f"Code dir: {code_dir}")
+    print(f"Usr dir: {usr_dir}")
+    print(f"Packages file: {packages_file}")
+    print(f"Install script directory: {install_scripts_dir}")
 
-    if not os.path.isfile("./cache"):
-        f = open("./cache",  "w+")
+    with open(packages_file, "r") as config_file:
+        config = json.load(config_file)
+
+    if args.setup:
+        print("Setup for config files done. Exiting now! ")
+        exit(0)
+
+    if args.list_pack:
+        print("Available packages:")
+        print(config['packages_list'])
+        exit(0)
+
+    if args.clear_cache:
+        print(f"Clearing cache file {cache}")
+        f = open(cache, "w")
         f.close()
+        print("Cleared!")
+        exit(0)
 
-    global inst,down
-    inst = Installer(usr_dir, args.noinstall)
-    down = Downloader()
-    deb_dep = Depender()
+    
+        
+    core = Core(args.noinstall, cache, config, code_dir, usr_dir, install_scripts_dir)
     
     if args.inst_all is not None:
-        install_all(config, code_dir, group=args.inst_all)
+        core.install_all(config, code_dir, group=args.inst_all)
     elif args.reall is not None:
-        install_all(config, code_dir, group=args.reall, reinstall=True)
+        core.install_all(config, code_dir, group=args.reall, reinstall=True)
     else:
-        install(config, code_dir, args.packages)
-        install(config, code_dir, args.reinstall, reinstall=True)
+        core.install(config, code_dir, args.packages)
+        core.install(config, code_dir, args.reinstall, reinstall=True)
 
 
 
