@@ -1,0 +1,227 @@
+
+#+OPTIONS: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+#+OPTIONS: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
+#+OPTIONS: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
+#+OPTIONS: prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t
+#+OPTIONS: toc:nil todo:t |:t
+#+TITLE: README
+#+DATE: <2018-10-21 Sun>
+#+AUTHOR: Stanislav Arnaudov
+#+EMAIL: arnaud@localhost
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 26.1 (Org mode 9.1.13)
+
+
+* Abstract
+
+
+* Installation
+Currently the project is not on [[https://pypi.org/][PyPi]] so you have to clone the repo yourself and then use the ~setup.py~ file for a manual installation.
+#+BEGIN_SRC sh
+git clone https://github.com/palikar/code_manager
+cd code_manager
+sudo python setup.py install
+code-manager --setup-only
+#+END_SRC
+/Suggestion:/ You may want to install the utility as
+#+BEGIN_SRC sh
+sudo python setup.py install --record install_manifest.txt
+#+END_SRC
+so that later you can delete all of the associated files. The deletion can be performed with something like:
+#+BEGIN_SRC sh
+cat install_manifest.txt | xargs rm -rf
+#+END_SRC
+
+
+
+* Usage
+
+The tool is pretty straight forward to use. The information for the packages that can be installed is give in the file ~~/.config/code_manager/packages.json~ and the configuration for the utility is in ~~/.config/code_manager/conf~. Those two files are explained in the following two sections. Working with the command line interface is simple to use and it's also later explained.
+
+** ~conf~ file
+This files tell ~code-manager~ where to download and where to install the packages that should be downloaded and installed. An example of a ~conf~ file:
+#+BEGIN_SRC conf
+[Config]
+        code = ${HOME}/core.d/code
+        usr = ${HOME}/core.d/usr
+#+END_SRC
+To note is that the values of the fields can indeed contain environmental variables. Those will be expanded by the ~code-manager~.
+\\
+Simple explanations:
+|---------------+-----------------------------------------------------|
+| Var           | Description                                         |
+|---------------+-----------------------------------------------------|
+| ~Config.code~ | The directory where the packages will be downloaded |
+|---------------+-----------------------------------------------------|
+| ~Config.usr~  | A directory that will be used as a installed        |
+|               | prefix while installing the packages                |
+|---------------+-----------------------------------------------------|
+
+
+** ~packages.json~
+
+The file contains all of the relevant information needed to install a certain package. As the name suggests this is a /JSON/-file and in it there are several list of packages together with download/compilation/installation information for each package. An example skeleton of the file is:
+#+BEGIN_SRC json
+{
+    "packages_list": [
+        "<list of names for packages in group 0>",
+        "<list of names for packages in group 1>",
+            .
+            .
+            .
+    ],
+    "debian_packages":[
+        "<list of names for debian packages>"
+    ],
+    "packages": {
+        "<package name>": {
+            "download": "git\curl\wget",
+            "URL": "<url>",
+            "install": "script\cmake\command",
+            "script": "<script file>",
+            "script_args": "",
+            "command" : "<shell command>" ,
+            "reinstall_command": "<shell command>",
+            "cmake_args" : "<extra arguments for cmake>",
+            "make_args" : "<extra arguments for make (for example -j4)>"
+            "dependencies": "<list of other packages>",
+            "deb_packages": "<list of debian packages>"
+    },
+            .
+            .
+            .
+}
+#+END_SRC
+
+- ~packages_list~ is a list of lists of ~code-manager~-packages. The sub-lists are to be seen as groups of packages. Every single package that can be installed with the ~code-manager~ must be in one of the groups. 
+- ~debian_packages~ is a list of lists of [[https://www.debian.org/distrib/packages][Debian]]-packages. _Not used for now_.
+- ~packages~ every object in this node must be a package-object. The name of every object in the node must also be present in the ~packages_list~.
+- /package-object/
+|---------------------+------------------------------------------------------------|
+| Field               | Description                                                |
+|---------------------+------------------------------------------------------------|
+| ~download~          | Download method                                            |
+|                     | This could be ~git~\ ~curl~\ ~wget~                        |
+|---------------------+------------------------------------------------------------|
+| ~URL~               | A URL that should be either a git repository or some sort  |
+|                     | of a file depending on the download method.                |
+|---------------------+------------------------------------------------------------|
+| ~install~           | Compilation\Installation method                            |
+|                     | This could be ~cmake~\ ~command~\ ~script~                 |
+|---------------------+------------------------------------------------------------|
+| ~script~            | The script must be available                               |
+|                     | in ~~/.config/code_manager/install_scripts~                |
+|---------------------+------------------------------------------------------------|
+| ~script_args~       | Command line arguments that will be given to the script    |
+|                     | while executed.                                            |
+|---------------------+------------------------------------------------------------|
+| ~command~           | A shell command to be executed to install the              |
+|                     | package. The command will be executed in the               |
+|                     | root folder of the package.                                |
+|---------------------+------------------------------------------------------------|
+| ~reinstall_command~ | A shell command to be executed to                          |
+|                     | reinstall the package. The command will be executed in the |
+|                     | root folder of the package.                                |
+|---------------------+------------------------------------------------------------|
+| ~cmake_args~        | Command line arguments that will be added to the ~cmake~   |
+|                     | command.                                                   |
+|---------------------+------------------------------------------------------------|
+| ~make_args~         | Command line arguments that will be added to the ~make~    |
+|                     | command.                                                   |
+|---------------------+------------------------------------------------------------|
+| ~dependencies~      | Those will be installed before the package is installed.   |
+|---------------------+------------------------------------------------------------|
+| ~deb_packages~      | Those will be installed before the package is installed.   |
+|---------------------+------------------------------------------------------------|
+
+
+** Command line
+
+A simple call of ~code-mamanger --help~ gives:
+#+BEGIN_EXAMPLE
+usage: code-mamanger [-h] [--version] [--setup-only] [--list-packages]
+                     [--clear-cache] [--install PACKAGES [PACKAGES ...]]
+                     [--reinstall REINSTALL [REINSTALL ...]]
+                     [--code-dir CODE_DIR] [--usr-dir USR_DIR]
+                     [--packages-file PACKAGES_FILE]
+                     [--install-all [INST_ALL]] [--reinstall-all [REALL]]
+                     [--no-install]
+
+Installs system packages from the INTERNET!!
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version, -v         Print veriosn inormation
+  --setup-only          Only copy the config files if needed
+  --list-packages       List the available packages in the packages.json file
+  --clear-cache         Clears the entries in the cach file
+  --install PACKAGES [PACKAGES ...]
+                        Packages to install
+  --reinstall REINSTALL [REINSTALL ...]
+                        Packages to reinstall
+  --code-dir CODE_DIR   A folder to put the source of the packages
+  --usr-dir USR_DIR     A folder to install the packages
+  --packages-file PACKAGES_FILE
+                        File to read the packages from
+  --install-all [INST_ALL]
+                        Install all packages in --packages from the given
+                        group
+  --reinstall-all [REALL]
+                        Reinstall all packages in --packages from the given
+                        group
+  --no-install          If present, packages will only be downloaded
+
+#+END_EXAMPLE
+
+The majority of the arguments are self-explanatory. The following table presents explanations for some of the other ones.
+
+|-----------------+-------------|
+| Argument        | Description |
+|-----------------+-------------|
+| ~--install~     |             |
+|-----------------+-------------|
+| ~--install-all~ |             |
+|                 |             |
+|-----------------+-------------|
+
+
+~--reinstall~ and ~--reinstall-all~ function analogously.
+
+* Installation scripts
+
+
+
+A nice template for a installation script can be:
+#+BEGIN_SRC sh
+#!/bin/bash
+usage() { echo "Usage: $0 [-r] [-p preffix]" 1>&2; exit 1; }
+
+while getopts ":rp:" o; do
+    case "${o}" in
+        r) reinstall=true;;
+        p) prefix=${OPTARG};;
+        *) usage;;
+    esac
+done
+shift $((OPTIND-1))
+
+
+[ -z ${reinstall+x} ] && reinstall=false
+[ -z ${prefix+x} ] && prefix="/usr/local"
+
+echo "###########################"
+echo "### Script for <module> ###"
+echo "###########################"
+
+if [ $reinstall = "false" ] ; then
+    echo "Installing."
+else
+    echo "Reinstalling."
+fi
+
+echo "Install prefix: ${prefix}"
+echo "Script finished"
+#+END_SRC
+

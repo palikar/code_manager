@@ -8,6 +8,7 @@ class Installer:
         self.installers["script"] = self.install_with_script
         self.installers["command"] = self.install_with_command
         self.installers["cmake"] = self.install_with_cmake
+        self.installers["setup.py"] = self.install_with_setup_py
         self.usr_dir = usr_dir
         self.noinstall = noinstall
         self.install_scripts_dir = install_scripts_dir
@@ -54,6 +55,11 @@ class Installer:
         command = os.path.expandvars(command)
         print(f"Command: sh {command}")
         return os.system(f"{command}")
+
+
+
+    def install_with_setup_py(self, name, package, reinstall=False):
+        pass
 
 
     def install_with_cmake(self, name, package, reinstall=False):
