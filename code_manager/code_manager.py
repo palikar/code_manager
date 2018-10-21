@@ -21,7 +21,7 @@ VERSION_MSG = [
 def main():
 
     parser = argparse.ArgumentParser(
-        prog="code-mamanger",
+        prog="code-mananger",
         description='Installs system packages from the INTERNET!!')
 
 
