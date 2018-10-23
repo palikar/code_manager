@@ -1,3 +1,6 @@
+Build status: [![Build Status](https://travis-ci.org/palikar/code_manager.svg?branch=master)](https://travis-ci.org/palikar/code_manager)
+
+
 # Abstract
 
 This is my personal tool now for managing my github repositories, some system software that I use and pretty much everything that can be downloaded, compiled locally and then installed on a Debian based Linux system. Through this utility one can quickly download and install random things from all over the internet. I&rsquo;ve always wanted some small program that would allow me to quickly bring my github repositories on my local machine so I end it up writing this in my spare time. The program is focused on automation but also on flexibility in the installation process. A lot of software is compiled and installed in some standard way but there are also things that are a little bit trickier. The utility - named appropriately `code_manager` aims to provide a unified interface for the installation process of all types of software &#x2013; the trickier kind included.
@@ -11,7 +14,7 @@ Currently the project is not on [PyPi](https://pypi.org/) so you have to clone t
 git clone https://github.com/palikar/code_manager
 cd code_manager
 sudo python setup.py install
-code-manager --setup-only
+code-manager -setup-only
 ```
 
 *Suggestion:* You may want to install the utility as
