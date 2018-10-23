@@ -41,6 +41,7 @@
             "speech_recognition"
         ]
     ],
+    
     "debian_packages":[
         ["libboost-all-dev","build-essential", "git", "cmake", "cmake-curses-gui",
          "krb5-config", "krb5-user", "libfile-homedir-perl", "libpath-class-perl",
@@ -50,6 +51,7 @@
         ["feh","i3blocks","i3lock","dmunu","rofi", "ibus",
          "libgtk2.0-dev"]
     ],
+    
     "packages": {
         "arnaud-framer": {
             "download": "git",
@@ -344,7 +346,6 @@
             "cmake_args": "-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fPIC",
             "make_args": "-j2",
             "deb_packages": ["libjansson-dev", "openssl", "libssl-dev"]
-        }
-        
+        }   
     }
 }

@@ -33,17 +33,18 @@ setup(
         ]
     },
     classifiers=[
-        "Development Status :: 1 - Proof of concept",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Natural Language :: English",
-        "License :: OSI Approved :: GNU General Public License",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: POSIX :: Linux",
-        "Operating System :: Linux :: Debian",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: Code Management",
+        "Topic :: System :: Archiving :: Mirroring",
+        "Topic :: System :: Archiving :: Packaging",
+        "Topic :: System :: Installation/Setup"
     ],
 )

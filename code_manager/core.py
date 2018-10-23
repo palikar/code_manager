@@ -22,8 +22,9 @@ class Core:
         self.config = config
         self.install_scripts_dir = install_scripts_dir
         self.cache_file = cache_file
-        
 
+
+        
 
     def _install_package(self, name, config, directory, reinstall=False):
         package = config["packages"][name]
@@ -40,7 +41,6 @@ class Core:
                    print(f"Dependency: {name} -> {dep}")
                    self._install_package(dep, config, directory, reinstall=reinstall)
         self.install_cache.remove(name)
-
 
         # ckeck cache
         cached = False
@@ -91,7 +91,6 @@ class Core:
 
         os.chdir(last_edit)
         with open(self.cache_file, "a") as cache:
-            print(name)
             cache.write(name + "\n")
 
         print("##############################")

@@ -1,0 +1,15 @@
+language: python
+python:
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+
+sudo: false # this allows TravisCI to use the fast Docker build environment rather than the slower VMs
+
+install:
+  - pip3 install mock
+  - pip install -e .
+
+script:
+  - python -m unitest discover --verbose
