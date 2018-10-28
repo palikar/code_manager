@@ -21,15 +21,18 @@ class Installer:
             print(f'Unknown installer {package["install"]} for package {name}')
             return -1
         else:
-            return self.installers[package["install"]](name, package, reinstall=False)
+            return self.installers[package["install"]](name, package, reinstall=reinstall)
 
 
     def install_with_script(self, name, package, reinstall=False):
         print(f"Installing {name} with script file")
 
-        if "script" not in package:
-            print("'script' field missing in the node form {name}")
-            return -1
+        assert(name is not None)
+        assert(package is not None)
+        assert("script" in package)
+
+
+        
         script = os.path.join(self.install_scripts_dir, package["script"])
         script = os.path.expanduser(script)
         script = os.path.expandvars(script)

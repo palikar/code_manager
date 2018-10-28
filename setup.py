@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-import sys, os
+import sys
 import setuptools
 from distutils.core import setup
 
-import code_manager
 
 if sys.version_info < (3, 3):
     print("THIS MODULE REQUIRES PYTHON 3.3+. YOU ARE CURRENTLY USING PYTHON {0}".format(sys.version))
