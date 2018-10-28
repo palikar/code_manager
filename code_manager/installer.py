@@ -49,10 +49,11 @@ class Installer:
 
     def install_with_command(self, name, package, reinstall=False):
         print(f"Installing {name} with command")
-        #Make checks!
-        if "command" not in package:
-            print("'command' field missing in the node form {name}")
-            return -1
+
+        assert(name is not None)
+        assert(package is not None)
+        assert("command" in package)        
+
         command = package["command"] if reinstall == False else package["reinstall_command"]
         command = os.path.expanduser(command)
         command = os.path.expandvars(command)
@@ -62,7 +63,26 @@ class Installer:
 
 
     def install_with_setup_py(self, name, package, reinstall=False):
-        pass
+        
+        assert(name is not None)
+        assert(package is not None)
+
+        if not os.path.isfile("setup.py"):
+            print("There isn't a setup.py file at the root of the package.")
+            return -1
+
+        setup_args = package["setup_args"] if "setup_args" in package.keys() else ""
+        setup_args = os.path.expanduser(setup_args)
+        setup_args = os.path.expandvars(setup_args)
+        
+        prefix = self.usr_dir
+        command = f"python setup.py install --prefix {prefix} {setup_args}"
+        print(f"Command: sh {command}")
+        return os.system(f"{command}")
+
+        
+        
+        
 
 
     def install_with_cmake(self, name, package, reinstall=False):

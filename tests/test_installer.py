@@ -76,11 +76,13 @@ class TestDown(unittest.TestCase):
             inst.install_with_script('mock', config['packages']['mock'])
 
         config['packages']['mock']['script'] = 'mock_script'
-
         inst.install_with_script('mock', config['packages']['mock'])
-
         
         os.assert_called_once()
+
+
+
+        
 
 if __name__ == '__main__':
     unittest.main()

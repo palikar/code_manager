@@ -3,6 +3,8 @@ local_packages.json
 system_packages.json
 CodeManager.egg-info/
 build/
+dist/
 
 *.pyo
 *.pyc
+
