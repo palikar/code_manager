@@ -80,7 +80,7 @@ The file contains all of the relevant information needed to install a certain pa
     ],
     "packages": {
         "<package name>": {
-            "download": "<git\curl\wget>",
+            "download": "<git\\curl\\wget>",
             "URL": "<url>",
             "install": "<script\cmake\command>",
             "script": "<script file>",
@@ -88,7 +88,7 @@ The file contains all of the relevant information needed to install a certain pa
             "command" : "<shell command>" ,
             "reinstall_command": "<shell command>",
             "cmake_args" : "<extra arguments for cmake>",
-            "make_args" : "<extra arguments for make (for example -j4)>"
+            "make_args" : "<extra arguments for make (for example -j4)>",
             "dependencies": "<list of other packages>",
             "deb_packages": "<list of debian packages>"
     },

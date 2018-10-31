@@ -10,15 +10,18 @@ class Depender:
         pass
 
 
-
+    def _available_packages(self):
+        pkgs = subprocess.Popen(('dpkg-query', '--list'), stdout=subprocess.PIPE)
+        pkgs = subprocess.check_output(
+            ('awk', '{print $2}'), stdin=pkgs.stdout,universal_newlines=True)
+        pkgs = pkgs.split("\n")
+        return list(map(lambda deb: deb.split(':')[0], pkgs))
+         
+        
 
     def install_deb_packages(self, packages):
+        pkgs = self._available_packages()
         for deb in packages:
-            pkgs = subprocess.Popen(('dpkg-query', '--list'), stdout=subprocess.PIPE)
-            pkgs = subprocess.check_output(
-                ('awk', '{print $2}'), stdin=pkgs.stdout,universal_newlines=True)
-            pkgs = pkgs.split("\n")
-            pkgs = list(map(lambda deb: deb.split(':')[0], pkgs))
             if deb in pkgs:
                 print(f"'{deb}' is already installed")
             else:
@@ -26,9 +29,11 @@ class Depender:
                 self.install(deb)
                 
     def install(self, deb):
-        print(f"Installing {deb}")
+        if deb is None:
+            return
+        print(f"Installing package \'{deb}\'")
 
         do_not_use = "--allow-downgrades --allow-remove-essential"
         options = "--allow-unauthenticated  --allow-change-held-packages"
         
-        os.system(f"sudo apt-get install -y  {deb} {options}")
+        return os.system(f"sudo apt-get install -y  {deb} {options}")

@@ -80,6 +80,29 @@ class TestDown(unittest.TestCase):
         
         os.assert_called_once()
 
+        
+    @patch('os.system')
+    def test_install_with_setup_py(self, os):
+        inst = Installer("user_dir_mock", "install_scripts_mock", noinstall=False)
+        config = dict()
+        config['packages'] = dict()
+        config['packages']['mock']  = dict()
+        config['packages']['mock']['install'] = 'setup.py'
+
+        with self.assertRaises(AssertionError):
+            self.assertEqual(inst.install_with_setup_py(None, None), -1)
+        with self.assertRaises(AssertionError):
+            self.assertEqual(inst.install_with_setup_py('mock', None), -1)
+        with self.assertRaises(AssertionError):
+            self.assertEqual(inst.install_with_setup_py(None, config['packages']['mock']), -1)
+
+        with self.assertRaises(AssertionError):
+            inst.install_with_script('mock', config['packages']['mock'])
+
+        inst.install_with_setup_py('mock', config['packages']['mock'])
+        
+        os.assert_called_once()
+
 
 
         
