@@ -15,8 +15,6 @@ class TestDown(unittest.TestCase):
         self.assertEqual(inst.install(None, None, reinstall=True),0)
         self.assertEqual(inst.install(None, None, reinstall=False),0)
 
-
-
     @patch('code_manager.installer.Installer.install_with_script')
     def test_install_script(self, fun):
         inst = Installer("user_dir_mock", "install_scripts_mock", noinstall=False)
@@ -29,7 +27,6 @@ class TestDown(unittest.TestCase):
         fun.reset_mock()
         inst.install('mock', config['packages']['mock'], reinstall=False)
         fun.assert_called_once_with('mock', config['packages']['mock'], reinstall=False)
-
         
     @patch('code_manager.installer.Installer.install_with_command')
     def test_install_command(self, fun):
@@ -43,7 +40,7 @@ class TestDown(unittest.TestCase):
         fun.reset_mock()
         inst.install('mock', config['packages']['mock'], reinstall=False)
         fun.assert_called_once_with('mock', config['packages']['mock'], reinstall=False)
-
+        
     @patch('code_manager.installer.Installer.install_with_cmake')
     def test_install_cmake(self, fun):
         inst = Installer("user_dir_mock", "install_scripts_mock", noinstall=False)
@@ -102,6 +99,9 @@ class TestDown(unittest.TestCase):
         inst.install_with_setup_py('mock', config['packages']['mock'])
         
         os.assert_called_once()
+
+
+        
 
 
 

@@ -29,8 +29,8 @@ class Depender:
                 self.install(deb)
                 
     def install(self, deb):
-        if deb is None:
-            return
+        assert(deb is not None)
+        
         print(f"Installing package \'{deb}\'")
 
         do_not_use = "--allow-downgrades --allow-remove-essential"

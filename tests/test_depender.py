@@ -24,6 +24,10 @@ class TestDown(unittest.TestCase):
     def test_install(self, system):
         deb = Depender()
 
+
+        with self.assertRaises(AssertionError):
+            deb.install(None)
+
         res = deb.install('mock')
 
         self.assertEqual(res, 0)
