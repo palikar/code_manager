@@ -1,7 +1,5 @@
-import os, sys
+import os
 import subprocess
-
-
 
 
 class Depender:
@@ -9,15 +7,13 @@ class Depender:
     def __init__(self):
         pass
 
-
     def _available_packages(self):
-        pkgs = subprocess.Popen(('dpkg-query', '--list'), stdout=subprocess.PIPE)
+        pkgs = subprocess.Popen(('dpkg-query', '--list'),
+                                stdout=subprocess.PIPE)
         pkgs = subprocess.check_output(
-            ('awk', '{print $2}'), stdin=pkgs.stdout,universal_newlines=True)
+            ('awk', '{print $2}'), stdin=pkgs.stdout, universal_newlines=True)
         pkgs = pkgs.split("\n")
         return list(map(lambda deb: deb.split(':')[0], pkgs))
-         
-        
 
     def install_deb_packages(self, packages):
         pkgs = self._available_packages()
@@ -27,13 +23,12 @@ class Depender:
             else:
                 print(f"{deb} is not there")
                 self.install(deb)
-                
+
     def install(self, deb):
         assert(deb is not None)
-        
+
         print(f"Installing package \'{deb}\'")
 
-        do_not_use = "--allow-downgrades --allow-remove-essential"
         options = "--allow-unauthenticated  --allow-change-held-packages"
-        
+
         return os.system(f"sudo apt-get install -y  {deb} {options}")

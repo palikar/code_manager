@@ -1,45 +1,44 @@
 
-import os, sys, argparse, json
-import subprocess, configparser
+import os
 
 
 from code_manager.installer import Installer
 from code_manager.downloader import Downloader
 from code_manager.deb_dependency import Depender
-from code_manager.utils import flatten 
-
-
+from code_manager.utils import flatten
 
 
 class Core:
 
-
-    def __init__(self, noinstall, cache_file, config, code_dir, usr_dir, install_scripts_dir):
+    def __init__(self, noinstall, cache_file, config, code_dir,
+                 usr_dir, install_scripts_dir):
         self.install_cache = list()
-        self.inst = Installer(usr_dir, install_scripts_dir,  noinstall=noinstall)
+        self.inst = Installer(usr_dir, install_scripts_dir,
+                              noinstall=noinstall)
         self.down = Downloader()
         self.deb_dep = Depender()
         self.config = config
         self.install_scripts_dir = install_scripts_dir
         self.cache_file = cache_file
 
-
-        
-
     def _install_package(self, name, config, directory, reinstall=False):
         package = config["packages"][name]
 
-        #Check dependencies
+        # Check dependencies
         self.install_cache.append(name)
         if "dependencies" in package:
             for dep in package["dependencies"]:
-               if dep in install_cache:
-                   print("Thers is a cirlucar dependency between packages. This is not allowed!")
-                   print(f"{name} depends on {dep} and the other way around.")
-                   exit(1)
-               else:
-                   print(f"Dependency: {name} -> {dep}")
-                   self._install_package(dep, config, directory, reinstall=reinstall)
+                if dep in self.install_cache:
+                    print("Thers is a cirlucar dependency between packages.\
+                    This is not allowed!")
+                    print(f"{name} depends on {dep} and the other way around.")
+                    exit(1)
+                else:
+                    print(f"Dependency: {name} -> {dep}")
+                    self._install_package(dep,
+                                          config,
+                                          directory,
+                                          reinstall=reinstall)
         self.install_cache.remove(name)
 
         # ckeck cache
@@ -52,7 +51,6 @@ class Core:
             print(f"{name} is already installed (it\'s in the cache).")
             return 0
 
-
         print(f"Installing \'{name}\'.")
 
         last_edit = os.curdir
@@ -64,7 +62,7 @@ class Core:
                 exit(1)
             os.makedirs(package_dir)
 
-        if len(os.listdir(package_dir)) != 0 and reinstall == False:
+        if len(os.listdir(package_dir)) != 0 and reinstall is False:
             print(f"The direcory ({package_dir}) is not empty and the package (name) is not in cache")
             print("Delete the direcotry\'s contents first")
             exit(1)
@@ -76,12 +74,10 @@ class Core:
             print(f"Downloading {name} in {package_dir}")
             self.down.download(name, config)
 
-
-        #resolve dependencies
+        # resolve dependencies
         if "deb_packages" in package.keys():
             print("Resolving Debian packages dependencies")
             self.deb_dep.install_deb_packages(package["deb_packages"])
-
 
         res = self.inst.install(name, package, reinstall=False)
 
@@ -96,8 +92,6 @@ class Core:
         print("##############################")
         return res
 
-
-
     def install(self, config, directory, packages, reinstall=False):
         if packages is None:
             return
@@ -107,16 +101,16 @@ class Core:
             if pack not in flat:
                 print(f"Package {pack} is not in the config file!")
                 exit(1)
-            else: 
-                self._install_package(pack, config, directory, reinstall=reinstall)
+            else:
+                self._install_package(pack,
+                                      config,
+                                      directory,
+                                      reinstall=reinstall)
 
-
-    def install_all(self, config, directory,group=None, reinstall=False):
+    def install_all(self, config, directory, group=None, reinstall=False):
         packages = config["packages_list"]
         if group is not None and group > 0 and group < len(packages):
             packages = packages[group]
         print(f"Installing: {packages}")
 
-        install(config, directory, packages, reinstall=reinstall)
-
-
+        self.install(config, directory, packages, reinstall=reinstall)

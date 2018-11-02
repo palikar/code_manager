@@ -1,7 +1,11 @@
 #!/usr/bin/python
 
-import os, sys, argparse, json
-import subprocess, configparser
+import os
+import sys
+import argparse
+import json
+import subprocess
+import configparser
 import locale
 from shutil import copyfile
 import shutil
@@ -18,16 +22,15 @@ VERSION_MSG = [
     'Locale: {0}'.format('.'.join(str(s) for s in locale.getlocale())),
 ]
 
+
 def main():
 
     parser = argparse.ArgumentParser(
         prog="code-mananger",
         description='Installs system packages from the INTERNET!!')
 
-
-
     parser.add_argument('--version', '-v', action="version", version=('\n'.join(VERSION_MSG)),
-                    help='Print veriosn inormation')
+                        help='Print veriosn inormation')
 
     parser.add_argument('--setup-only', dest='setup', action="store_true", default=False,
                         help='Only copy the config files if needed')
@@ -37,13 +40,13 @@ def main():
 
     parser.add_argument('--clear-cache', dest='clear_cache', action="store_true", default=False,
                         help='Clears the entries in the cach file')
-    
+
     parser.add_argument('--install', dest='packages',
                         help='Packages to install', nargs='+')
 
     parser.add_argument('--reinstall', dest='reinstall',
                         help='Packages to reinstall', nargs='+')
-    
+
     parser.add_argument('--code-dir', dest='code_dir', action='store', required=False,
                         help='A folder to put the source of the packages')
 
@@ -62,13 +65,11 @@ def main():
     parser.add_argument('--no-install', dest='noinstall', action='store_true', default=False,
                         help='If present, packages will only be downloaded')
 
-    args = parser.parse_args()    
+    args = parser.parse_args()
     opt = configparser.ConfigParser()
 
-    
-    
-    private_data_dir = os.path.join(code_manager.CMDIR,"data")
-    
+    private_data_dir = os.path.join(code_manager.CMDIR, "data")
+
     if not os.path.isdir(code_manager.CONFDIR):
         os.mkdir(code_manager.CONFDIR)
     if not os.path.isfile(os.path.join(code_manager.CONFDIR, "packages.json")):
@@ -85,16 +86,12 @@ def main():
 
     if not os.path.isdir(os.path.join(code_manager.CONFDIR, "install_scripts")):
         shutil.copytree(os.path.join(code_manager.CMDIR, "install_scripts"),
-                 os.path.join(code_manager.CONFDIR, "install_scripts"))
+                        os.path.join(code_manager.CONFDIR, "install_scripts"))
 
     install_scripts_dir = os.path.join(code_manager.CONFDIR, "install_scripts")
 
-        
-        
-
     opt.read(os.path.join(os.path.join(code_manager.CONFDIR, "conf")))
-        
-    
+
     if args.code_dir is not None:
         code_dir = os.path.abspath(os.path.expanduser(args.code_dir))
     else:
@@ -110,18 +107,18 @@ def main():
     if args.packages_file is not None:
         packages_file = os.path.abspath(os.path.expanduser(args.packages_file))
     else:
-        packages_file = os.path.join(code_manager.CONFDIR,"packages.json")
+        packages_file = os.path.join(code_manager.CONFDIR, "packages.json")
 
-    cache = os.path.join(code_manager.CONFDIR,"cache")
+    cache = os.path.join(code_manager.CONFDIR, "cache")
     if not os.path.isfile(os.path.isfile(cache)):
-        f = open(cache,  "w+")
+        f = open(cache, "w+")
         f.close()
 
     if not os.path.isdir(usr_dir):
         os.makedirs(usr_dir)
     if not os.path.isdir(code_dir):
-        os.makedirs(code_dir)    
-        
+        os.makedirs(code_dir)
+
     print(f"Code dir: {code_dir}")
     print(f"Usr dir: {usr_dir}")
     print(f"Packages file: {packages_file}")
@@ -146,10 +143,8 @@ def main():
         print("Cleared!")
         exit(0)
 
-    
-        
     core = Core(args.noinstall, cache, config, code_dir, usr_dir, install_scripts_dir)
-    
+
     if args.inst_all is not None:
         core.install_all(config, code_dir, group=args.inst_all)
     elif args.reall is not None:
@@ -157,7 +152,6 @@ def main():
     else:
         core.install(config, code_dir, args.packages)
         core.install(config, code_dir, args.reinstall, reinstall=True)
-
 
 
 if __name__ == '__main__':

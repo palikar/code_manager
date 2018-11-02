@@ -1,4 +1,5 @@
-import os, sys
+import os
+
 
 class Downloader:
 
@@ -8,14 +9,12 @@ class Downloader:
         self.download_methods["curl"] = self.download_curl
         self.download_methods["wget"] = self.download_wget
 
-
     def download(self, name, config):
         package = config["packages"][name]
         method = package["download"]
         self.download_methods[method](package)
 
-
-    def download_git(self, package) :
+    def download_git(self, package):
         print(f"Using git and cloning from {package['URL']}")
         print(f"Cloning into {os.path.abspath('.')}")
         url = package['URL']
@@ -28,9 +27,8 @@ class Downloader:
         print(f"Command: curl -LOs {package['URL']} .")
         os.system(f"curl -LOs {package['URL']} .")
 
-
     def download_wget(self, package):
         print(f"Using wget and downloading from {package['URL']}")
         print(f"Cloning into {os.path.abspath('.')}")
         print(f"Command: wget {package['URL']} .")
-        os.system(f"wget {package['URL']} .")        
+        os.system(f"wget {package['URL']} .")

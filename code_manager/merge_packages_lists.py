@@ -1,31 +1,31 @@
 #!/usr/bin/python
 
 
-import os, sys, json
+import sys
+import json
+from code_manager.utils import merge_two_dicts
+from code_manager.utils import flatten
 
 
-
-
-
-
-def merge_two_dicts(x, y):
-    z = x.copy()   # start with x's keys and values
-    z.update(y)    # modifies z with y's keys and values & returns None
-    return z
-
-def main():
-
+def merge_package_file(input_files, output_file):
     new = dict()
     new["packages_list"] = list()
+    new["debian_packages"] = list()
     new["packages"] = dict()
-    for js in sys.argv[1:-1]:
+    for js in input_files:
         with open(js) as config_file:
             config = json.load(config_file)
-            new["packages_list"].append(config["packages_list"])
-            new["packages"] = merge_two_dicts(new["packages"], config["packages"])
+            new["packages_list"].append(flatten(config["packages_list"]))
+            new["debian_packages"].append(flatten(config["debian_packages"]))
+            new["packages"] = merge_two_dicts(new["packages"],
+                                              config["packages"])
 
-    with open(sys.argv[-1], 'w') as outfile:
-        json.dump(new, outfile,indent = 4,)
+    with open(output_file, 'w') as outfile:
+        json.dump(new, outfile, indent=4,)
+
+
+def main():
+    merge_package_file(sys.argv[1:-1], sys.argv[-1])
 
 
 if __name__ == '__main__':

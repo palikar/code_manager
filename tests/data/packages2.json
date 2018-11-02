@@ -1,0 +1,14 @@
+{
+    "packages_list": [
+        "package2"
+    ],
+    "debian_packages":[["mock3","mock4"]],
+    "packages": {
+        "package2": {
+            "download": "git",
+            "URL": "mock_url",
+            "install": "command",
+            "command": "echo 'No install command'"
+        }
+    }
+}

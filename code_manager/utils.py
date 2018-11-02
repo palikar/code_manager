@@ -1,11 +1,15 @@
 #!/usr/bin/python
 
-import os, sys
-import collections
+
+def merge_two_dicts(x, y):
+    z = x.copy()   # start with x's keys and values
+    z.update(y)    # modifies z with y's keys and values & returns None
+    return z
 
 
 def flatten(xs):
     res = []
+
     def loop(ys):
         for i in ys:
             if isinstance(i, list):
@@ -14,9 +18,3 @@ def flatten(xs):
                 res.append(i)
     loop(xs)
     return res
-
-
-def main():
-    pass
-if __name__ == '__main__':
-    main()
