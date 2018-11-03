@@ -11,7 +11,7 @@ from code_manager.utils import flatten
 class Core:
 
     def __init__(self, noinstall, cache_file, config, code_dir,
-                 usr_dir, install_scripts_dir):
+                 usr_dir, install_scripts_dir, force_clear):
         self.install_cache = list()
         self.inst = Installer(usr_dir, install_scripts_dir,
                               noinstall=noinstall)
@@ -20,6 +20,7 @@ class Core:
         self.config = config
         self.install_scripts_dir = install_scripts_dir
         self.cache_file = cache_file
+        self.force_clear = force_clear
 
     def _install_package(self, name, config, directory, reinstall=False):
         package = config["packages"][name]
@@ -62,7 +63,7 @@ class Core:
                 exit(1)
             os.makedirs(package_dir)
 
-        if len(os.listdir(package_dir)) != 0 and reinstall is False:
+        if (len(os.listdir(package_dir)) != 0 and reinstall is False and self.force_clear):
             print(f"The direcory ({package_dir}) is not empty and the package (name) is not in cache")
             print("Delete the direcotry\'s contents first")
             exit(1)

@@ -4,7 +4,6 @@ import os
 import sys
 import argparse
 import json
-import subprocess
 import configparser
 import locale
 from shutil import copyfile
@@ -12,8 +11,8 @@ import shutil
 
 
 import code_manager
-from code_manager.core import Core
 from code_manager.utils import flatten
+from code_manager.core import Core
 from code_manager.version import VERSION
 
 VERSION_MSG = [
@@ -23,7 +22,7 @@ VERSION_MSG = [
 ]
 
 
-def main():
+def get_arg_parser():
 
     parser = argparse.ArgumentParser(
         prog="code-mananger",
@@ -40,6 +39,9 @@ def main():
 
     parser.add_argument('--clear-cache', dest='clear_cache', action="store_true", default=False,
                         help='Clears the entries in the cach file')
+
+    parser.add_argument('--list-cache', dest='list_cache', action="store_true", default=False,
+                        help='Show the entries in the cache')
 
     parser.add_argument('--install', dest='packages',
                         help='Packages to install', nargs='+')
@@ -65,6 +67,17 @@ def main():
     parser.add_argument('--no-install', dest='noinstall', action='store_true', default=False,
                         help='If present, packages will only be downloaded')
 
+    parser.add_argument('--focre--clear', dest='force_clear', action='store_true', default=False,
+                        help='If present, packages will only be downloaded')
+
+    return parser
+
+
+def main():
+
+    parser = get_arg_parser()
+
+    
     args = parser.parse_args()
     opt = configparser.ConfigParser()
 
@@ -75,10 +88,6 @@ def main():
     if not os.path.isfile(os.path.join(code_manager.CONFDIR, "packages.json")):
         copyfile(os.path.join(private_data_dir, "packages.json"),
                  os.path.join(code_manager.CONFDIR, "packages.json"))
-
-    if not os.path.isfile(os.path.join(code_manager.CONFDIR, "cache")):
-        copyfile(os.path.join(private_data_dir, "cache"),
-                 os.path.join(code_manager.CONFDIR, "cache"))
 
     if not os.path.isfile(os.path.join(code_manager.CONFDIR, "conf")):
         copyfile(os.path.join(private_data_dir, "conf"),
@@ -110,8 +119,9 @@ def main():
         packages_file = os.path.join(code_manager.CONFDIR, "packages.json")
 
     cache = os.path.join(code_manager.CONFDIR, "cache")
-    if not os.path.isfile(os.path.isfile(cache)):
-        f = open(cache, "w+")
+    if not os.path.isfile(cache):
+        print(cache)
+        f = open(cache, 'a+')
         f.close()
 
     if not os.path.isdir(usr_dir):
@@ -133,17 +143,28 @@ def main():
 
     if args.list_pack:
         print("Available packages:")
-        print(config['packages_list'])
+
+        for pack in flatten(config['packages_list']):
+            print(pack)
+
         exit(0)
 
     if args.clear_cache:
         print(f"Clearing cache file {cache}")
         f = open(cache, "w")
         f.close()
-        print("Cleared!")
         exit(0)
 
-    core = Core(args.noinstall, cache, config, code_dir, usr_dir, install_scripts_dir)
+    if args.list_cache:
+        print(f"Dumping cache file {cache}")
+        f = open(cache, "r")
+        cont = f.read()
+        print(cont)
+        f.close()
+        exit(0)
+
+    core = Core(args.noinstall, cache, config, code_dir, usr_dir,
+                install_scripts_dir, args.force_clear)
 
     if args.inst_all is not None:
         core.install_all(config, code_dir, group=args.inst_all)
