@@ -70,6 +70,7 @@ def get_arg_parser():
     parser.add_argument('--focre--clear', dest='force_clear', action='store_true', default=False,
                         help='If present, packages will only be downloaded')
 
+
     return parser
 
 
@@ -77,7 +78,6 @@ def main():
 
     parser = get_arg_parser()
 
-    
     args = parser.parse_args()
     opt = configparser.ConfigParser()
 
@@ -129,10 +129,13 @@ def main():
     if not os.path.isdir(code_dir):
         os.makedirs(code_dir)
 
+
+
     print(f"Code dir: {code_dir}")
     print(f"Usr dir: {usr_dir}")
     print(f"Packages file: {packages_file}")
     print(f"Install script directory: {install_scripts_dir}")
+    print(f"Cache file: {cache}")
 
     with open(packages_file, "r") as config_file:
         config = json.load(config_file)

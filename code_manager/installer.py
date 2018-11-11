@@ -1,14 +1,20 @@
 import os
+from code_manager.utils import get_emacs_load_file
 
 
 class Installer:
 
-    def __init__(self, usr_dir, install_scripts_dir, noinstall=True):
+    def __init__(self,
+                 usr_dir, install_scripts_dir,
+                 noinstall=True):
+
         self.installers = dict()
         self.installers['script'] = self.install_with_script
         self.installers['command'] = self.install_with_command
         self.installers['cmake'] = self.install_with_cmake
         self.installers['setup.py'] = self.install_with_setup_py
+        self.installers['emacs'] = self.install_with_emacs
+
         self.usr_dir = usr_dir
         self.noinstall = noinstall
         self.install_scripts_dir = install_scripts_dir
@@ -103,4 +109,22 @@ class Installer:
         print(f'Command:sudo make install')
         res = os.system('cmake .. {} && cmake --build ./ \
             -- {} && sudo make install'.format(cmake_args, make_args))
+        return res
+
+    def install_with_emacs(self, name, package, reinstall=False):
+        assert(name is not None)
+        assert(package is not None)
+
+        if 'el_files' not in package.keys():
+            return 0
+
+        emacs_load_file = get_emacs_load_file()
+        load_file = open(emacs_load_file, 'a')
+        el_files = package['el_files']
+        for el_f in el_files:
+            path = os.path.join(os.getcwd(), el_f)
+            load_file.write(f'\n(load-file \"{path}\")\n\n')
+
+        load_file.close()
+        res = -1
         return res
