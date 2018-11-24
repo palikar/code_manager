@@ -60,8 +60,8 @@ The file contains all of the relevant information needed to install a certain pa
 ```json
 {
     "packages_list": [
-        "<list of names for packages in group 0>",
-        "<list of names for packages in group 1>",
+        "<list of names of packages in group 0>",
+        "<list of names of packages in group 1>",
     ],
     "debian_packages":[
         "<list of names for debian packages>"
@@ -76,7 +76,7 @@ The file contains all of the relevant information needed to install a certain pa
             "command" : "<shell command>" ,
             "reinstall_command": "<shell command>",
             "cmake_args" : "<extra arguments for cmake>",
-            "make_args" : "<extra arguments for make (for example -j4)>",
+            "make_args" : "<extra arguments for make (for example \"-j4\")>",
             "dependencies": "<list of other packages>",
             "deb_packages": "<list of debian packages>"
     },
@@ -92,13 +92,15 @@ The file contains all of the relevant information needed to install a certain pa
 |------------------- |---------------------------------------------------------------------------------------------------------------------------------------- |
 | `download`          | Download method <br> This could be `git` \\ `curl` \\ `wget`                                                                             |
 | `URL`               | A URL that should be either a git repository or some sort <br> of a file depending on the download method.                               |
-| `install`           | Compilation\Installation method <br> This could be `cmake` \\ `command` \\ `script`                                                      |
+| `install`           | Compilation\Installation method <br> This could be `cmake` \\ `command` \\ `script` \\ <br> `setup.py` \\ `emacs`                        |
 | `script`            | The script must be available <br> in `~/.config/code_manager/install_scripts`                                                            |
 | `script_args`       | Command line arguments that will be given to the script <br> while executed.                                                             |
 | `command`           | A shell command to be executed to install the <br> package. The command will be executed in the <br> root folder of the package.         |
 | `reinstall_command` | A shell command to be executed to<br>reinstall the package. The command will be executed in the <br> root folder of the package.         |
 | `cmake_args`        | Command line arguments that will be added to the `cmake` <br> command.                                                                   |
 | `make_args`         | Command line arguments that will be added to the `make` <br> command.                                                                    |
+| `setup_args`        | Command line arguments that will be added to the `python setup.py install` <br> command.                                                 |
+| `el_files`          | `.el` files to be included in your Emacs configuration.                                                                                  |
 | `dependencies`      | A list of other packages that are required for the<br> current package. Those will be installed <br> before the package is installed.    |
 | `deb_packages`      | A list of Debian packages that are required for the  <br>  current package Those will be installed before <br> the package is installed. |
 
@@ -115,8 +117,29 @@ sudo make install
 cd ..
 ```
 
--   `command` - just execute the shell command given in `command`.
+-   `command` - just execute the shell command given in the `command` field.
 -   `script` - execute the install script given in `script`. Explanation on install scripts can be found in the last section.
+-   `setup.py` - installs the project with calling `python setup.py install` in the root directory.
+-   `emacs` - this will find your Emacs init file (`~/.emacs` or `~/.emacs.d/init.el`) and will include e separate file in it. The new file will on its side include the files from every package installed by `the code_manager`. The files from the package to be included are specified with the field `el_files`.
+
+
+### Installation type specific fields
+
+As seen above, some of the installation types require some additional fields to be present in the package object. Here we conveniently specify them all.
+
+-   `cmake`
+    -   `cmake_args` - Optional
+    -   `make_args` - Optional
+-   `emacs`
+    -   `el_files` - Optional
+-   `setup.py`
+    -   `setup_args` - Optional
+-   `script`
+    -   `script_args` - Optional
+-   `command`
+
+
+### Examples
 
 
 ## Command line
