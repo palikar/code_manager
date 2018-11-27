@@ -55,11 +55,11 @@ class Core:
             os.system(f"git checkout tags/{package['tag']}")
         pass
 
-    def _install_package(self, name, config, directory, reinstall=False):
-        package = config["packages"][name]
+    def _install_package(self, name, reinstall=False):
+        package = self.config["packages"][name]
 
         # Check dependencies
-        self._check_dependencies(name, package, directory, reinstall)
+        self._check_dependencies(name, package, self.directory, reinstall)
 
         # ckeck cache
         cached = self._check_cache(name)
@@ -112,25 +112,31 @@ class Core:
         print("##############################")
         return res
 
-    def install(self, config, directory, packages, reinstall=False):
+    def install(self, packages, reinstall=False):
         if packages is None:
             return
         packages = flatten(packages)
-        flat = flatten(config["packages_list"])
+        available_packages = flatten(self.config["packages_list"].values())
+
         for pack in packages:
-            if pack not in flat:
+            if pack not in available_packages:
                 print(f"Package {pack} is not in the config file!")
-                exit(1)
             else:
-                self._install_package(pack,
-                                      config,
-                                      directory,
-                                      reinstall=reinstall)
+                print(f'=====>Installing \'{pack}\' ')
+                # self._install_package(pack,
+                #                       reinstall=reinstall)
+    def install_group(self, group, reinstall=False):
+        if group is None:
+            return
 
-    def install_all(self, config, directory, group=None, reinstall=False):
-        packages = config["packages_list"]
-        if group is not None and group > 0 and group < len(packages):
-            packages = packages[group]
-        print(f"Installing: {packages}")
-
-        self.install(config, directory, packages, reinstall=reinstall)
+        if not group in self.config["packages_list"].keys():
+            print(f'There is no group with name {group}')
+            return 
+            
+        
+        packages = flatten(self.config["packages_list"][group])
+        
+        for pack in packages:
+            print(f'=====>Installing {pack}')
+            # self._install_package(pack,
+            #                       reinstall=reinstall)

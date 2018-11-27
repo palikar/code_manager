@@ -64,18 +64,18 @@ def get_arg_parser():
     subparsers = parser.add_subparsers(title='Commands', description='A list of avialble commands', dest='command', metavar='Command')
 
     parser_install = subparsers.add_parser('install',description='Full installatio of packages', help='Installs packages (fetch, build and install)')
-    parser_install.add_argument('packages', nargs='?',  default=None, help='A list of packages to install')
+    parser_install.add_argument('packages', nargs='*',  default=None, help='A list of packages to install')
     parser_install.add_argument('--reinstall', dest='reinstall', action='store_true', help='Should the packages be reinstalled')
     parser_install.add_argument('--group', action='store',metavar='name',default=None, help='Should the packages be reinstalled')
 
     parser_fetch = subparsers.add_parser('fetch', description='Downloads packages but it does not install them nor build them', help='Downloads packages')
-    parser_fetch.add_argument('packages', nargs='?', default=None, help='A list of packages to fetch')
+    parser_fetch.add_argument('packages', nargs='*', default=None, help='A list of packages to fetch')
     parser_fetch.add_argument('--focre--clear', dest='force_clear', action='store_true', default=False,
                         help='Will delete any folders that stay on its way')
     parser_fetch.add_argument('--group', action='store',metavar='name',default=None, help='If given, every package from this group will be fetched')
 
     parser_build = subparsers.add_parser('build', description='Builds a package from source', help='Builds the project of package')
-    parser_build.add_argument('packages', nargs='?',  default=None, help='A list of packages to fetch')
+    parser_build.add_argument('packages', nargs='*',  default=None, help='A list of packages to fetch')
     parser_build.add_argument('--group', action='store', metavar='name',default=None, help='If given, every package from this group will be build')
     parser_build.add_argument('--no-install', dest='noinstall', action='store_true', default=False,
                         help='If present, packages will only be build but not installed')
@@ -93,6 +93,7 @@ def get_arg_parser():
 def install(args,core):
 
     if args.group is None:
+        print(args.packages)
         core.install(args.packages, 
                      reinstall=args.reinstall)
     else:
