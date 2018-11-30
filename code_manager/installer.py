@@ -19,6 +19,13 @@ class Installer:
         self.noinstall = noinstall
         self.install_scripts_dir = install_scripts_dir
 
+        self._load_extra_installers()
+
+
+    def _load_extra_installers(self):
+        pass
+        
+
     def install(self, name, package, reinstall=False):
         if self.noinstall:
             return 0
@@ -119,12 +126,14 @@ class Installer:
             return 0
 
         emacs_load_file = get_emacs_load_file()
+        
         load_file = open(emacs_load_file, 'a')
+        load_file.write(f';; Files from package {name}\n')
         el_files = package['el_files']
         for el_f in el_files:
             path = os.path.join(os.getcwd(), el_f)
-            load_file.write(f'\n(load-file \"{path}\")\n\n')
-
+            load_file.write(f'(load-file \"{path}\")\n')
         load_file.close()
-        res = -1
-        return res
+
+    
+        return 0

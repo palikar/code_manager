@@ -50,16 +50,6 @@ def get_arg_parser():
     parser.add_argument('--setup-only', dest='setup', action="store_true", default=False,
                         help='Only copy the config files if needed')
 
-    
-
-
-
-    
-
-    
-
-
-
 
     subparsers = parser.add_subparsers(title='Commands', description='A list of avialble commands', dest='command', metavar='Command')
 

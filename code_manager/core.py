@@ -1,6 +1,6 @@
 
 import os
-
+import json
 
 from code_manager.installer import Installer
 from code_manager.downloader import Downloader
@@ -15,12 +15,21 @@ class Core:
         self.install_cache = list()
         self.inst = Installer(usr_dir, install_scripts_dir,
                               noinstall=noinstall)
+        
         self.down = Downloader()
         self.deb_dep = Depender()
         self.config = config
         self.install_scripts_dir = install_scripts_dir
         self.cache_file = cache_file
+        self.cache = None
         self.force_clear = force_clear
+
+
+
+    def _get_package_group(self, package):
+        
+        return ""
+            
         
     def _check_dependencies(self, name, package, directory, reinstall):
 
@@ -40,11 +49,49 @@ class Core:
                                           reinstall=reinstall)
         self.install_cache.remove(name)
 
-    def _check_cache(self, name):
-        with open(self.cache_file, "r") as cache:
-            if name in cache.read().splitlines():
-                return True
-        return False
+    def _preupdate_cache(self):
+
+        try:
+            self.cache = json.load(open(self.cache_file, 'r'))
+        except ValueError e:
+            print('Invalid cache file!')
+            print(e)
+            exit(1)
+
+        for package, node in config['packages'].items():
+            if not package in self.cache:
+                self.cache[package] = dict()
+                self.cache[package]['node'] = node
+                self.cache[package]['installed'] = False
+                self.cache[package]['fetched'] = False
+                self.cache[package]['built'] = False
+                self.cache[package]['group'] = self._get_package_group(package)
+                self.cache[package]['root'] = ""
+        self._save_cache()
+        
+    def _save_cache(self):
+        json.dump(self.cache, open(self.cache_file, 'w'))
+        
+    
+    def _update_cache(self, name, package_node,
+                      root,
+                      build=False,
+                      install=False,
+                      fetched=False):
+
+        self.cache[name]['node'] = package_node
+        self.cache[name]['installed'] = installed
+        self.cache[name]['fetched'] = fetched
+        self.cache[name]['built'] = build
+        self.cache[name]['root'] = root
+
+        self._save_cache()
+        
+        
+
+    def _check_cache(self, name, prop='installed'):
+        return self.cache[name][prop]
+        
 
     def _fix_git_status(self, name, package):
         if "branch" in package.keys():
@@ -140,3 +187,9 @@ class Core:
             print(f'=====>Installing {pack}')
             # self._install_package(pack,
             #                       reinstall=reinstall)
+
+
+    def get_installed_packages(self,group=None):
+        #just look in the cache
+        pass
+        
