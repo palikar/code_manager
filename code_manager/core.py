@@ -51,12 +51,12 @@ class Core:
 
     def _preupdate_cache(self):
 
-        try:
-            self.cache = json.load(open(self.cache_file, 'r'))
-        except ValueError e:
-            print('Invalid cache file!')
-            print(e)
-            exit(1)
+        # try:
+        #     self.cache = json.load(open(self.cache_file, 'r'))
+        # except ValueError ex:
+        #     print('Invalid cache file!')
+        #     print(e)
+        #     exit(1)
 
         for package, node in config['packages'].items():
             if not package in self.cache:

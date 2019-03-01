@@ -90,7 +90,7 @@ def install(args,core):
         core.install_group(args.group, 
                      reinstall=args.reinstall)
 
-    
+3    
 
 def fetch(args,core):
     pass
