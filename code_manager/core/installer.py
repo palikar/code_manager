@@ -1,5 +1,5 @@
 import os
-from code_manager.utils import get_emacs_load_file
+from code_manager.utils.utils import get_emacs_load_file
 
 
 class Installer:
@@ -24,7 +24,7 @@ class Installer:
 
     def _load_extra_installers(self):
         pass
-        
+
 
     def install(self, name, package, reinstall=False):
         if self.noinstall:
@@ -126,7 +126,7 @@ class Installer:
             return 0
 
         emacs_load_file = get_emacs_load_file()
-        
+
         load_file = open(emacs_load_file, 'a')
         load_file.write(f';; Files from package {name}\n')
         el_files = package['el_files']
@@ -135,5 +135,5 @@ class Installer:
             load_file.write(f'(load-file \"{path}\")\n')
         load_file.close()
 
-    
+
         return 0

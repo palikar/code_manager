@@ -6,14 +6,22 @@ import argparse
 import json
 import configparser
 import locale
-from shutil import copyfile
 import shutil
 
+import logging
+from shutil import copyfile
 
 import code_manager
-from code_manager.utils import flatten
-from code_manager.core import Core
+from code_manager.utils.utils import flatten
+from code_manager.core.manager import Manager
 from code_manager.version import VERSION
+
+
+handler = logging.StreamHandler()
+LOG = logging.getLogger(__name__)
+LOG.addHandler(handler)
+LOG.setLevel(logging.DEBUG)
+
 
 VERSION_MSG = [
     'code-manager version: {0}'.format(VERSION),
@@ -22,11 +30,11 @@ VERSION_MSG = [
 ]
 
 
+cache = None
+config = None
+usr_dir = None
+code_dir = None
 
-cache=None
-config=None
-usr_dir=None
-code_dir=None
 
 def get_arg_parser():
 
@@ -46,9 +54,11 @@ def get_arg_parser():
     parser.add_argument('--packages-file', dest='packages_file', action='store',
                         help='File to read the packages from', metavar='packages.json')
 
-
     parser.add_argument('--setup-only', dest='setup', action="store_true", default=False,
                         help='Only copy the config files if needed')
+
+    parser.add_argument('--debug', dest='debug', action="store_true", default=False,
+                        help='Run in debug mode outputing more information')
 
 
     subparsers = parser.add_subparsers(title='Commands', description='A list of avialble commands', dest='command', metavar='Command')
@@ -58,7 +68,7 @@ def get_arg_parser():
     parser_install.add_argument('--reinstall', dest='reinstall', action='store_true', help='Should the packages be reinstalled')
     parser_install.add_argument('--group', action='store',metavar='name',default=None, help='Should the packages be reinstalled')
 
-    parser_fetch = subparsers.add_parser('fetch', description='Downloads packages but it does not install them nor build them', help='Downloads packages')
+    parser_fetch = subparsers.add_parser('fetch', description='Downloads packages but it does not install them nor builds them. If a name of a group is given, all packages of the group will be downloaded.', help='Downloads packages')
     parser_fetch.add_argument('packages', nargs='*', default=None, help='A list of packages to fetch')
     parser_fetch.add_argument('--focre--clear', dest='force_clear', action='store_true', default=False,
                         help='Will delete any folders that stay on its way')
@@ -81,49 +91,37 @@ def get_arg_parser():
 
 
 def install(args,core):
-
-    if args.group is None:
-        print(args.packages)
-        core.install(args.packages, 
-                     reinstall=args.reinstall)
-    else:
-        core.install_group(args.group, 
-                     reinstall=args.reinstall)
-
-3    
-
+    pass
+  
 def fetch(args,core):
     pass
 
 def build(args,core):
     pass
 
+
+
 def list_packages(args,core):
-    
-    print("Available packages:")
+    LOG.info("Available packages:")
     for pack in flatten(config['packages_list']):
-        print(pack)
-    
+        LOG.info(pack)
 
 
 def list_cache(args,core):
-
-    print(f"Dumping cache file {cache}")
+    LOG.info(f"Dumping cache file {cache}")
     f = open(cache, "r")
     cont = f.read()
-    print(cont)
+    LOG.info(cont)
     f.close()
 
 
 def clear_cache(args,core):
-
-    print(f"Clearing cache file {cache}")
+    LOG.info(f"Clearing cache file {cache}")
     f = open(cache, "w")
     f.close()
 
 
 def get_commands_map():
-
     commands = dict()
 
     commands['install'] = install
@@ -135,18 +133,14 @@ def get_commands_map():
 
     return commands
 
-def main():
+
+def setup_config_files(args, opt):
 
     global cache
     global config
     global usr_dir
     global code_dir
-
-    parser = get_arg_parser()
-
-    args = parser.parse_args()
-    opt = configparser.ConfigParser()
-
+    
     private_data_dir = os.path.join(code_manager.CMDIR, "data")
 
     if not os.path.isdir(code_manager.CONFDIR):
@@ -186,7 +180,7 @@ def main():
 
     cache = os.path.join(code_manager.CONFDIR, "cache")
     if not os.path.isfile(cache):
-        print(cache)
+        LOG.info(cache)
         f = open(cache, 'a+')
         f.close()
 
@@ -195,32 +189,49 @@ def main():
     if not os.path.isdir(code_dir):
         os.makedirs(code_dir)
 
-
-
-    print(f"Code dir: {code_dir}")
-    print(f"Usr dir: {usr_dir}")
-    print(f"Packages file: {packages_file}")
-    print(f"Install script directory: {install_scripts_dir}")
-    print(f"Cache file: {cache}")
-
     with open(packages_file, "r") as config_file:
         config = json.load(config_file)
-        
+    
+    
+    if args.debug:
+         LOG.info(f"Code dir: {code_dir}")
+         LOG.info(f"Usr dir: {usr_dir}")
+         LOG.info(f"Packages file: {packages_file}")
+         LOG.info(f"Install script directory: {install_scripts_dir}")
+         LOG.info(f"Cache file: {cache}")
+
+
+
+def main():
+
+    global cache
+    global config
+    global usr_dir
+    global code_dir
+
+    parser = get_arg_parser()
+
+    args = parser.parse_args()
+    opt = configparser.ConfigParser()
+
+    setup_config_files(args, opt)
+
+    
     if args.setup:
-        print("Setup for config files done. Exiting now! ")
-        exit(0)
+        LOG.info("Setup for config files done.")
+        raise SystemExit
 
     if args.command is None:
         parser.print_help()
-        exit(1)
+        raise SystemExit
 
     commands = get_commands_map()
 
-    
-    core = Core(False, cache, config, code_dir, usr_dir,
-                install_scripts_dir, False)
-    
-    commands[args.command](args, core)
+
+    # core = Core(False, cache, config, code_dir, usr_dir,
+    #             install_scripts_dir, False)
+
+    # commands[args.command](args, core)
 
 
 

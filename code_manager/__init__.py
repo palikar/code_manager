@@ -8,7 +8,7 @@ import sys
 __license__ = 'GNU GPL v3'
 __release__ = False
 __author__ = __maintainer__ = 'Stanislav Arnaudov'
-__email__ = 'stanislav_ts@abv.b'
+__email__ = 'stanislav_ts@abv.bg'
 
 # Setup constants
 CMDIR = os.path.dirname(__file__)
