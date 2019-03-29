@@ -12,8 +12,9 @@ import logging
 from shutil import copyfile
 
 import code_manager
-from code_manager.utils.utils import flatten
 from code_manager.core.manager import Manager
+from code_manager.core.configuration import ConfigurationAware
+from code_manager.utils.utils import flatten
 from code_manager.version import VERSION
 
 
@@ -34,6 +35,7 @@ cache = None
 config = None
 usr_dir = None
 code_dir = None
+install_scripts_dir = None
 
 
 def get_arg_parser():
@@ -140,6 +142,7 @@ def setup_config_files(args, opt):
     global config
     global usr_dir
     global code_dir
+    global install_scripts_dir
     
     private_data_dir = os.path.join(code_manager.CMDIR, "data")
 
@@ -227,11 +230,11 @@ def main():
 
     commands = get_commands_map()
 
-
-    # core = Core(False, cache, config, code_dir, usr_dir,
-    #             install_scripts_dir, False)
-
+    ConfigurationAware.set_configuration(config, install_scripts_dir, cache, opt)
+    core_manager = Manager()
+    
     # commands[args.command](args, core)
+
 
 
 
