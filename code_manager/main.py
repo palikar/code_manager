@@ -18,10 +18,15 @@ from code_manager.utils.utils import flatten
 from code_manager.version import VERSION
 
 
-handler = logging.StreamHandler()
-LOG = logging.getLogger(__name__)
-LOG.addHandler(handler)
-LOG.setLevel(logging.DEBUG)
+
+def setup_logging():
+
+    console_handler = logging.StreamHandler()
+
+
+    logging.getLogger().addHandler(console_handler)
+    logging.getLogger().setLevel(logging.DEBUG)
+
 
 
 VERSION_MSG = [
@@ -94,7 +99,7 @@ def get_arg_parser():
 
 def install(args,core):
     pass
-  
+
 def fetch(args,core):
     pass
 
@@ -143,7 +148,7 @@ def setup_config_files(args, opt):
     global usr_dir
     global code_dir
     global install_scripts_dir
-    
+
     private_data_dir = os.path.join(code_manager.CMDIR, "data")
 
     if not os.path.isdir(code_manager.CONFDIR):
@@ -194,8 +199,8 @@ def setup_config_files(args, opt):
 
     with open(packages_file, "r") as config_file:
         config = json.load(config_file)
-    
-    
+
+
     if args.debug:
          LOG.info(f"Code dir: {code_dir}")
          LOG.info(f"Usr dir: {usr_dir}")
@@ -212,14 +217,18 @@ def main():
     global usr_dir
     global code_dir
 
-    parser = get_arg_parser()
 
+
+
+    parser = get_arg_parser()
     args = parser.parse_args()
     opt = configparser.ConfigParser()
 
+    setup_logging()
+
     setup_config_files(args, opt)
 
-    
+
     if args.setup:
         LOG.info("Setup for config files done.")
         raise SystemExit
@@ -231,8 +240,8 @@ def main():
     commands = get_commands_map()
 
     ConfigurationAware.set_configuration(config, install_scripts_dir, cache, opt)
-    core_manager = Manager()
-    
+    # core_manager = Manager()
+
     # commands[args.command](args, core)
 
 
