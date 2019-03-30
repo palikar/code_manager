@@ -5,13 +5,14 @@ from code_manager.core.installer import Installer
 from code_manager.core.downloader import Downloader
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.core.deb_dependency import Depender
+from code_manager.core.cache_container import CacheContainer
 
 from code_manager.utils.utils import flatten
 
 
 class Manager(ConfigurationAware):
 
-    cache = None
+
 
     def __init__(self):
 
@@ -22,52 +23,9 @@ class Manager(ConfigurationAware):
 
         self.down = Downloader()
         self.deb_dep = Depender()
-
-        
-        
-        self._load_cache()
-        self._preupdate_cache()
+        self.cache = CacheContainer()
 
 
-    def _load_cache(self):
-        try:
-            self.cache = json.load(open(self.cache_file, 'r'))
-        except json.decoder.JSONDecodeError:
-            self.cache = dict()
-
-    def _preupdate_cache(self):
-        for group, packages in self.config['packages_list'].items():
-            for package in packages:
-                if not package in self.cache.keys():
-                    self.cache[package] = dict()
-                    self.cache[package]['node'] = self.config['packages'][package]
-                    self.cache[package]['installed'] = False
-                    self.cache[package]['fetched'] = False
-                    self.cache[package]['built'] = False
-                    self.cache[package]['group'] = group
-                    self.cache[package]['root'] = ""
-
-        self._save_cache()
-
-    def _save_cache(self):
-        json.dump(self.cache, open(self.cache_file, 'w'),
-                  indent=4, separators=(',', ' : '))
-
-    def _update_cache(self, name, package_node,
-                      root,
-                      build=False,
-                      install=False,
-                      fetched=False):
-        self.cache[name]['node'] = package_node
-        self.cache[name]['installed'] = installed
-        self.cache[name]['fetched'] = fetched
-        self.cache[name]['built'] = build
-        self.cache[name]['root'] = root
-
-        self._save_cache()
-
-    def _check_cache(self, name, prop='installed'):
-        return self.cache[name][prop]
 
 
     def _fix_git_status(self, name, package):
@@ -148,7 +106,7 @@ class Manager(ConfigurationAware):
 
             if p in self.install_order:
                 continue
-            
+
             new_packages = []
 
             if 'dependencies' is self.config['packages'][p].keys():
@@ -158,24 +116,22 @@ class Manager(ConfigurationAware):
 
             self.install_order = new_packages + [p] + self.install_order
 
-        
-        
-        pass
-        
-    
+
+
+
     def _install_thing(self, thing):
 
-        if thing is self.config["packages_list"].keys():
+        if thing is self.packages_list().keys():
             print('\`%s\` is a group. Installing all packages in it.'.format(thing))
             self.install_queue = self.install_queue + self.config["packages_list"][thing]
-        elif thing is flatten(self.config["packages_list"].values()):
+
+        elif thing is flatten(self.packages_list().values()):
             print('\`%s\` is a package. Installing it.'.format(thing))
             self.install_queue.append(thing)
+
         else:
             print('There is no thing with name %s'.format(thing))
             return
-
-        self._invoke()
 
 
     def install(self, thing, install=True, fetch=False, build=False):
@@ -191,7 +147,7 @@ class Manager(ConfigurationAware):
             self.install = False
             self.build = False
             self.fetch = True
-            
+
 
         if isinstance(thing, list):
             for t in thing:
@@ -199,3 +155,4 @@ class Manager(ConfigurationAware):
         else:
             self._install_thing(thing)
 
+        self._invoke()

@@ -45,7 +45,7 @@ class CofigurationResolver(object):
 
 
     def _check_integrity(self, config):
-        
+
         success = True
         if "packages_list" not in config.keys():
             logging.debug('The \'packages_list\' is missing in the package file')
@@ -119,7 +119,7 @@ class CofigurationResolver(object):
                     if new_val is not None and new_val != value:
                         cur_dicts[key] = new_val
 
-
+        return config
 
 class ConfigurationAware(object):
 
@@ -135,14 +135,29 @@ class ConfigurationAware(object):
         return name in ConfigurationAware.resovler.variables.keys()
 
     @staticmethod
+    def packages_list(name):
+        return ConfigurationAware.config['packages_list']
+    @staticmethod
+    def packages(name):
+        return ConfigurationAware.config['packages']
+
+    @staticmethod
+    def variables(name):
+        return ConfigurationAware.config['vars']
+
+    @staticmethod
     def set_configuration(config, install_scripts_dir, cache_file, opt):
 
         ConfigurationAware.opt = opt
         ConfigurationAware.usr_dir = opt["Config"]["code"]
         ConfigurationAware.code_dir = opt["Config"]["usr"]
 
-        ConfigurationAware.resovler = CofigurationResolver()
-        ConfigurationAware.config = ConfigurationAware.resovler.configuration_dict(config)
+        ConfigurationAware.resolver = CofigurationResolver()
+        ConfigurationAware.config = ConfigurationAware.resolver.configuration_dict(config)
+
+        ConfigurationAware.packages_list = ConfigurationAware.config['packages_list']
+        ConfigurationAware.packages = ConfigurationAware.config['packages']
+        ConfigurationAware.variables = ConfigurationAware.resolver.variables
 
         ConfigurationAware.install_scripts_dir = install_scripts_dir
 
