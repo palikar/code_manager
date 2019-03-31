@@ -234,7 +234,7 @@ def main():
     ConfigurationAware.set_configuration(config, install_scripts_dir, cache, opt)
 
 
-    # core_manager = Manager()
+    core_manager = Manager()
 
     # commands[args.command](args, core)
 

@@ -68,7 +68,7 @@ def info_blue(msg):
     logging.info('{0}{1}{2}'.format(BLUE, msg, RESET))
 
 def debug_cyan(msg):
-    logging.info('{0}{1}{2}'.format(CYAN, msg, RESET))
+    logging.debug('{0}{1}{2}'.format(CYAN, msg, RESET))
 
 def debug_red(msg):
-    logging.info('{0}{1}{2}'.format(RED, msg, RESET))
+    logging.debug('{0}{1}{2}'.format(RED, msg, RESET))

@@ -11,9 +11,10 @@ class CacheContainer(ConfigurationAware):
     dirty = False
     cache = {}
 
-    def __init__(self, cache_file):
-        self.file = cache_file
 
+
+    def __init__(self):
+        pass
 
 
     def load_cache(self):
@@ -24,6 +25,7 @@ class CacheContainer(ConfigurationAware):
             self.cache = dict()
 
         self.preupdate_cache()
+        
 
     def preupdate_cache(self):
         for group, packages in self.packages_list.items():
