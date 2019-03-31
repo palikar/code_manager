@@ -7,25 +7,16 @@ import json
 import configparser
 import locale
 import shutil
-
 import logging
+
 from shutil import copyfile
 
 import code_manager
 from code_manager.core.manager import Manager
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.utils.utils import flatten
+from code_manager.utils.logger import *
 from code_manager.version import VERSION
-
-
-
-def setup_logging():
-
-    console_handler = logging.StreamHandler()
-
-
-    logging.getLogger().addHandler(console_handler)
-    logging.getLogger().setLevel(logging.DEBUG)
 
 
 
@@ -66,6 +57,9 @@ def get_arg_parser():
 
     parser.add_argument('--debug', dest='debug', action="store_true", default=False,
                         help='Run in debug mode outputing more information')
+
+    parser.add_argument('--verbose', dest='verbose', action="store_true", default=False,
+                        help='Print a lot of information about the execution.')
 
 
     subparsers = parser.add_subparsers(title='Commands', description='A list of avialble commands', dest='command', metavar='Command')
@@ -109,13 +103,13 @@ def build(args,core):
 
 
 def list_packages(args,core):
-    LOG.info("Available packages:")
+    logging.info("Available packages:")
     for pack in flatten(config['packages_list']):
         LOG.info(pack)
 
 
 def list_cache(args,core):
-    LOG.info(f"Dumping cache file {cache}")
+    logging.info(f"Dumping cache file {cache}")
     f = open(cache, "r")
     cont = f.read()
     LOG.info(cont)
@@ -123,7 +117,7 @@ def list_cache(args,core):
 
 
 def clear_cache(args,core):
-    LOG.info(f"Clearing cache file {cache}")
+    logging.info(f"Clearing cache file {cache}")
     f = open(cache, "w")
     f.close()
 
@@ -188,7 +182,7 @@ def setup_config_files(args, opt):
 
     cache = os.path.join(code_manager.CONFDIR, "cache")
     if not os.path.isfile(cache):
-        LOG.info(cache)
+        logging.info(cache)
         f = open(cache, 'a+')
         f.close()
 
@@ -202,11 +196,11 @@ def setup_config_files(args, opt):
 
 
     if args.debug:
-         LOG.info(f"Code dir: {code_dir}")
-         LOG.info(f"Usr dir: {usr_dir}")
-         LOG.info(f"Packages file: {packages_file}")
-         LOG.info(f"Install script directory: {install_scripts_dir}")
-         LOG.info(f"Cache file: {cache}")
+        logging.info(f"Code dir: {code_dir}")
+        logging.info("Usr dir: {usr_dir}")
+        logging.info(f"Packages file: {packages_file}")
+        logging.info(f"Install script directory: {install_scripts_dir}")
+        logging.info(f"Cache file: {cache}")
 
 
 
@@ -218,20 +212,18 @@ def main():
     global code_dir
 
 
-
-
     parser = get_arg_parser()
     args = parser.parse_args()
     opt = configparser.ConfigParser()
 
-    setup_logging()
-
     setup_config_files(args, opt)
 
+    setup_logging(args, opt)
 
     if args.setup:
         LOG.info("Setup for config files done.")
         raise SystemExit
+
 
     if args.command is None:
         parser.print_help()
@@ -240,6 +232,8 @@ def main():
     commands = get_commands_map()
 
     ConfigurationAware.set_configuration(config, install_scripts_dir, cache, opt)
+
+
     # core_manager = Manager()
 
     # commands[args.command](args, core)

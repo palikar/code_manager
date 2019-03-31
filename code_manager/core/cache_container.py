@@ -55,9 +55,10 @@ class CacheContainer(ConfigurationAware):
 
 
     def check_cache(self, name, prop='installed'):
-         if name in self.cache.keys():
+        if name in self.cache.keys():
             logging.debug('{0} is not in the cache'.format(name))
             return False
+
         return self.cache[name][prop]
 
     def set_installed(self, name, value):

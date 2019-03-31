@@ -5,28 +5,8 @@ import re
 
 
 from code_manager.utils.utils import flatten
+from code_manager.utils.utils import recursive_items
 
-def recursive_items(dictionary, dicts=False):
-    if type(dictionary) is dict:
-        for key, value in dictionary.items():
-            if type(value) is dict:
-                if dicts:
-                    yield (key, value)
-                    yield from recursive_items(value, dicts = dicts)
-                else:
-                    yield from recursive_items(value, dicts = dicts)
-            elif type(value) is list:
-                for v in value:
-                    if type(v) is dict or type(v) is list:
-                        yield from recursive_items(v, dicts = dicts)
-                yield (key, value)
-            else:
-                yield (key, value)
-    elif type(dictionary) is list:
-        for v in dictionary:
-            if type(v) is dict or type(v) is list:
-                yield from recursive_items(v, dicts = dicts)
-        yield (None, dictionary)
 
 
 class CofigurationResolver(object):
