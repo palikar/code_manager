@@ -24,7 +24,7 @@ class Manager(ConfigurationAware):
 
         self.installation = Installation()
         self.cache = CacheContainer()
-
+        print(self.git_command)
         if self.debug:
             self._setup_all()
 

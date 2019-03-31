@@ -142,3 +142,12 @@ class ConfigurationAware(object):
         ConfigurationAware.install_scripts_dir = install_scripts_dir
 
         ConfigurationAware.cache_file = cache_file
+
+        ConfigurationAware.debug = 'debug' in opt['Config'].keys() and opt['Config']['debug'] == "true"
+        ConfigurationAware.git_ssh = 'git_ssh' in opt['Download'].keys() and opt['Download']['git_ssh'] == "true"
+
+
+    def __getattr__(self, item):
+        if item in opt['Common'].keys():
+            return opt['Common'][item]
+    
