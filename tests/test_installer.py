@@ -10,9 +10,9 @@ class TestDown(unittest.TestCase):
         inst = Installer(
             "user_dir_mock", "install_scripts_mock", noinstall=True)
         self.assertEqual(
-            inst.install(None, None, reinstall=True),0)
+            inst.install(None, None, reinstall=True), 0)
         self.assertEqual(
-            inst.install(None, None, reinstall=False),0)
+            inst.install(None, None, reinstall=False), 0)
 
     @patch('code_manager.installer.Installer.install_with_script')
     def test_install_script(self, fun):
@@ -20,7 +20,7 @@ class TestDown(unittest.TestCase):
             "user_dir_mock", "install_scripts_mock", noinstall=False)
         config = dict()
         config['packages'] = dict()
-        config['packages']['mock']  = dict()
+        config['packages']['mock'] = dict()
         config['packages']['mock']['install'] = 'script'
         inst.install('mock', config['packages']['mock'], reinstall=True)
         fun.assert_called_once_with(
@@ -36,7 +36,7 @@ class TestDown(unittest.TestCase):
             "user_dir_mock", "install_scripts_mock", noinstall=False)
         config = dict()
         config['packages'] = dict()
-        config['packages']['mock']= dict()
+        config['packages']['mock'] = dict()
         config['packages']['mock']['install'] = 'command'
         inst.install('mock', config['packages']['mock'], reinstall=True)
         fun.assert_called_once_with('mock',
@@ -68,7 +68,7 @@ class TestDown(unittest.TestCase):
             "user_dir_mock", "install_scripts_mock", noinstall=False)
         config = dict()
         config['packages'] = dict()
-        config['packages']['mock']= dict()
+        config['packages']['mock'] = dict()
         config['packages']['mock']['install'] = 'script'
 
         with self.assertRaises(AssertionError):
@@ -137,7 +137,7 @@ class TestDown(unittest.TestCase):
 
         self.assertIn('cmake', os.call_args[0][0])
         self.assertIn('DCMAKE_INSTALL_PREFIX', os.call_args[0][0])
-        self.assertIn('-make_arg',  os.call_args[0][0])
+        self.assertIn('-make_arg', os.call_args[0][0])
         self.assertIn('-cmake_arg', os.call_args[0][0])
         self.assertIn('make install', os.call_args[0][0])
 

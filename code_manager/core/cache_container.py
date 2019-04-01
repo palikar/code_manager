@@ -1,9 +1,8 @@
 import json
 import logging
-import os
-import sys
 
 from code_manager.core.configuration import ConfigurationAware
+
 
 class CacheContainer(ConfigurationAware):
 
@@ -11,11 +10,8 @@ class CacheContainer(ConfigurationAware):
     dirty = False
     cache = {}
 
-
-
     def __init__(self):
         pass
-
 
     def load_cache(self):
         try:
@@ -25,14 +21,14 @@ class CacheContainer(ConfigurationAware):
             self.cache = dict()
 
         self.preupdate_cache()
-        
 
     def preupdate_cache(self):
         for group, packages in self.packages_list.items():
             for package in packages:
-                if not package in self.cache.keys():
+                if package not in self.cache.keys():
                     self.cache[package] = dict()
-                    self.cache[package]['node'] = self.config['packages'][package]
+                    self.cache[package]['node'] = (
+                        self.config['packages'][package])
                     self.cache[package]['installed'] = False
                     self.cache[package]['fetched'] = False
                     self.cache[package]['built'] = False
@@ -49,16 +45,15 @@ class CacheContainer(ConfigurationAware):
 
     def update_cache(self, name, prop, value):
         if name in self.cache.keys():
-            logging.debug('{0} is not in the cache'.format(name))
+            logging.debug('%s is not in the cache', name)
             return False
         self.cache[name][prop] = value
         self.dirty = True
         return True
 
-
     def check_cache(self, name, prop='installed'):
         if name in self.cache.keys():
-            logging.debug('{0} is not in the cache'.format(name))
+            logging.debug('%s is not in the cache', name)
             return False
 
         return self.cache[name][prop]
@@ -75,7 +70,6 @@ class CacheContainer(ConfigurationAware):
     def set_root(self, name, value):
         return self.update_cache(name, prop='root', value=value)
 
-
     def is_installed(self, name):
         return self.check_cache(name, prop='installed')
 
@@ -91,23 +85,22 @@ class CacheContainer(ConfigurationAware):
     def in_cache(self, name):
         return name in self.cache.keys()
 
-
     def get_packages(self):
         return self.cache.values()
-
 
     def __enter__(self):
         if not self.loaded:
             self.load_cache()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type_, value, traceback):
         if self.dirty:
             self.save_cache()
-    def __getitem__(name):
+
+    def __getitem__(self, name):
         if name in self.cache.keys():
             return self.cache[name]
-        else:
-            return None
-    def __call__(name):
+        return None
+
+    def __call__(self, name):
         return name in self.cache.keys()

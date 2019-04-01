@@ -10,7 +10,6 @@ class SetupPyInstaller(BasicInstaller, ConfigurationAware):
 
     name = 'command'
 
-
     def __init__(self):
         BasicInstaller.__init__()
         pass
@@ -20,8 +19,6 @@ class SetupPyInstaller(BasicInstaller, ConfigurationAware):
 
     def update(self, name):
         pass
-        
-        
 
 
 exported_class = SetupPyInstaller

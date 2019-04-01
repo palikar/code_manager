@@ -21,11 +21,9 @@ class ShutdownHandler(logging.Handler):
         sys.exit(1)
 
 
-
 def setup_logging(args, opt):
 
     logging.getLogger().handlers = []
-
 
     logger = logging.getLogger()
 
@@ -35,7 +33,6 @@ def setup_logging(args, opt):
         logger.setLevel(logging.VERBOSE)
     else:
         logger.setLevel(logging.INFO)
-
 
     if 'Logging' in opt.keys() and 'direcory' in opt['Logging']:
 
@@ -48,7 +45,7 @@ def setup_logging(args, opt):
         log_filename = datetime.datetime.now().strftime('%Y-%m-%d') + '.log'
         log_filename = os.path.join(path_to_log_directory, log_filename)
 
-        rot = logging.handlers.RotatingFileHandler(log_filename, maxBytes=100*1024*1024, backupCount=10)
+        rot = logging.handlers.RotatingFileHandler(log_filename, maxBytes=100 * 1024 * 1024, backupCount=10)
         rot.setLevel(logging.VERBOSE)
         rot.setFormatter(formatter)
         logger.addHandler(rot)
@@ -63,12 +60,13 @@ def setup_logging(args, opt):
     logger.addHandler(ShutdownHandler(level=50))
 
 
-
 def info_blue(msg):
     logging.info('{0}{1}{2}'.format(BLUE, msg, RESET))
 
+
 def debug_cyan(msg):
     logging.debug('{0}{1}{2}'.format(CYAN, msg, RESET))
+
 
 def debug_red(msg):
     logging.debug('{0}{1}{2}'.format(RED, msg, RESET))

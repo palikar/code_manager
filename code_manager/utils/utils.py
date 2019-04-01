@@ -6,28 +6,27 @@ import re
 
 def recursive_items(dictionary, dicts=False):
 
-    if type(dictionary) is dict:
+    if isinstance(dictionary, dict):
         for key, value in dictionary.items():
-            if type(value) is dict:
+            if isinstance(value, dict):
                 if dicts:
                     yield (key, value)
-                    yield from recursive_items(value, dicts = dicts)
+                    yield from recursive_items(value, dicts=dicts)
                 else:
-                    yield from recursive_items(value, dicts = dicts)
-            elif type(value) is list:
+                    yield from recursive_items(value, dicts=dicts)
+            elif isinstance(value, list):
                 for v in value:
-                    if type(v) is dict or type(v) is list:
-                        yield from recursive_items(v, dicts = dicts)
+                    if isinstance(v, dict) or isinstance(v, list):
+                        yield from recursive_items(v, dicts=dicts)
                 yield (key, value)
             else:
                 yield (key, value)
-    elif type(dictionary) is list:
+    elif isinstance(dictionary, list):
         for v in dictionary:
-            if type(v) is dict or type(v) is list:
-                yield from recursive_items(v, dicts = dicts)
+            if isinstance(v, dict) or isinstance(v, list):
+                yield from recursive_items(v, dicts=dicts)
         yield (None, dictionary)
 
-        
 
 def merge_two_dicts(x, y):
     z = x.copy()
@@ -37,6 +36,7 @@ def merge_two_dicts(x, y):
 
 def flatten(xs):
     res = []
+
     def loop(ys):
         for i in ys:
             if isinstance(i, list):

@@ -8,8 +8,7 @@ from code_manager.utils.utils import flatten
 from code_manager.utils.utils import recursive_items
 
 
-
-class CofigurationResolver(object):
+class CofigurationResolver():
 
     _VAR_RE = re.compile(r'(@\w+)|(\\@)')
     _VAR_NAME_RE = re.compile(r'\w+')
@@ -22,7 +21,6 @@ class CofigurationResolver(object):
 
     def __init__(self):
         pass
-
 
     def _check_integrity(self, config):
 
@@ -37,38 +35,37 @@ class CofigurationResolver(object):
 
         if "vars" in config.keys():
 
-            if type(config['vars']) is not dict:
-                    logging.debug('The \'vars\' are not an proper object.')
-                    success = False
+            if not isinstance(config['vars'], dict):
+                logging.debug('The \'vars\' are not an proper object.')
+                success = False
 
-            for var,val in config['vars'].items():
+            for var, val in config['vars'].items():
                 if not self._VAR_NAME_RE.fullmatch(var):
                     logging.debug('The variable \'{0}\' has invalid identifier.'.format(var))
                     success = False
-                if type(val) is not str:
+                if not isinstance(val, str):
                     logging.debug('The variable \'{0}\' has invalid value \'{1}\'.'.format(var, val))
                     success = False
-
-
-
 
         packages_list = flatten(config['packages_list'].values())
         for pack in packages_list:
             if pack not in config['packages'].keys():
-                logging.debug('The \'{0}\' packages is in the list but does not have a node'.format(pack))
+                logging.debug('The \'{0}\' packages is in the list but does\
+                not have a node'.format(pack))
                 success = False
 
         return success
 
-
-    def _resolve_string(self, string):
+    def resolve_string(self, string):
         for match in self._VAR_RE.finditer(string):
             if match.group(1) is not None:
                 var = match.group(1)[1:]
-                value =  self.variables[var]
+                value = self.variables[var]
                 return string.replace(match.group(1), value)
             if match.group(2) is not None:
-                return string.replace('\\@','')
+                return string.replace('\\@', '')
+
+        return string
 
     def configuration_dict(self, config):
         self.config = config
@@ -77,11 +74,11 @@ class CofigurationResolver(object):
             logging.debug('The package file has some issues.')
             raise SystemExit
 
-
         if 'vars' in config.keys():
             self.variables = config['vars']
             config.pop('vars')
 
+        # pylint: disable=R1702
         cur_dicts = {}
         for key, value in recursive_items(config, dicts=True):
 
@@ -101,28 +98,29 @@ class CofigurationResolver(object):
 
         return config
 
+
 class ConfigurationAware(object):
 
     @staticmethod
     def var(name):
         if name in ConfigurationAware.resovler.variables.keys():
             return ConfigurationAware.resovler.variables[name]
-        else:
-            return None
+        return None
 
     @staticmethod
     def var_check(name):
         return name in ConfigurationAware.resovler.variables.keys()
 
     @staticmethod
-    def packages_list(name):
+    def packages_list():
         return ConfigurationAware.config['packages_list']
+
     @staticmethod
-    def packages(name):
+    def packages():
         return ConfigurationAware.config['packages']
 
     @staticmethod
-    def variables(name):
+    def variables():
         return ConfigurationAware.config['vars']
 
     @staticmethod
@@ -133,9 +131,11 @@ class ConfigurationAware(object):
         ConfigurationAware.code_dir = opt["Config"]["usr"]
 
         ConfigurationAware.resolver = CofigurationResolver()
-        ConfigurationAware.config = ConfigurationAware.resolver.configuration_dict(config)
+        ConfigurationAware.config = (
+            ConfigurationAware.resolver.configuration_dict(config))
 
-        ConfigurationAware.packages_list = ConfigurationAware.config['packages_list']
+        ConfigurationAware.packages_list = (
+            ConfigurationAware.config['packages_list'])
         ConfigurationAware.packages = ConfigurationAware.config['packages']
         ConfigurationAware.variables = ConfigurationAware.resolver.variables
 
@@ -143,11 +143,13 @@ class ConfigurationAware(object):
 
         ConfigurationAware.cache_file = cache_file
 
-        ConfigurationAware.debug = 'debug' in opt['Config'].keys() and opt['Config']['debug'] == "true"
-        ConfigurationAware.git_ssh = 'git_ssh' in opt['Download'].keys() and opt['Download']['git_ssh'] == "true"
-
+        ConfigurationAware.debug = ('debug' in opt['Config'].keys()
+                                    and opt['Config']['debug'] == "true")
+        ConfigurationAware.git_ssh = ('git_ssh' in opt['Download'].keys()
+                                      and opt['Download']['git_ssh'] == "true")
 
     def __getattr__(self, item):
+        opt = ConfigurationAware.opt
         if item in opt['Common'].keys():
             return opt['Common'][item]
-    
+        return None

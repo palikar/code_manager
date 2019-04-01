@@ -1,17 +1,16 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
+
+from distutils.core import setup  # pylint: disable=E0611, E0401
 
 import sys
 import setuptools
-from distutils.core import setup
 
+from code_manager.version import __version__
 
 if sys.version_info < (3, 3):
     print("THIS MODULE REQUIRES PYTHON 3.3+. YOU ARE CURRENTLY\
     USING PYTHON {0}".format(sys.version))
     sys.exit(1)
-
-
-exec(open('code_manager/version.py').read())
 
 setup(
     name="CodeManager",
@@ -32,7 +31,7 @@ setup(
     tests_require=["pytest"],
     entry_points={
         'console_scripts': [
-            'code-manager = code_manager.code_manager:main'
+            'code-manager = code_manager.main:main'
         ]
     },
     classifiers=[

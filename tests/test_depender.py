@@ -1,14 +1,14 @@
 import unittest
 from unittest.mock import patch
 
-from code_manager.deb_dependency import Depender
+from code_manager.core.deb_dependency import Depender
 
 
 class TestDown(unittest.TestCase):
 
 
-    @patch('code_manager.deb_dependency.Depender.install')
-    @patch('code_manager.deb_dependency.Depender._available_packages',
+    @patch('code_manager.core.deb_dependency.Depender.install')
+    @patch('code_manager.core.deb_dependency.Depender._available_packages',
            return_value=['mock', 'mocker'])
     def test_install_deb_packages(self, packs, install):
         deb = Depender()

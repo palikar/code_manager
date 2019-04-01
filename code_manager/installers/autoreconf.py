@@ -6,11 +6,9 @@ from code_manager.core.installation import BasicInstaller
 from code_manager.core.configuration import ConfigurationAware
 
 
-
 class AutoreconfInstaller(BasicInstaller, ConfigurationAware):
 
     name = 'command'
-
 
     def __init__(self):
         BasicInstaller.__init__()
@@ -21,8 +19,6 @@ class AutoreconfInstaller(BasicInstaller, ConfigurationAware):
 
     def update(self, name):
         pass
-        
-        
 
 
 exported_class = AutoreconfInstaller

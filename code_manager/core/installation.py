@@ -1,9 +1,9 @@
 import os
 import logging
-
 from abc import abstractmethod
 
-from code_manager.utils.logger import *
+from code_manager.utils.logger import debug_red
+from code_manager.utils.logger import debug_cyan
 from code_manager.utils.utils import get_emacs_load_file
 from code_manager.utils.importing import import_modules_from_folder
 from code_manager.core.configuration import ConfigurationAware
@@ -12,7 +12,7 @@ import code_manager.installers
 
 
 class BasicInstaller(ConfigurationAware):
-    
+
     name = None
     manditory_attr = []
     node = {}
@@ -20,32 +20,28 @@ class BasicInstaller(ConfigurationAware):
     def __init__(self):
         pass
 
-
     def get_optional(self, attr, action):
 
-        if not hasattr(action, __call__):
+        if not hasattr(action, '__call__'):
             raise AttributeError('Action must be callable')
-        
-        if attr in node.keys():
-            action(node[attr])
-        
-    
+
+        if attr in self.node.keys():
+            action(self.node[attr])
+
     @abstractmethod
     def execute(self, name):
         raise NotImplementedError('All installers need to implement the execute method.')
 
-
     @abstractmethod
     def udpate(self, name):
         raise NotImplementedError('All installers need to implement the execute method.')
-        
+
 
 class Installation(ConfigurationAware):
 
     installers = {}
     installer_objects = {}
 
-    
     def __init__(self):
         self.installers_dir = os.path.dirname(code_manager.installers.__file__)
 
@@ -54,13 +50,11 @@ class Installation(ConfigurationAware):
         logging.debug('Install scripts directroy: {0}'.format(self.installers_dir))
 
         import_modules_from_folder(self.installers_dir, 'code_manager.installers', self._add_installer)
-        
 
-    
     def _add_installer(self, installer, file):
         assert(installer is not None)
         assert(file is not None)
-        
+
         if not hasattr(installer, 'exported_class'):
             debug_red('No exported class found in file {0}'.format(file))
             return
@@ -68,7 +62,7 @@ class Installation(ConfigurationAware):
         if issubclass(installer.exported_class, BasicInstaller) is None:
             debug_red('The exported class is not a subclass of BasicInstaller.')
             return
-        
+
         if installer.exported_class.name is None:
             debug_red('The exported class does not have proper name.')
             return
@@ -77,9 +71,7 @@ class Installation(ConfigurationAware):
         debug_cyan('Loading installer: \'{0}\''.format(InstallerClass.name))
         self.installers[InstallerClass.name] = InstallerClass
 
-
-
-    def run_installer(self, name, installer): 
+    def run_installer(self, name, installer):
 
         if installer not in self.installers.keys():
             logging.critical('There is no installer with the name'.format(name))
@@ -93,19 +85,16 @@ class Installation(ConfigurationAware):
         node = self.packages[name]
         installer_obj.node = node
 
-        if hasattr(installer_obj,'manditory_attr') and isinstance(installer_obj.manditory_attr, list):
+        if hasattr(installer_obj, 'manditory_attr') and isinstance(installer_obj.manditory_attr, list):
             for attr in installer_obj.manditory_attr:
                 if attr not in node.keys():
                     logging.critical('The attribute {0} is mandatory for the installer {1} but it is not in the package node.'.format(attr, installer_obj.name))
-                    
-        
+
         result = installer_obj.execute(name)
 
         if result > 0:
             logging.critical('The installer {0} failed to execute properly'.format(installer_obj.nam))
 
-        
-        
 
 class Installer:
 
@@ -126,10 +115,8 @@ class Installer:
 
         self._load_extra_installers()
 
-
     def _load_extra_installers(self):
         pass
-
 
     def install(self, name, package, reinstall=False):
         if self.noinstall:
@@ -239,6 +226,5 @@ class Installer:
             path = os.path.join(os.getcwd(), el_f)
             load_file.write(f'(load-file \"{path}\")\n')
         load_file.close()
-
 
         return 0

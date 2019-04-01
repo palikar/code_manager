@@ -1,8 +1,0 @@
-[Default]
-        code = ${HOME}/code
-        usr = ${HOME}/usr
-        packages_file = packages.json
-[Set]
-        code = ${HOME}/core.d/code
-        usr = ${HOME}/core.d/usr
-        packages_file = packages.json

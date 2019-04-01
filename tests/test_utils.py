@@ -1,7 +1,7 @@
 import unittest
 
-from code_manager.utils import flatten
-from code_manager.utils import merge_two_dicts
+from code_manager.utils.utils import flatten
+from code_manager.utils.utils import merge_two_dicts
 
 
 class TestDown(unittest.TestCase):
