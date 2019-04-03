@@ -41,17 +41,17 @@ class CofigurationResolver():
 
             for var, val in config['vars'].items():
                 if not self._VAR_NAME_RE.fullmatch(var):
-                    logging.debug('The variable \'{0}\' has invalid identifier.'.format(var))
+                    logging.debug('The variable \'%s\' has invalid identifier.', var)
                     success = False
                 if not isinstance(val, str):
-                    logging.debug('The variable \'{0}\' has invalid value \'{1}\'.'.format(var, val))
+                    logging.debug('The variable \'%s\' has invalid value \'%s\'.', var, val)
                     success = False
 
         packages_list = flatten(config['packages_list'].values())
         for pack in packages_list:
             if pack not in config['packages'].keys():
-                logging.debug('The \'{0}\' packages is in the list but does\
-                not have a node'.format(pack))
+                logging.debug('The \'%s\' packages is in the list but does\
+                not have a node', pack)
                 success = False
 
         return success
@@ -88,18 +88,18 @@ class CofigurationResolver():
                 if isinstance(value, list):
                     for idx, item in enumerate(value):
                         if not isinstance(item, list) and not isinstance(item, dict):
-                            new_val = self._resolve_string(item)
+                            new_val = self.resolve_string(item)
                             if new_val is not None and new_val != value:
                                 value[idx] = new_val
                 else:
-                    new_val = self._resolve_string(value)
+                    new_val = self.resolve_string(value)
                     if new_val is not None and new_val != value:
                         cur_dicts[key] = new_val
 
         return config
 
 
-class ConfigurationAware(object):
+class ConfigurationAware():
 
     @staticmethod
     def var(name):

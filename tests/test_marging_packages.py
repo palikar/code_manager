@@ -13,7 +13,7 @@ class TestDown(unittest.TestCase):
         input2 = os.path.join(dir_path, "data", "packages2.json")
         outfile_path = tempfile.mkstemp()[1]
         print(outfile_path)
-        merge_package_file([input1,  input2], outfile_path)
+        merge_package_file([input1, input2], outfile_path)
 
         try:
             contents = json.load(open(outfile_path))

@@ -32,9 +32,6 @@ TEST_PATHS =  $(shell find ./code_manager -mindepth 1 -maxdepth 1 -type d \
 			./tests \
 			./setup.py
 
-default: test compile
-	@echo 'Run `make options` for a list of all options'
-
 help:
 	@echo 'make:              Test and compile code_manager.'
 	@echo 'make install:      Install $(NAME)'
@@ -45,6 +42,9 @@ help:
 	@echo 'make test:         Test everything'
 	@echo 'make snapshot:     Create a tar.gz of the current git revision'
 	@echo 'make pypi_sdist:   Release a new sdist to PyPI'
+
+test: test_pylint test_flake
+	@echo "All test ran..."
 
 test_pylint:
 	@echo "Running pylint..."
@@ -79,3 +79,5 @@ install:
 	$(PYTHON) setup.py install $(SETUPOPTS) \
 		'--prefix=$(PREFIX)' '--root=$(DESTDIR)' \
 		--optimize=$(PYOPTIMIZE)
+
+.PHONY: clean compile build install

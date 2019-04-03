@@ -60,13 +60,13 @@ def setup_logging(args, opt):
     logger.addHandler(ShutdownHandler(level=50))
 
 
-def info_blue(msg):
-    logging.info('{0}{1}{2}'.format(BLUE, msg, RESET))
+def info_blue(msg, *args):
+    logging.info(BLUE + msg + RESET, *args)
 
 
-def debug_cyan(msg):
-    logging.debug('{0}{1}{2}'.format(CYAN, msg, RESET))
+def debug_cyan(msg, *args):
+    logging.debug(CYAN + msg + RESET, *args)
 
 
-def debug_red(msg):
-    logging.debug('{0}{1}{2}'.format(RED, msg, RESET))
+def debug_red(msg, *args):
+    logging.debug(RED + msg + RESET, *args)

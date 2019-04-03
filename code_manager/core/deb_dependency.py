@@ -7,7 +7,7 @@ class Depender:
     def __init__(self):
         pass
 
-    def _available_packages(self):
+    def _available_packages(self):  # pylint: disable=R0201
         pkgs = subprocess.Popen(('dpkg-query', '--list'),
                                 stdout=subprocess.PIPE)
         pkgs = subprocess.check_output(
@@ -24,8 +24,8 @@ class Depender:
                 print(f"{deb} is not there")
                 self.install(deb)
 
-    def install(self, deb):
-        assert(deb is not None)
+    def install(self, deb):  # pylint: disable=R0201
+        assert deb is not None
 
         print(f"Installing package \'{deb}\'")
 

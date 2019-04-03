@@ -15,35 +15,35 @@ def recursive_items(dictionary, dicts=False):
                 else:
                     yield from recursive_items(value, dicts=dicts)
             elif isinstance(value, list):
-                for v in value:
-                    if isinstance(v, dict) or isinstance(v, list):
-                        yield from recursive_items(v, dicts=dicts)
+                for val in value:
+                    if isinstance(val, (dict, list)):
+                        yield from recursive_items(val, dicts=dicts)
                 yield (key, value)
             else:
                 yield (key, value)
     elif isinstance(dictionary, list):
-        for v in dictionary:
-            if isinstance(v, dict) or isinstance(v, list):
-                yield from recursive_items(v, dicts=dicts)
+        for val in dictionary:
+            if isinstance(val, (dict, list)):
+                yield from recursive_items(val, dicts=dicts)
         yield (None, dictionary)
 
 
-def merge_two_dicts(x, y):
-    z = x.copy()
-    z.update(y)
-    return z
+def merge_two_dicts(first, second):
+    new = first.copy()
+    new.update(second)
+    return new
 
 
-def flatten(xs):
+def flatten(iterable):
     res = []
 
-    def loop(ys):
-        for i in ys:
-            if isinstance(i, list):
-                loop(i)
+    def loop(array):
+        for val in array:
+            if isinstance(val, list):
+                loop(val)
             else:
-                res.append(i)
-    loop(xs)
+                res.append(val)
+    loop(iterable)
     return res
 
 

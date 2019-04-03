@@ -1,7 +1,3 @@
-import os
-import sys
-import subprocess
-
 from code_manager.core.installation import BasicInstaller
 from code_manager.core.configuration import ConfigurationAware
 
@@ -11,8 +7,7 @@ class CommandInstaller(BasicInstaller, ConfigurationAware):
     name = 'command'
 
     def __init__(self):
-        BasicInstaller.__init__()
-        pass
+        BasicInstaller.__init__(self)
 
     def execute(self, name):
         pass
@@ -21,4 +16,4 @@ class CommandInstaller(BasicInstaller, ConfigurationAware):
         pass
 
 
-exported_class = CommandInstaller
+ExportedClass = CommandInstaller

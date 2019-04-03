@@ -3,7 +3,7 @@
 import unittest
 from unittest.mock import patch
 
-from code_manager.downloader import Downloader
+from code_manager.core.downloader import Downloader
 
 
 class TestDown(unittest.TestCase):

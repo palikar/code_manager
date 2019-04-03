@@ -3,8 +3,8 @@
 
 import sys
 import json
-from code_manager.utils import merge_two_dicts
-from code_manager.utils import flatten
+from code_manager.utils.utils import merge_two_dicts
+from code_manager.utils.utils import flatten
 
 
 def merge_package_file(input_files, output_file):
