@@ -4,7 +4,7 @@ from code_manager.core.configuration import ConfigurationAware
 
 class CmakeInstaller(BasicInstaller, ConfigurationAware):
 
-    name = 'command'
+    name = 'cmake'
 
     def __init__(self):
         BasicInstaller.__init__(self)

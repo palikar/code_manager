@@ -1,5 +1,5 @@
 from code_manager.core.installation import Installation
-# from code_manager.core.downloader import Downloader
+from code_manager.core.fetcher import Fetcher
 from code_manager.core.configuration import ConfigurationAware
 # from code_manager.core.deb_dependency import Depender
 from code_manager.core.cache_container import CacheContainer
@@ -17,11 +17,11 @@ class Manager(ConfigurationAware):
 
         self.install_queue = list()
 
-        # self.down = Downloader()
         # self.deb_dep = Depender()
 
         self.installation = Installation()
         self.cache = CacheContainer()
+        self.fetch = Fetcher()
 
         if self.debug:
             self._setup_all()
@@ -97,6 +97,9 @@ class Manager(ConfigurationAware):
 
     def _invoke(self):
         pass
+
+    def fetch_package(self, package):
+        self.fetch.download(package, package)
 
     def _install_thing(self, thing):
 

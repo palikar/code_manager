@@ -4,7 +4,7 @@ from code_manager.core.configuration import ConfigurationAware
 
 class EmacsInstaller(BasicInstaller, ConfigurationAware):
 
-    name = 'command'
+    name = 'emacs'
 
     def __init__(self):
         BasicInstaller.__init__(self)

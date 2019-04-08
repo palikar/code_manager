@@ -4,7 +4,7 @@ from code_manager.core.configuration import ConfigurationAware
 
 class SetupPyInstaller(BasicInstaller, ConfigurationAware):
 
-    name = 'command'
+    name = 'setuppy'
 
     def __init__(self):
         BasicInstaller.__init__(self)

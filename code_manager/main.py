@@ -129,8 +129,8 @@ def install(args, core):
     pass
 
 
-def fetch(_, core):
-    pass
+def fetch(args, core):
+    core.fetch_package(args.packages[0])
 
 
 def build(_, core):

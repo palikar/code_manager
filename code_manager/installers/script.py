@@ -4,7 +4,7 @@ from code_manager.core.configuration import ConfigurationAware
 
 class ScriptInstaller(BasicInstaller, ConfigurationAware):
 
-    name = 'command'
+    name = 'scripts'
 
     def __init__(self):
         BasicInstaller.__init__(self)

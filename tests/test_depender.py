@@ -6,7 +6,6 @@ from code_manager.core.deb_dependency import Depender
 
 class TestDown(unittest.TestCase):
 
-
     @patch('code_manager.core.deb_dependency.Depender.install')
     @patch('code_manager.core.deb_dependency.Depender._available_packages',
            return_value=['mock', 'mocker'])
@@ -15,7 +14,6 @@ class TestDown(unittest.TestCase):
         packages = ['mock', 'mocker', 'mojito']
         deb.install_deb_packages(packages)
         install.assert_called_once_with('mojito')
-
 
     @patch('os.system', return_value=0)
     def test_install(self, system):

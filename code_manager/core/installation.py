@@ -54,19 +54,22 @@ class Installation(ConfigurationAware):
         assert installer is not None
         assert file is not None
 
-        if not hasattr(installer, 'exported_class'):
+        if not hasattr(installer, 'ExportedClass'):
             debug_red('No exported class found in file %s', file)
             return
 
-        if issubclass(installer.exported_class, BasicInstaller) is None:
+        if issubclass(installer.ExportedClass, BasicInstaller) is None:
             debug_red('The exported class is not a subclass of BasicInstaller.')
             return
 
-        if installer.exported_class.name is None:
+        if installer.ExportedClass.name is None:
             debug_red('The exported class does not have proper name.')
             return
 
-        InstallerClass = installer.exported_class  # pylint: disable=C0103
+        InstallerClass = installer.ExportedClass  # pylint: disable=C0103
+        if InstallerClass.name in self.installers.keys():
+            debug_red('Installer with the name \'%s\' already exists', InstallerClass.name)
+
         debug_cyan('Loading installer: \'%s\'', InstallerClass.name)
         self.installers[InstallerClass.name] = InstallerClass
 

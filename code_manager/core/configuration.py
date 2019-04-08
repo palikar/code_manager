@@ -2,6 +2,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import logging
 import re
+import os
 
 
 from code_manager.utils.utils import flatten
@@ -115,9 +116,9 @@ class ConfigurationAware():
     def packages_list():
         return ConfigurationAware.config['packages_list']
 
-    @staticmethod
-    def packages():
-        return ConfigurationAware.config['packages']
+    # @staticmethod
+    # def packages():
+    #     return ConfigurationAware.config['packages']
 
     @staticmethod
     def variables():
@@ -127,8 +128,8 @@ class ConfigurationAware():
     def set_configuration(config, install_scripts_dir, cache_file, opt):
 
         ConfigurationAware.opt = opt
-        ConfigurationAware.usr_dir = opt["Config"]["code"]
-        ConfigurationAware.code_dir = opt["Config"]["usr"]
+        ConfigurationAware.usr_dir = os.path.expandvars(opt["Config"]["usr"])
+        ConfigurationAware.code_dir = os.path.expandvars(opt["Config"]["code"])
 
         ConfigurationAware.resolver = CofigurationResolver()
         ConfigurationAware.config = (
