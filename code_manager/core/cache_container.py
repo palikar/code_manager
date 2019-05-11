@@ -14,13 +14,13 @@ class CacheContainer(ConfigurationAware):
         pass
 
     def load_cache(self):
+        logging.debug('Loading cache from the cache file %s ', self.cache_file)
         try:
             self.cache = json.load(open(self.cache_file, 'r'))
         except json.decoder.JSONDecodeError:
             logging.debug('Invalid or empty cache. Starting with clean cache')
             self.cache = dict()
-
-        self.preupdate_cache()
+            self.preupdate_cache()
 
     def preupdate_cache(self):
         for group, packages in self.packages_list.items():
@@ -35,10 +35,10 @@ class CacheContainer(ConfigurationAware):
                     self.cache[package]['group'] = group
                     self.cache[package]['root'] = ""
 
-        self.dirty = True
+        self.save_cache()
 
     def save_cache(self):
-        logging.debug('Dumpint the cache in the cache file.')
+        logging.debug('Dumping the cache in the cache file.')
         json.dump(self.cache, open(self.cache_file, 'w'),
                   indent=4, separators=(',', ' : '))
         self.dirty = False

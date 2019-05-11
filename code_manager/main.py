@@ -30,6 +30,7 @@ CONFIG = None
 USR_DIR = None
 CODE_DIR = None
 INSTALL_SCRIPTS_DIR = None
+PACKAGES_FILE = None
 
 
 def get_arg_parser():
@@ -65,6 +66,8 @@ def get_arg_parser():
     parser.add_argument('--verbose', dest='verbose', action="store_true",
                         default=False,
                         help='Print a lot of information about the execution.')
+
+
 
     subparsers = parser.add_subparsers(title='Commands', description='A list\
     of avialble commands', dest='command', metavar='Command')
@@ -130,7 +133,7 @@ def install(args, core):
 
 
 def fetch(args, core):
-    core.fetch_package(args.packages[0])
+    core.fetch(args.packages)
 
 
 def build(_, core):
@@ -138,17 +141,16 @@ def build(_, core):
 
 
 def list_packages(args, core):
-    logging.info("Available packages:")
-    for pack in flatten(CONFIG['packages_list']):
-        logging.info(pack)
+    logging.debug("Available packages:")
+    for pack in flatten(CONFIG['packages_list'].values()):
+        print(pack)
 
 
 def list_cache(_, core):
-    logging.info(f"Dumping cache file {0}"
-                 .format(CACHE))
+    logging.debug(f"Dumping cache file {0}".format(CACHE))
     handle = open(CACHE, "r")
     cont = handle.read()
-    logging.info(cont)
+    print(cont)
     handle.close()
 
 
@@ -178,6 +180,7 @@ def setup_config_files(args, opt):
     global USR_DIR
     global CODE_DIR
     global INSTALL_SCRIPTS_DIR
+    global PACKAGES_FILE
 
     private_data_dir = os.path.join(code_manager.CMDIR, "data")
 
@@ -227,23 +230,15 @@ def setup_config_files(args, opt):
     if not os.path.isdir(code_dir):
         os.makedirs(code_dir)
 
+    CODE_DIR = code_dir
+    USR_DIR = usr_dir
+    PACKAGES_FILE = packages_file
+
     with open(packages_file, "r") as config_file:
         CONFIG = json.load(config_file)
 
-    if args.debug:
-        logging.info("Code dir: %s", CODE_DIR)
-        logging.info("Usr dir: %s", USR_DIR)
-        logging.info("Packages file: %s", packages_file)
-        logging.info("Install script directory: %s", INSTALL_SCRIPTS_DIR)
-        logging.info("Cache file: %s", CACHE)
-
 
 def main():
-
-    global CACHE
-    global CONFIG
-    global USR_DIR
-    global CODE_DIR
 
     parser = get_arg_parser()
     args = parser.parse_args()
@@ -265,6 +260,13 @@ def main():
 
     ConfigurationAware.set_configuration(CONFIG, INSTALL_SCRIPTS_DIR,
                                          CACHE, opt)
+
+    if args.debug:
+        logging.info("Code dir: %s", CODE_DIR)
+        logging.info("Usr dir: %s", USR_DIR)
+        logging.info("Packages file: %s", PACKAGES_FILE)
+        logging.info("Install script directory: %s", INSTALL_SCRIPTS_DIR)
+        logging.info("Cache file: %s", CACHE)
 
     core_manager = Manager()
 

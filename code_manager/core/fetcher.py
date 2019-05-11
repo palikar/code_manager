@@ -9,7 +9,7 @@ from code_manager.utils.logger import debug_red
 
 class Fetcher(ConfigurationAware):
 
-    GIT_COMMAND =  'git'
+    GIT_COMMAND = 'git'
     WGET_COMMAND = 'wget'
     CURL_COMMAND = 'curl'
 
@@ -19,15 +19,12 @@ class Fetcher(ConfigurationAware):
     def __init__(self):
 
         self.download_methods = {}
-
         self.download_methods["git"] = self._download_git
-
         self.download_methods["curl"] = self._download_curl
-
         self.download_methods["wget"] = self._download_wget
 
-        logging.debug('Fetchers:' + str(self.download_methods))
-        
+        logging.debug('Fetchers: ' + str(list(self.download_methods.keys())))
+
         # TODO: load the extra fetching functions
 
     def download(self, name, root):   # pylint: disable=R0201
@@ -35,7 +32,7 @@ class Fetcher(ConfigurationAware):
         if name not in self.packages.keys():
             debug_red('The package %s is not in the package file.', name)
             return None
-        
+
         package = self.packages[name]
         fetcher = package["fetch"]
 
@@ -61,11 +58,11 @@ class Fetcher(ConfigurationAware):
         if 'url' not in package['git'].keys():
             debug_red('The git node of %s does not have urlf field.', name)
             return None
-        
+
         git_node = package['git']
         url = git_node['url']
         path = os.path.join(self.code_dir, root)
-        
+
         cmd = []
         cmd.append(self.GIT_COMMAND)
         cmd.append('clone')
@@ -83,7 +80,7 @@ class Fetcher(ConfigurationAware):
                 cmd.append(url)
             else:
                 debug_red('Bad git url for %s: %s', name, url)
-                return None            
+                return None
         else:
             logging.debug('Trying to use https with git')
             match = self.GIT_SSH_RE.match(url)
@@ -99,14 +96,16 @@ class Fetcher(ConfigurationAware):
         if os.path.exists(path):
             debug_red('The given path already exists: %s', path)
             return None
-            
+
         cmd.append(path)
-        
+
         logging.debug('Fetching with git and command: %s', cmd)
-        
+
         if subprocess.call(cmd) != 0:
             debug_red('The fetching failed!')
             return None
+
+        # TODO: Mark somehow that the contents have been cloned but the step is not fully complete
 
         if 'checkout' in git_node.keys() and isinstance(git_node['checkout'], str):
             cmd = []
@@ -118,18 +117,52 @@ class Fetcher(ConfigurationAware):
                 return None
 
         return 0
-            
-            
-        
 
     def _download_curl(self, name, package, root):   # pylint: disable=R0201
-        print(f"Using curl and downloading from {package['URL']}")
-        print(f"Cloning into {os.path.abspath('.')}")
-        print(f"Command: curl -LOs {package['URL']} .")
-        os.system(f"curl -LOs {package['URL']} .")
+        logging.info('Trying to fetch with curl.')
 
-    def _download_wget(self, name,  package, root):   # pylint: disable=R0201
-        print(f"Using wget and downloading from {package['URL']}")
-        print(f"Cloning into {os.path.abspath('.')}")
-        print(f"Command: wget {package['URL']} .")
+        if 'curl' not in package.keys() or not isinstance(package['curl'], dict):
+            debug_red('Invalid curl node for packag %s.', name)
+            return None
+
+        if 'url' not in package['curl'].keys():
+            debug_red('The git node of %s does not have urlf field.', name)
+            return None
+
+        curl_node = package['git']
+        url = curl_node['url']
+        path = os.path.join(self.code_dir, root)
+
+        cmd = []
+
+        cmd.append('cd')
+        cmd.append(path)
+        cmd.append('&&')
+
+        cmd.append(self.CURL_COMMAND)
+
+        if 'args' in curl_node.keys() and isinstance(curl_node['args'], str):
+            cmd.append(curl_node['args'])
+
+        cmd.append(url)
+
+        if 'output' in curl_node.keys() and isinstance(curl_node['output'], str):
+            cmd.append('-o')
+            cmd.append(curl_node['output'])
+        else:
+            cmd.append('-O')
+
+        cmd.append('&&')
+        cmd.append('cd')
+        cmd.append('-')
+
+        logging.debug('Fetching with curl and command: %s', cmd)
+
+        if subprocess.Popen(cmd, shell=True) != 0:
+            debug_red('The fetching failed!')
+            return None
+
+        return 0
+
+    def _download_wget(self, name, package, root):   # pylint: disable=R0201
         os.system(f"wget {package['URL']} .")

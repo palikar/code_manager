@@ -1,3 +1,5 @@
+import logging
+
 from code_manager.core.installation import Installation
 from code_manager.core.fetcher import Fetcher
 from code_manager.core.configuration import ConfigurationAware
@@ -11,7 +13,7 @@ class Manager(ConfigurationAware):
 
     install = False
     build = False
-    fetch = False
+    fetcher = False
 
     def __init__(self):
 
@@ -21,85 +23,46 @@ class Manager(ConfigurationAware):
 
         self.installation = Installation()
         self.cache = CacheContainer()
-        self.fetch = Fetcher()
+        self.fetcher = Fetcher()
 
-        if self.debug:
-            self._setup_all()
-
-    # def _fix_git_status(self, name, package):
-    #     if "branch" in package.keys():
-    #         os.system(f"git checkout {package['branch']}")
-    #     if "commit" in package.keys():
-    #         os.system(f"git checkout {package['commit']}")
-    #     elif "tag" in package.keys():
-    #         os.system(f"git checkout tags/{package['tag']}")
-
-    # def _install_package(self, name, reinstall=False):
-        # package = self.config["packages"][name]
-        # # Check dependencies
-        # self._check_dependencies(name, package, self.directory, reinstall)
-
-        # # ckeck cache
-        # cached = self._check_cache(name)
-        # if cached:
-        #     print(f"{name} is already installed (it\'s in the cache).")
-        #     return 0
-
-        # print(f"Installing \'{name}\'.")
-
-        # last_edit = os.curdir
-        # package_dir = os.path.join("direcory", name)
-        # if not os.path.isdir(package_dir):
-        #     if reinstall:
-        #         print(f"Reinstalling {name} but there is\
-        #         no directory. Install first!")
-        #         exit(1)
-        #     os.makedirs(package_dir)
-
-        # if (os.listdir(package_dir)
-        #     and reinstall is False and self.force_clear):
-        #     print(f"The direcory ({package_dir}) is not empty\
-        #     and the package (name) is not in cache")
-        #     print("Delete the direcotry\'s contents first")
-        #     exit(1)
-
-        # os.chdir(package_dir)
-
-        # if ("commit" in package.keys() or "branch" in package.keys()
-        #         or "tag" in package.keys()):
-        #     self._fix_git_status(name, package)
-
-        # if not reinstall or os.listdir(package_dir):
-        #     print(f"Downloading {name} in {package_dir}")
-        #     self.down.download(name, self.config)
-
-        # # resolve dependencies
-        # if "deb_packages" in package.keys():
-        #     print("Resolving Debian packages dependencies")
-        #     self.deb_dep.install_deb_packages(package["deb_packages"])
-
-        # res = self.inst.install(name, package, reinstall=False)
-
-        # if res != 0:
-        #     print(f"Package {name} could not be installed")
-        #     exit(1)
-
-        # os.chdir(last_edit)
-        # with open(self.cache_file, "a") as cache:
-        #     cache.write(name + "\n")
-
-        # print("##############################")
-        # return None
+        self._setup_all()
 
     def _setup_all(self):
-
         self.installation.load_installer()
+        self.cache.load_cache()
 
     def _invoke(self):
         pass
 
     def fetch_package(self, package):
-        self.fetch.download(package, package)
+        with self.cache as cache:
+            self.fetcher.download(package, package)
+            cache.set_fetched(package, True)
+            cache.set_root(package, package)
+
+    def fetch_group(self, group):
+        for pack in self.packages_list[group]:
+            self.fetch_package(pack)
+
+    def fetch_thing(self, thing):
+        if thing in self.packages_list.keys():
+            logging.info('\'%s\' is a group. Fetching all packages in it.', thing)
+            self.fetch_group(thing)
+        elif thing in flatten(self.packages_list.values()):
+            logging.info('\'%s\' is a package. Fetching it.', thing)
+            self.fetch_package(thing)
+        else:
+            logging.info('There is no thing with name \'%s\'', thing)
+
+    def fetch(self, thing):
+        if isinstance(thing, list):
+            for th in thing:
+                self.fetch_thing(th)
+        elif isinstance(thing, str):
+            self.fetch_thing(thing)
+        else:
+            logging.critical('Can\'t install %s. It\'s \
+            no string nor list', thing)
 
     def _install_thing(self, thing):
 
