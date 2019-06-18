@@ -44,7 +44,7 @@ class CacheContainer(ConfigurationAware):
         self.dirty = False
 
     def update_cache(self, name, prop, value):
-        if name in self.cache.keys():
+        if name not in self.cache.keys():
             logging.debug('%s is not in the cache', name)
             return False
         self.cache[name][prop] = value
@@ -52,7 +52,7 @@ class CacheContainer(ConfigurationAware):
         return True
 
     def check_cache(self, name, prop='installed'):
-        if name in self.cache.keys():
+        if name not in self.cache.keys():
             logging.debug('%s is not in the cache', name)
             return False
 

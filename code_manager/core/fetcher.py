@@ -3,6 +3,8 @@ import subprocess
 import logging
 import re
 
+from contextlib import suppress
+
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.utils.logger import debug_red
 
@@ -40,7 +42,7 @@ class Fetcher(ConfigurationAware):
             for fetch in fetcher:
                 pass
         elif isinstance(fetcher, str):
-            self.download_methods[fetcher](name, package, root)
+            return self.download_methods[fetcher](name, package, root)
         else:
             debug_red('The fetcher field of the package \'%s\' is invalid: %s', name, fetcher)
             return None
@@ -129,15 +131,14 @@ class Fetcher(ConfigurationAware):
             debug_red('The git node of %s does not have urlf field.', name)
             return None
 
-        curl_node = package['git']
+        curl_node = package['curl']
         url = curl_node['url']
         path = os.path.join(self.code_dir, root)
 
-        cmd = []
+        with suppress(OSError):
+            os.makedirs(path)
 
-        cmd.append('cd')
-        cmd.append(path)
-        cmd.append('&&')
+        cmd = []
 
         cmd.append(self.CURL_COMMAND)
 
@@ -152,14 +153,12 @@ class Fetcher(ConfigurationAware):
         else:
             cmd.append('-O')
 
-        cmd.append('&&')
-        cmd.append('cd')
-        cmd.append('-')
-
         logging.debug('Fetching with curl and command: %s', cmd)
 
-        if subprocess.Popen(cmd, shell=True) != 0:
-            debug_red('The fetching failed!')
+        child = subprocess.Popen(cmd, cwd=path, stdout=subprocess.PIPE)
+        child.communicate()[0]
+        rc = child.returncode
+        if rc != 0:
             return None
 
         return 0

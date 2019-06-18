@@ -5,8 +5,8 @@ from code_manager.core.fetcher import Fetcher
 from code_manager.core.configuration import ConfigurationAware
 # from code_manager.core.deb_dependency import Depender
 from code_manager.core.cache_container import CacheContainer
-
 from code_manager.utils.utils import flatten
+from code_manager.utils.logger import debug_red
 
 
 class Manager(ConfigurationAware):
@@ -36,9 +36,16 @@ class Manager(ConfigurationAware):
 
     def fetch_package(self, package):
         with self.cache as cache:
-            self.fetcher.download(package, package)
-            cache.set_fetched(package, True)
-            cache.set_root(package, package)
+            if cache.is_fetched(package):
+                debug_red('The package \'%s\' is already fetched', package)
+                return None
+            if self.fetcher.download(package, package) is None:
+                debug_red('The fetching of \'%s\' failed.', package)
+                return None
+            else:
+                cache.set_fetched(package, True)
+                cache.set_root(package, package)
+            return 0
 
     def fetch_group(self, group):
         for pack in self.packages_list[group]:
