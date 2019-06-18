@@ -101,7 +101,7 @@ def get_arg_parser():
     subparsers = parser.add_subparsers(
         title="Commands",
         description="A list\
-    of avialble commands",
+        of avialble commands",
         dest="command",
         metavar="Command",
     )
@@ -109,9 +109,9 @@ def get_arg_parser():
     parser_install = subparsers.add_parser(
         "install",
         description="Full installatio \
-                                           of packages",
+        of packages",
         help="Installs packages \
-                                           (fetch, build and install)",
+        (fetch, build and install)",
     )
     parser_install.add_argument(
         "packages", nargs="*", default=None, help="A list of packages to install"
@@ -133,10 +133,10 @@ def get_arg_parser():
     parser_fetch = subparsers.add_parser(
         "fetch",
         description="Downloads packages but\
-                                         it does not install them nor builds\
-                                         them. If a name of a group is given,\
-                                         all packages of the group will\
-                                         be downloaded.",
+        it does not install them nor builds\
+        them. If a name of a group is given,\
+        all packages of the group will\
+        be downloaded.",
         help="Downloads packages",
     )
 
@@ -157,13 +157,13 @@ def get_arg_parser():
         metavar="name",
         default=None,
         help="If given, every\
-                              package from this group will be fetched",
+        package from this group will be fetched",
     )
 
     parser_build = subparsers.add_parser(
         "build",
         description="Builds a package\
-                                         from source",
+        from source",
         help="Builds the project of package",
     )
     parser_build.add_argument(
@@ -175,7 +175,7 @@ def get_arg_parser():
         metavar="name",
         default=None,
         help="If given, every package\
-                              from this group will be build",
+        from this group will be build",
     )
     parser_build.add_argument(
         "--no-install",
