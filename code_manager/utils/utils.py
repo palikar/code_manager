@@ -69,9 +69,9 @@ def get_emacs_load_file():
 
     if not match:
         with open(emacs_init, 'a') as file:
-            file.write(f'\n\n;; This \'load-file\' is added by code-manager \n')
-            file.write(f';; It loads the packages installed by code-manager\n')
-            file.write(f';; Do not delete the line nor the file\n')
-            file.write(f'(load-file \"~/.emacs.d/code-manager-packages.el\")')
+            file.write('\n\n;; This \'load-file\' is added by code-manager \n')
+            file.write(';; It loads the packages installed by code-manager\n')
+            file.write(';; Do not delete the line nor the file\n')
+            file.write('(load-file \"~/.emacs.d/code-manager-packages.el\")')
 
     return load_file

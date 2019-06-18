@@ -114,6 +114,9 @@ class Fetcher(ConfigurationAware):
             cmd.append(self.GIT_COMMAND)
             cmd.append('checkout')
             cmd.append(git_node['checkout'])
+
+            logging.debug('Checking out a git repository with_ ', cmd)
+
             if subprocess.call(cmd) != 0:
                 debug_red('The checkint out failed!')
                 return None
@@ -159,9 +162,10 @@ class Fetcher(ConfigurationAware):
         child.communicate()[0]
         rc = child.returncode
         if rc != 0:
+            debug_red('The checkint out failed!')
             return None
 
         return 0
 
     def _download_wget(self, name, package, root):   # pylint: disable=R0201
-        os.system(f"wget {package['URL']} .")
+        os.system("wget {package['URL']} .")

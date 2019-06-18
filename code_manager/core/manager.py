@@ -74,17 +74,17 @@ class Manager(ConfigurationAware):
     def _install_thing(self, thing):
 
         if thing in self.packages_list.keys():
-            print(r'\`{0}\` is a group. Installing all packages in it.'
+            logging.debug(r'\`{0}\` is a group. Installing all packages in it.'
                   .format(thing))
             self.install_queue = (self.install_queue
                                   + self.config["packages_list"][thing])
 
         elif thing in flatten(self.packages_list.values()):
-            print(r'\`{0}\` is a package. Installing it.'.format(thing))
+            logging.debug(r'\`{0}\` is a package. Installing it.'.format(thing))
             self.install_queue.append(thing)
 
         else:
-            print('There is no thing with name {0}'.format(thing))
+            logging.critical('There is no thing with name {0}'.format(thing))
 
     def install_thing(self, thing, install=True, fetch=False, build=False):
         if install:

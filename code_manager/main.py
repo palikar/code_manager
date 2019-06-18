@@ -147,15 +147,17 @@ def list_packages(args, core):
 
 
 def list_cache(_, core):
-    logging.debug(f"Dumping cache file {0}".format(CACHE))
+    logging.debug("Dumping cache file {0}".format(CACHE))
     handle = open(CACHE, "r")
     cont = handle.read()
+    #TODO : Pretty printing; some sort of table
     print(cont)
     handle.close()
 
 
 def clear_cache(_, core):
     logging.info("Clearing cache file %s", CACHE)
+    #TODO : Add "Are you sure check here"; It's too easy now
     handle = open(CACHE, "w")
     handle.close()
 
@@ -270,7 +272,7 @@ def main():
 
     core_manager = Manager()
 
-    commands[args.command](args, core_manager)
+    # commands[args.command](args, core_manager)
 
 
 if __name__ == '__main__':

@@ -33,7 +33,7 @@ class BasicInstaller(ConfigurationAware):
 
     @abstractmethod
     def update(self, name):
-        raise NotImplementedError('All installers need to implement the execute method.')
+        raise NotImplementedError('All installers need to implement the update method.')
 
 
 class Installation(ConfigurationAware):
