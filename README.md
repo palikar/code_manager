@@ -1,14 +1,21 @@
 Build status: [![Build Status](https://travis-ci.org/palikar/code_manager.svg?branch=master)](https://travis-ci.org/palikar/code_manager)
 
 
-# Abstract
+# Code Manager
 
-This is my personal tool now for managing my github repositories, some system software that I use and pretty much everything that can be downloaded, compiled locally and then installed on a Debian based Linux system. Through this utility one can quickly download and install random things from all over the internet. I&rsquo;ve always wanted some small program that would allow me to quickly bring my github repositories on my local machine so I end it up writing this in my spare time. The program is focused on automation but also on flexibility in the installation process. A lot of software is compiled and installed in some standard way but there are also things that are a little bit trickier. The utility - named appropriately `code_manager` aims to provide a unified interface for the installation process of all types of software &#x2013; the trickier kind included.
+![img](https://travis-ci.org/palikar/code_manager.svg?branch=master) ![img](https://pyup.io/repos/github/palikar/code_manager/shield.svg) ![img](https://pyup.io/repos/github/palikar/code_manager/python-3-shield.svg) ![img](https://coveralls.io/repos/github/palikar/code_manager/badge.svg?branch=master)
 
 
-# Installation
+## Abstract
+
+This is my personal tool now for managing my github repositories, some system software that I use and pretty much everything that can be downloaded, compiled locally and then installed on a Debian based Linux system. Through this utility one can quickly download and install random things from all over the internet. I&rsquo;ve always wanted some small program that would allow me to quickly bring my github repositories on my local machine so I end it up writing this in my spare time. The program is focused on automation but also on flexibility in the installation process. A lot of software is compiled and installed in some standard way but there are also things that are a little bit trickier. The utility - named appropriately `code_manager` - aims to provide a unified interface for the installation process of all types of software &#x2013; the trickier kind included.
 
 Currently the project is not on [PyPi](https://pypi.org/) so you have to clone the repo yourself and then use the `setup.py` file for a manual installation.
+
+
+## Installation
+
+The installation from source is possible through this repository.
 
 ```sh
 git clone https://github.com/palikar/code_manager
@@ -17,7 +24,7 @@ sudo python setup.py install
 code-manager -setup-only
 ```
 
-*Suggestion:* You may want to install the utility as
+*Suggestion:* You may want to install the tool as
 
 ```sh
 sudo python setup.py install --record install_manifest.txt
@@ -30,12 +37,12 @@ cat install_manifest.txt | xargs rm -rf
 ```
 
 
-# Usage
+## Usage
 
 The tool is pretty straight forward to use. The information for the packages that can be installed is give in the file `~/.config/code_manager/packages.json` and the configuration for the utility is in `~/.config/code_manager/conf`. Those two files are explained in the following two sections. Working with the command line interface is simple to use and it&rsquo;s also later explained.
 
 
-## `conf` file
+### `conf` file
 
 This files tell `code-manager` where to download and where to install the packages that should be downloaded and installed. An example of a `conf` file:
 
@@ -53,7 +60,7 @@ To note is that the values of the fields can indeed contain environmental variab
 | `Config.usr`  | A directory that will be used as a installed <br> prefix while installing the packages |
 
 
-## `packages.json`
+### `packages.json`
 
 The file contains all of the relevant information needed to install a certain package. As the name suggests this is a *JSON*-file and in it there are several list of packages together with download/compilation/installation information for each package. An example skeleton of the file is:
 
@@ -122,27 +129,25 @@ cd ..
 -   `setup.py` - installs the project with calling `python setup.py install` in the root directory.
 -   `emacs` - this will find your Emacs init file (`~/.emacs` or `~/.emacs.d/init.el`) and will include e separate file in it. The new file will on its side include the files from every package installed by `the code_manager`. The files from the package to be included are specified with the field `el_files`.
 
+1.  Installation type specific fields
 
-### Installation type specific fields
+    As seen above, some of the installation types require some additional fields to be present in the package object. Here we conveniently specify them all.
+    
+    -   `cmake`
+        -   `cmake_args` - Optional
+        -   `make_args` - Optional
+    -   `emacs`
+        -   `el_files` - Optional
+    -   `setup.py`
+        -   `setup_args` - Optional
+    -   `script`
+        -   `script_args` - Optional
+    -   `command`
 
-As seen above, some of the installation types require some additional fields to be present in the package object. Here we conveniently specify them all.
-
--   `cmake`
-    -   `cmake_args` - Optional
-    -   `make_args` - Optional
--   `emacs`
-    -   `el_files` - Optional
--   `setup.py`
-    -   `setup_args` - Optional
--   `script`
-    -   `script_args` - Optional
--   `command`
-
-
-### Examples
+2.  Examples
 
 
-## Command line
+### Command line
 
 The main (and for one only one) interface for the utility is the command line program `code-mamanger`. A simple call of `code-mamanger --help` gives:
 
@@ -188,7 +193,7 @@ The majority of the arguments are self-explanatory. The following table presents
 `--reinstall` and `--reinstall-all` function analogously.
 
 
-# Installation scripts
+## Installation scripts
 
 If the installation type of a package is set to `script`, a custom user defined script will be used for the compilation/installation of a package. All of the install scripts must be put in the `~/.config/code_manager/install_scripts` folder. Those custom install scripts are a nice way making the whole utility as flexible as possible. If the specific piece of software you want to manage through `code-manager` has a long and tedious non standard way of compiling/installing, you can abstract all of that away in a shell-script file. After downloading (or cloning) the given URL, the specified script will be executed at the root of the package&rsquo;s folder. If the package is to be installed at a specific prefix, `-p <prefix>` will be passed to the script. If the package is being reinstalled, `-r` will be passed to the script. A nice template for a installation script can be:
 

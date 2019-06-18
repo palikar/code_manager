@@ -79,5 +79,7 @@ install:
 	$(PYTHON) setup.py install $(SETUPOPTS) \
 		'--prefix=$(PREFIX)' '--root=$(DESTDIR)' \
 		--optimize=$(PYOPTIMIZE)
+coverage:
+	py.test --cov=code_manager
 
 .PHONY: clean compile build install
