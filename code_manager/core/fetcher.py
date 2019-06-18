@@ -23,9 +23,9 @@ class Fetcher(ConfigurationAware):
         self.download_methods = {}
         self.download_methods["git"] = self._download_git
         self.download_methods["curl"] = self._download_curl
-        self.download_methods["wget"] = self._download_wget
+        # self.download_methods["wget"] = self._download_wget
 
-        logging.debug('Fetchers: ' + str(list(self.download_methods.keys())))
+        logging.debug('Fetchers: %s.', ','.join(self.download_methods.keys()))
 
         # TODO: load the extra fetching functions
 
@@ -40,7 +40,10 @@ class Fetcher(ConfigurationAware):
 
         if isinstance(fetcher, list):
             for fetch in fetcher:
-                pass
+                if self.download_methods[fetch](name, package, root) is None:
+                    return None
+                else:
+                    return 0
         elif isinstance(fetcher, str):
             return self.download_methods[fetcher](name, package, root)
         else:
@@ -50,7 +53,7 @@ class Fetcher(ConfigurationAware):
     def get_available_fetcheres(self):
         pass
 
-    def _download_git(self, name, package, root):   # pylint: disable=R0201
+    def _download_git(self, name, package, root):   # pylint: disable=R0201,R0911
         logging.info('Trying to fetch with git.')
 
         if 'git' not in package.keys() or not isinstance(package['git'], dict):
@@ -115,7 +118,7 @@ class Fetcher(ConfigurationAware):
             cmd.append('checkout')
             cmd.append(git_node['checkout'])
 
-            logging.debug('Checking out a git repository with_ ', cmd)
+            logging.debug('Checking out a git repository with %s ', ','.join(cmd))
 
             if subprocess.call(cmd) != 0:
                 debug_red('The checkint out failed!')
@@ -159,13 +162,13 @@ class Fetcher(ConfigurationAware):
         logging.debug('Fetching with curl and command: %s', cmd)
 
         child = subprocess.Popen(cmd, cwd=path, stdout=subprocess.PIPE)
-        child.communicate()[0]
-        rc = child.returncode
-        if rc != 0:
+        _ = child.communicate()[0]
+        ret_code = child.returncode
+        if ret_code != 0:
             debug_red('The checkint out failed!')
             return None
 
         return 0
 
-    def _download_wget(self, name, package, root):   # pylint: disable=R0201
-        os.system("wget {package['URL']} .")
+    # def _download_wget(self, name, package, root):   # pylint: disable=R0201
+    #     os.system("wget {package['URL']} .")

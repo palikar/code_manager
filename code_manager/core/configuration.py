@@ -1,4 +1,4 @@
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
 
 import logging
 import re
@@ -9,10 +9,10 @@ from code_manager.utils.utils import flatten
 from code_manager.utils.utils import recursive_items
 
 
-class CofigurationResolver():
+class CofigurationResolver:
 
-    _VAR_RE = re.compile(r'(@\w+)|(\\@)')
-    _VAR_NAME_RE = re.compile(r'\w+')
+    _VAR_RE = re.compile(r"(@\w+)|(\\@)")
+    _VAR_NAME_RE = re.compile(r"\w+")
     config = None
     variables = {}
 
@@ -27,32 +27,35 @@ class CofigurationResolver():
 
         success = True
         if "packages_list" not in config.keys():
-            logging.debug('The \'packages_list\' is missing in the package file')
+            logging.debug("The 'packages_list' is missing in the package file")
             success = False
 
         if "packages" not in config.keys():
-            logging.debug('The \'packages\' is missing in the package file')
+            logging.debug("The 'packages' is missing in the package file")
             success = False
 
         if "vars" in config.keys():
 
-            if not isinstance(config['vars'], dict):
-                logging.debug('The \'vars\' are not an proper object.')
+            if not isinstance(config["vars"], dict):
+                logging.debug("The 'vars' are not an proper object.")
                 success = False
 
-            for var, val in config['vars'].items():
+            for var, val in config["vars"].items():
                 if not self._VAR_NAME_RE.fullmatch(var):
-                    logging.debug('The variable \'%s\' has invalid identifier.', var)
+                    logging.debug("The variable '%s' has invalid identifier.", var)
                     success = False
                 if not isinstance(val, str):
-                    logging.debug('The variable \'%s\' has invalid value \'%s\'.', var, val)
+                    logging.debug("The variable '%s' has invalid value '%s'.", var, val)
                     success = False
 
-        packages_list = flatten(config['packages_list'].values())
+        packages_list = flatten(config["packages_list"].values())
         for pack in packages_list:
-            if pack not in config['packages'].keys():
-                logging.debug('The \'%s\' packages is in the list but does\
-                not have a node', pack)
+            if pack not in config["packages"].keys():
+                logging.debug(
+                    "The '%s' packages is in the list but does\
+                not have a node",
+                    pack,
+                )
                 success = False
 
         return success
@@ -64,7 +67,7 @@ class CofigurationResolver():
                 value = self.variables[var]
                 return string.replace(match.group(1), value)
             if match.group(2) is not None:
-                return string.replace('\\@', '')
+                return string.replace("\\@", "")
 
         return string
 
@@ -72,12 +75,12 @@ class CofigurationResolver():
         self.config = config
 
         if not self._check_integrity(config):
-            logging.debug('The package file has some issues.')
+            logging.debug("The package file has some issues.")
             raise SystemExit
 
-        if 'vars' in config.keys():
-            self.variables = config['vars']
-            config.pop('vars')
+        if "vars" in config.keys():
+            self.variables = config["vars"]
+            config.pop("vars")
 
         # pylint: disable=R1702
         cur_dicts = {}
@@ -100,8 +103,7 @@ class CofigurationResolver():
         return config
 
 
-class ConfigurationAware():
-
+class ConfigurationAware:
     @staticmethod
     def var(name):
         if name in ConfigurationAware.resovler.variables.keys():
@@ -114,15 +116,11 @@ class ConfigurationAware():
 
     @staticmethod
     def packages_list():
-        return ConfigurationAware.config['packages_list']
-
-    # @staticmethod
-    # def packages():
-    #     return ConfigurationAware.config['packages']
+        return ConfigurationAware.config["packages_list"]
 
     @staticmethod
     def variables():
-        return ConfigurationAware.config['vars']
+        return ConfigurationAware.config["vars"]
 
     @staticmethod
     def set_configuration(config, install_scripts_dir, cache_file, opt):
@@ -132,25 +130,27 @@ class ConfigurationAware():
         ConfigurationAware.code_dir = os.path.expandvars(opt["Config"]["code"])
 
         ConfigurationAware.resolver = CofigurationResolver()
-        ConfigurationAware.config = (
-            ConfigurationAware.resolver.configuration_dict(config))
+        ConfigurationAware.config = ConfigurationAware.resolver.configuration_dict(
+            config
+        )
 
-        ConfigurationAware.packages_list = (
-            ConfigurationAware.config['packages_list'])
-        ConfigurationAware.packages = ConfigurationAware.config['packages']
+        ConfigurationAware.packages_list = ConfigurationAware.config["packages_list"]
+        ConfigurationAware.packages = ConfigurationAware.config["packages"]
         ConfigurationAware.variables = ConfigurationAware.resolver.variables
 
         ConfigurationAware.install_scripts_dir = install_scripts_dir
 
         ConfigurationAware.cache_file = cache_file
 
-        ConfigurationAware.debug = ('debug' in opt['Config'].keys()
-                                    and opt['Config']['debug'] == "true")
-        ConfigurationAware.git_ssh = ('git_ssh' in opt['Download'].keys()
-                                      and opt['Download']['git_ssh'] == "true")
+        ConfigurationAware.debug = (
+            "debug" in opt["Config"].keys() and opt["Config"]["debug"] == "true"
+        )
+        ConfigurationAware.git_ssh = (
+            "git_ssh" in opt["Download"].keys() and opt["Download"]["git_ssh"] == "true"
+        )
 
     def __getattr__(self, item):
         opt = ConfigurationAware.opt
-        if item in opt['Common'].keys():
-            return opt['Common'][item]
+        if item in opt["Common"].keys():
+            return opt["Common"][item]
         return None
