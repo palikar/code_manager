@@ -43,7 +43,7 @@ help:
 	@echo 'make snapshot:     Create a tar.gz of the current git revision'
 	@echo 'make pypi_sdist:   Release a new sdist to PyPI'
 
-test: test_pylint test_flake8
+test: test_pylint test_flake8 test_pylint
 	@echo "All test ran..."
 
 test_pylint:
@@ -53,6 +53,10 @@ test_pylint:
 test_flake8:
 	@echo "Running flake8..."
 	flake8 $(TEST_PATHS)
+
+test_pylint:
+	@echo "Running pylint..."
+	pytest
 
 snapshot:
 	git archive --prefix='$(NAME)-$(VERSION)/' --format=tar HEAD | gzip > $(SNAPSHOT_NAME)
@@ -69,6 +73,7 @@ clean:
 	find ./code_manager -depth -name __pycache__ -type d -exec rm -r -- {} \;
 	rm -rf ./build
 	rm -rf ./CodeManager.egg-info
+	rm -rf ./htmlcov
 
 build:
 	@echo 'Building the project'
@@ -81,5 +86,8 @@ install:
 		--optimize=$(PYOPTIMIZE)
 coverage:
 	py.test --cov=code_manager
+
+coverage_html:
+	py.test --cov=code_manager --cov-report=html $(TEST_FILES)
 
 .PHONY: clean compile build install
