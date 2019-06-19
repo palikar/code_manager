@@ -51,7 +51,8 @@ class DebGrapher(ConfigurationAware):
 
     def get_dependencies(self, package):
         if package not in self.packages.keys():  # pylint: disable=E1101
-            logging.critical("The package %s is not in the packages.json.", package)  # pylint: disable=E1136
+            logging.critical("The package %s\
+            is not in the packages.json.", package)  # pylint: disable=E1136
         return self.packages[package]["dependencies"]  # pylint: disable=E1136
 
     def get_deep_dependencies(self, package):
@@ -71,4 +72,26 @@ class DebGrapher(ConfigurationAware):
         return deps
 
     def generate_build_order(self, packages):
-        pass
+        sub_tree = {}
+        for pack in sorted(packages):
+            sub_tree[pack] = set()
+
+        for pack in packages:
+            for depend in self.get_dependencies(pack):
+                if depend in sub_tree.keys():
+                    sub_tree[pack].add(depend)
+
+        build_order = []
+        while sub_tree:
+            available = [pack for pack, deps in sub_tree.items() if deps]
+            if not available:
+                logging.critical('Build order cannot be generated.\
+                The packages tree is maybe broken.')
+                exit(1)
+            for pack in available:
+                build_order.append(pack)
+                del sub_tree[pack]
+            for pack, deps in sub_tree.items():
+                deps -= set(available)
+
+        return build_order

@@ -69,11 +69,8 @@ class Manager(ConfigurationAware):
         elif isinstance(thing, str):
             self.fetch_thing(thing)
         else:
-            logging.critical(
-                "Can't install %s. It's \
-            no string nor list",
-                thing,
-            )
+            logging.critical("Can't install %s. It's \
+            no string nor list", thing)
 
     def _install_thing(self, thing):
 
@@ -113,56 +110,3 @@ class Manager(ConfigurationAware):
         if self.install_queue:
             self._setup_all()
             self._invoke()
-
-
-# def generate_build_order(self, all_libs):
-#        """
-#        This function figures out the build order of an unordered list of libraries.
-#        Tt does not add or remove anything make sure that the list is complete
-#        """
-#        merge_graph = {}
-#        # set up the basic structure
-#        for lib in sorted(all_libs):
-#            base = self._depgraph[lib]['extends'] if 'extends' in self._depgraph[lib] else lib
-#            merge_graph[base] = {'extends': set(), 'dependencies': set()}
-#        # fill the structure
-#        for lib in all_libs:
-#            if 'extends' in self._depgraph[lib]:
-#                base = self._depgraph[lib]['extends']
-#                # if the lib is an extension add it to the parent
-#                merge_graph[base]['extends'].add(lib)
-#            else:
-#                base = lib
-#            # check the dependencies of the lib but add only those dependencies
-#            # that are in our collected list of libraries all others are not
-#            # relevant
-#            for dep in self._get_dependencies(lib):
-#                # if the dependency is an extension check with its root
-#                root = self._depgraph[dep].get('extends', dep)
-#                if root in merge_graph and root != base:
-#                    merge_graph[base]['dependencies'].add(root)
-#        logging.debug('simplified dep graph: %s', merge_graph)
-#        # generate build build order
-#        build_order = []
-#        extends_dict = {}
-#        while len(merge_graph) > 0:
-#            # find all libraries without any unsatisfied dependencies
-#            buildable = [depname for depname, data in merge_graph.items()
-#                         if len(data['dependencies']) == 0]
-#            if len(buildable) == 0:
-#                logging.critical(
-#                    'error could not generate build order. your dependency graph seems to be broken')
-#                exit(-1)
-#            # add the found libraries to the build order
-#            for depname in buildable:
-#                build_order.append(depname)
-#                extends_dict[depname] = list(merge_graph[depname]['extends'])
-#            # delete all processed libraries
-#            for depname in buildable:
-#                del merge_graph[depname]
-#            # remove processed libraries from the dependencies of the remaining
-#            # libraries
-#            for key, dep in merge_graph.items():
-#                dep['dependencies'] -= set(buildable)
-#        logging.debug('build order %s with extends %s', build_order, extends_dict)
-#        return build_order, extends_dict
