@@ -40,6 +40,7 @@ class Installation(ConfigurationAware):
 
     installers = {}
     installer_objects = {}
+    update = False
 
     def __init__(self):
         self.installers_dir = os.path.dirname(code_manager.installers.__file__)
@@ -93,18 +94,22 @@ class Installation(ConfigurationAware):
                     logging.critical('The attribute %s is mandatory for the installer %s\
                     but it is not in the package node of %s.',
                                      attr, installer_obj.name, name)
-
-        result = installer_obj.execute(name)
+        if self.update:
+            result = installer_obj.update(name)
+        else:
+            result = installer_obj.execute(name)
 
         if result is None:
             logging.critical('The installer [%s] failed to execute properly', installer_obj.name)
 
-    def install(self, package):
+    def install(self, package, update=False):
         assert package is not None
         node = self.packages[package]
 
         if 'install' not in node.keys():
             return 0
+
+        self.update = update
 
         installer = node['install']
         if isinstance(installer, str):

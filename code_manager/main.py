@@ -214,9 +214,9 @@ def fetch(args, core):
 
 def build(args, core):
     if args.group is not None:
-        core.install_thing(args.group, fetch=True)
+        core.install_thing(args.group, build=True)
     else:
-        core.install_thing(args.packages, fetch=True)
+        core.install_thing(args.packages, build=True)
 
 
 def list_packages(args, core):

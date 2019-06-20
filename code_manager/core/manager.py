@@ -47,7 +47,7 @@ class Manager(ConfigurationAware):
         if self.fetching:
             self._invoke_fetch()
 
-        if self.fetching:
+        if self.build:
             self._invoke_build()
 
     def _invoke_fetch(self):
@@ -62,7 +62,19 @@ class Manager(ConfigurationAware):
                     logging.info("\'%s\' is already fetched", pack)
 
     def _invoke_build(self):
-        pass
+        broken = []
+        for pack in self.install_queue:
+            if self.cache.is_installed(pack):
+                broken.append(pack)
+        if broken:
+            logging.critical('The packages [%s] are not installed.', ','.join(broken))
+
+        for pack in self.install_queue:
+            with self.cache as cache:
+                cache.set_built(pack, False)
+                if self.installation.install(pack, update=True) == 0:
+                    logging.info("\'%s\' was build", pack)
+                    cache.set_built(pack, True)
 
     def _invoke_install(self):
         extended_queue = set(self.install_queue)
@@ -77,23 +89,30 @@ class Manager(ConfigurationAware):
 
         for pack in ordered_packages:
             with self.cache as cache:
-
                 if not cache.is_fetched(pack):
+                    logging.info("Trying to fetch \'%s\'", pack)
                     if self.fetcher.download(pack, pack) is None:
                         logging.critical("The fetching of '%s' failed.", pack)
                     cache.set_fetched(pack, True)
                 else:
                     logging.info("\'%s\' is already fetched", pack)
 
+                # if the package is not installed - install it
+                # installation means 'for the first time'
                 if not cache.is_installed(pack):
+                    logging.info("Trying to install \'%s\'", pack)
                     if self.installation.install(pack) == 0:
                         logging.info("\'%s\' was installed", pack)
                         cache.set_installed(pack, True)
+                # if the package is not installed, we want to build it
+                # build means 'install again'
                 else:
                     logging.info("\'%s\' is already installed", pack)
-                    # TODO: Update\Build the package here
-
-                cache.set_built(pack, True)
+                    logging.info("Trying to build \'%s\'", pack)
+                    cache.set_built(pack, False)
+                    if self.installation.install(pack, update=True) == 0:
+                        logging.info("\'%s\' was build", pack)
+                        cache.set_built(pack, True)
 
     def _check_install_nodes(self, packages):
         for pack in packages:
@@ -126,11 +145,13 @@ Installation node is nor a list, nor a string.', pack)
             self.install = True
             self.fetching = False
             self.build = False
-        elif build:
+
+        if build:
             self.install = False
             self.fetching = False
             self.build = True
-        elif fetch:
+
+        if fetch:
             self.install = False
             self.fetching = True
             self.build = False
@@ -142,5 +163,4 @@ Installation node is nor a list, nor a string.', pack)
             self._install_thing(thing)
 
         if self.install_queue:
-            # self._setup_all()
             self._invoke()
