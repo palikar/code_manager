@@ -7,7 +7,6 @@ from code_manager.core.configuration import ConfigurationAware
 from code_manager.core.debgrapher import DebGrapher
 from code_manager.core.cache_container import CacheContainer
 from code_manager.utils.utils import flatten
-from code_manager.utils.logger import debug_red
 
 
 class Manager(ConfigurationAware):
@@ -30,52 +29,82 @@ class Manager(ConfigurationAware):
     def _setup_all(self):
         self.installation.load_installer()
         self.cache.load_cache()
+        self.depender.verify_packages_tree()
 
     def _invoke(self):
-        pass
+        logging.info('Invoking installation with: %s',
+                     ','.join(self.install_queue))
+        logging.info('Steps configuration:')
+        logging.info('\tInstall:%s', self.install)
+        logging.info('\tBuild:%s', self.build)
+        logging.info('\tFetching:%s', self.fetching)
+
+        self.depender.verify_package_list(self.install_queue)
+
+        if self.install:
+            self._invoke_install()
+
+        if self.fetching:
+            self._invoke_fetch()
+
+        if self.fetching:
+            self._invoke_build()
+
+    def _invoke_fetch(self):
+        for pack in self.install_queue:
+            with self.cache as cache:
+
+                if not cache.is_fetched(pack):
+                    if self.fetcher.download(pack, pack) is None:
+                        logging.critical("The fetching of '%s' failed.", pack)
+                    cache.set_fetched(pack, True)
+                else:
+                    logging.info("\'%s\' is already fetched", pack)
 
     def _invoke_build(self):
         pass
 
     def _invoke_install(self):
-        pass
+        extended_queue = set(self.install_queue)
+        for pack in self.install_queue:
+            extended_queue.update(self.depender.get_deep_dependencies(pack))
+        logging.debug('Extended queue: %s', ','.join(extended_queue))
 
-    def fetch_package(self, package):
-        with self.cache as cache:
-            if cache.is_fetched(package):
-                debug_red("The package '%s' is already fetched", package)
-                return None
-            if self.fetcher.download(package, package) is None:
-                debug_red("The fetching of '%s' failed.", package)
-                return None
-            else:
-                cache.set_fetched(package, True)
-                cache.set_root(package, package)
-            return 0
+        ordered_packages = self.depender.get_build_order(list(extended_queue))
+        logging.debug('Build order: %s', ','.join(ordered_packages))
 
-    def fetch_group(self, group):
-        for pack in self.packages_list[group]:
-            self.fetch_package(pack)
+        self._check_install_nodes(ordered_packages)
 
-    def fetch_thing(self, thing):
-        if thing in self.packages_list.keys():
-            logging.info("'%s' is a group. Fetching all packages in it.", thing)
-            self.fetch_group(thing)
-        elif thing in flatten(self.packages_list.values()):
-            logging.info("'%s' is a package. Fetching it.", thing)
-            self.fetch_package(thing)
-        else:
-            logging.info("There is no thing with name '%s'", thing)
+        for pack in ordered_packages:
+            with self.cache as cache:
 
-    def fetch(self, thing):
-        if isinstance(thing, list):
-            for thingy in thing:
-                self.fetch_thing(thingy)
-        elif isinstance(thing, str):
-            self.fetch_thing(thing)
-        else:
-            logging.critical("Can't install %s. It's \
-            no string nor list", thing)
+                if not cache.is_fetched(pack):
+                    if self.fetcher.download(pack, pack) is None:
+                        logging.critical("The fetching of '%s' failed.", pack)
+                    cache.set_fetched(pack, True)
+                else:
+                    logging.info("\'%s\' is already fetched", pack)
+
+                if not cache.is_installed(pack):
+                    if self.installation.install(pack) == 0:
+                        logging.info("\'%s\' was installed", pack)
+                        cache.set_installed(pack, True)
+                else:
+                    logging.info("\'%s\' is already installed", pack)
+                    # TODO: Update\Build the package here
+
+                cache.set_built(pack, True)
+
+    def _check_install_nodes(self, packages):
+        for pack in packages:
+            pack_node = self.packages[pack]
+            if 'install' not in pack_node.keys():
+                continue
+            installer = pack_node['install']
+            if not isinstance(installer, str) and not isinstance(installer, list):
+                logging.critical('Can\'t install %s.\
+Installation node is nor a list, nor a string.', pack)
+                exit(1)
 
     def _install_thing(self, thing):
 
@@ -90,16 +119,16 @@ class Manager(ConfigurationAware):
             self.install_queue.append(thing)
 
         else:
-            logging.critical("There is no thing with name %s", thing)
+            self.install_queue.append(thing)
 
     def install_thing(self, thing, install=True, fetch=False, build=False):
         if install:
             self.install = True
-            self.fetching = True
-            self.build = True
+            self.fetching = False
+            self.build = False
         elif build:
             self.install = False
-            self.fetching = True
+            self.fetching = False
             self.build = True
         elif fetch:
             self.install = False
@@ -113,5 +142,5 @@ class Manager(ConfigurationAware):
             self._install_thing(thing)
 
         if self.install_queue:
-            self._setup_all()
+            # self._setup_all()
             self._invoke()

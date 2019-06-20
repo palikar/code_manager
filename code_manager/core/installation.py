@@ -76,7 +76,7 @@ class Installation(ConfigurationAware):
     def run_installer(self, name, installer):
 
         if installer not in self.installers.keys():
-            logging.critical('There is no installer with the name %s', name)
+            logging.critical('There is no installer with the name %s', installer)
 
         if installer not in self.installer_objects.keys():
             installer_obj = self.installers[installer]()
@@ -84,20 +84,41 @@ class Installation(ConfigurationAware):
         else:
             installer_obj = self.installer_objects[installer]
 
-        node = self.packages()[name]
+        node = self.packages[name]
         installer_obj.node = node
 
         if hasattr(installer_obj, 'manditory_attr') and isinstance(installer_obj.manditory_attr, list):
             for attr in installer_obj.manditory_attr:
                 if attr not in node.keys():
                     logging.critical('The attribute %s is mandatory for the installer %s\
-                    but it is not in the package node.',
-                                     attr, installer_obj.name)
+                    but it is not in the package node of %s.',
+                                     attr, installer_obj.name, name)
 
         result = installer_obj.execute(name)
 
-        if result > 0:
-            logging.critical('The installer %s failed to execute properly', installer_obj.nam)
+        if result is None:
+            logging.critical('The installer [%s] failed to execute properly', installer_obj.name)
+
+    def install(self, package):
+        assert package is not None
+        node = self.packages[package]
+
+        if 'install' not in node.keys():
+            return 0
+
+        installer = node['install']
+        if isinstance(installer, str):
+            self.run_installer(package, installer)
+            return 0
+        elif isinstance(installer, list):
+            for inst in installer:
+                self.run_installer(package, inst)
+            return 0
+        else:
+            logging.critical('Can\'t install %s.\
+            Installation node is nor a list, nor a string.', package)
+            exit(1)
+            return None
 
 
 # class Installer:

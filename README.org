@@ -15,16 +15,19 @@
 #+CREATOR: Emacs 26.1 (Org mode 9.1.13)
 
 
-
+#+BEGIN_EXAMPLE
+Build status:
+[![Build Status](https://travis-ci.org/palikar/code_manager.svg?branch=master)](https://travis-ci.org/palikar/code_manager)
+[![Build Status](https://pyup.io/repos/github/palikar/code_manager/shield.svg)](https://pyup.io/repos/github/palikar/code_manager)
+[![Build Status](https://pyup.io/repos/github/palikar/code_manager/python-3-shield.svg)](https://pyup.io/repos/github/palikar/code_manager/)
+[![Coverage Status](https://coveralls.io/repos/github/palikar/code_manager/badge.svg?branch=master)](https://coveralls.io/github/palikar/code_manager?branch=master)
+#+END_EXAMPLE
 
 * Code Manager
 
-![[https://travis-ci.org/palikar/code_manager.svg?branch=master][img]]
-![[https://pyup.io/repos/github/palikar/code_manager/shield.svg][img]]
-![[https://pyup.io/repos/github/palikar/code_manager/python-3-shield.svg][img]]
-![[https://coveralls.io/repos/github/palikar/code_manager/badge.svg?branch=master][img]]
 
 ** Abstract
+
 This is my personal tool now for managing my github repositories, some system software that I use and pretty much everything that can be downloaded, compiled locally and then installed on a Debian based Linux system. Through this utility one can quickly download and install random things from all over the internet. I've always wanted some small program that would allow me to quickly bring my github repositories on my local machine so I end it up writing this in my spare time. The program is focused on automation but also on flexibility in the installation process. A lot of software is compiled and installed in some standard way but there are also things that are a little bit trickier. The utility - named appropriately ~code_manager~ - aims to provide a unified interface for the installation process of all types of software -- the trickier kind included. 
 
 
@@ -33,6 +36,7 @@ Currently the project is not on [[https://pypi.org/][PyPi]] so you have to clone
 ** Installation
 
 The installation from source is possible through this repository.
+
 #+BEGIN_SRC sh
 git clone https://github.com/palikar/code_manager
 cd code_manager

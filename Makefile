@@ -43,7 +43,7 @@ help:
 	@echo 'make snapshot:     Create a tar.gz of the current git revision'
 	@echo 'make pypi_sdist:   Release a new sdist to PyPI'
 
-test: test_pylint test_flake8 test_pylint
+test: test_pylint test_flake8 test_pytest
 	@echo "All test ran..."
 
 test_pylint:
@@ -54,7 +54,7 @@ test_flake8:
 	@echo "Running flake8..."
 	flake8 $(TEST_PATHS)
 
-test_pylint:
+test_pytest:
 	@echo "Running pylint..."
 	pytest
 

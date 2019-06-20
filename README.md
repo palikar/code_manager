@@ -1,9 +1,11 @@
-Build status: [![Build Status](https://travis-ci.org/palikar/code_manager.svg?branch=master)](https://travis-ci.org/palikar/code_manager)
+Build status:
+    [![Build Status](https://travis-ci.org/palikar/code_manager.svg?branch=master)](https://travis-ci.org/palikar/code_manager)
+    [![Build Status](https://pyup.io/repos/github/palikar/code_manager/shield.svg)](https://pyup.io/repos/github/palikar/code_manager)
+    [![Build Status](https://pyup.io/repos/github/palikar/code_manager/python-3-shield.svg)](https://pyup.io/repos/github/palikar/code_manager/)
+    [![Coverage Status](https://coveralls.io/repos/github/palikar/code_manager/badge.svg?branch=master)](https://coveralls.io/github/palikar/code_manager?branch=master)
 
 
 # Code Manager
-
-![img](https://travis-ci.org/palikar/code_manager.svg?branch=master) ![img](https://pyup.io/repos/github/palikar/code_manager/shield.svg) ![img](https://pyup.io/repos/github/palikar/code_manager/python-3-shield.svg) ![img](https://coveralls.io/repos/github/palikar/code_manager/badge.svg?branch=master)
 
 
 ## Abstract

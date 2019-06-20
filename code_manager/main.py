@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 from shutil import copyfile, copytree
 import os
@@ -125,7 +125,7 @@ def get_arg_parser():
     parser_install.add_argument(
         "--group",
         action="store",
-        metavar="name",
+        metavar='group',
         default=None,
         help="Should the packages be reinstalled",
     )
@@ -143,14 +143,16 @@ def get_arg_parser():
     parser_fetch.add_argument(
         "packages", nargs="*", default=None, help="A list of packages to fetch"
     )
-    parser_fetch.add_argument(
-        "--focre--clear",
-        dest="force_clear",
-        action="store_true",
-        default=False,
-        help="Will delete any\
-                              folders that stay on its way",
-    )
+
+    # TODO: Add support for foce clear
+    # parser_fetch.add_argument(
+    #     "--focre--clear",
+    #     dest="force_clear",
+    #     action="store_true",
+    #     default=False,
+    #     help="Will delete anyfolders that stay on its way",
+    # )
+
     parser_fetch.add_argument(
         "--group",
         action="store",
@@ -167,7 +169,7 @@ def get_arg_parser():
         help="Builds the project of package",
     )
     parser_build.add_argument(
-        "packages", nargs="*", default=None, help="A list of packages to fetch"
+        "packages", nargs="*", default=None, help="A list of packages to fetch."
     )
     parser_build.add_argument(
         "--group",
@@ -182,14 +184,13 @@ def get_arg_parser():
         dest="noinstall",
         action="store_true",
         default=False,
-        help="If present, packages will\
-                              only be build but not installed",
+        help="If present, packages will only be build but not installed.",
     )
 
     subparsers.add_parser(
         "list-packages",
         description="Lists the installed packages",
-        help="Lists the installed packages",
+        help="Lists the installed packages.",
     )
     subparsers.add_parser("list-cache", help="Show the entries in the cache")
     subparsers.add_parser("clear-cache", help="Clears the entries in the cach file")
@@ -198,15 +199,24 @@ def get_arg_parser():
 
 
 def install(args, core):
-    pass
+    if args.group is not None:
+        core.install_thing(args.group, install=True)
+    else:
+        core.install_thing(args.packages, install=True)
 
 
 def fetch(args, core):
-    core.fetch(args.packages)
+    if args.group is not None:
+        core.install_thing(args.group, fetch=True)
+    else:
+        core.install_thing(args.packages, fetch=True)
 
 
-def build(_, core):
-    pass
+def build(args, core):
+    if args.group is not None:
+        core.install_thing(args.group, fetch=True)
+    else:
+        core.install_thing(args.packages, fetch=True)
 
 
 def list_packages(args, core):
@@ -339,12 +349,11 @@ def main():
 
     ConfigurationAware.set_configuration(CONFIG, INSTALL_SCRIPTS_DIR, CACHE, opt)
 
-    if args.debug:
-        logging.info("Code dir: %s", CODE_DIR)
-        logging.info("Usr dir: %s", USR_DIR)
-        logging.info("Packages file: %s", PACKAGES_FILE)
-        logging.info("Install script directory: %s", INSTALL_SCRIPTS_DIR)
-        logging.info("Cache file: %s", CACHE)
+    logging.debug("Code dir: %s", CODE_DIR)
+    logging.debug("Usr dir: %s", USR_DIR)
+    logging.debug("Packages file: %s", PACKAGES_FILE)
+    logging.debug("Install script directory: %s", INSTALL_SCRIPTS_DIR)
+    logging.debug("Cache file: %s", CACHE)
 
     core_manager = Manager()
 

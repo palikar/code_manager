@@ -23,11 +23,10 @@ class DebGrapher(ConfigurationAware):
 
     def verify_package_list(self, package_names):
         all_packs = set(flatten(self.packages_list.values()))
-        print(all_packs)
         for pack in package_names:
             if pack not in all_packs:
                 logging.info("The package %s is not\
-                in the list with packags.", pack)
+in the list with packags.", pack)
                 logging.info("Did you mean any of the following: %s",
                              ",".join(difflib.get_close_matches(pack, all_packs, 5)))
                 exit(1)
@@ -39,32 +38,40 @@ class DebGrapher(ConfigurationAware):
         all_packs_list = set(flatten(self.packages_list.values()))
         all_packs_nodes = set(self.packages.keys())  # pylint: disable=E1101
 
+        broken = []
         # Every package is in a group
         for pack in all_packs_nodes:
             if pack not in all_packs_list:
-                logging.critical("Incosistant packages file!\
-                The package %s is not in any group", pack)
-                exit(1)
+                broken.append(pack)
 
+        if broken:
+            logging.critical("Inconsistent packages file!\
+The packages [%s] are not in any group", ','.join(broken))
+            exit(1)
+
+        broken = []
         # Every package in a group is in the nodes
         for pack in all_packs_list:
             if pack not in all_packs_nodes:
-                logging.critical("Incosistant packages file!\
-                The package %s does not have node", pack)
-                exit(1)
+                broken.append(pack)
+
+        if broken:
+            logging.critical("Incosistant packages file!\
+The packages [%s] do not have node", ','.join(broken))
+            exit(1)
 
         # Every dependency is in the packages.json
         for pack in all_packs_nodes:
             for deb in self.get_dependencies(pack):
                 if deb not in all_packs_nodes:
                     logging.critical("%s is dependency\
-                    of %s but it is not in the packages.json", deb, pack)
+of %s but it is not in the packages.json", deb, pack)
                     exit(1)
 
     def get_dependencies(self, package):
         if package not in self.packages.keys():  # pylint: disable=E1101
             logging.critical("The package %s\
-            is not in the packages.json.", package)  # pylint: disable=E1136
+is not in the packages.json.", package)  # pylint: disable=E1136
             exit(1)
         if 'dependencies' in self.packages[package].keys():
             return self.packages[package]['dependencies']  # pylint: disable=E1136
@@ -102,7 +109,7 @@ class DebGrapher(ConfigurationAware):
             available = [pack for pack, deps in sub_tree.items() if not deps]
             if not available:
                 logging.critical('Build order cannot be generated.\
-                The packages tree is maybe broken.')
+The packages tree is maybe broken.')
                 exit(1)
             for pack in available:
                 build_order.append(pack)

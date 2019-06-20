@@ -10,10 +10,10 @@ class CommandInstaller(BasicInstaller, ConfigurationAware):
         BasicInstaller.__init__(self)
 
     def execute(self, name):
-        pass
+        return 0
 
     def update(self, name):
-        pass
+        return 0
 
 
 ExportedClass = CommandInstaller
