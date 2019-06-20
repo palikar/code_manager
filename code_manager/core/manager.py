@@ -4,7 +4,7 @@ from code_manager.core.installation import Installation
 from code_manager.core.fetcher import Fetcher
 from code_manager.core.configuration import ConfigurationAware
 
-# from code_manager.core.deb_dependency import Depender
+from code_manager.core.debgrapher import DebGrapher
 from code_manager.core.cache_container import CacheContainer
 from code_manager.utils.utils import flatten
 from code_manager.utils.logger import debug_red
@@ -20,11 +20,10 @@ class Manager(ConfigurationAware):
 
         self.install_queue = list()
 
-        # self.deb_dep = Depender()
-
         self.installation = Installation()
         self.cache = CacheContainer()
         self.fetcher = Fetcher()
+        self.depender = DebGrapher()
 
         self._setup_all()
 
@@ -33,6 +32,12 @@ class Manager(ConfigurationAware):
         self.cache.load_cache()
 
     def _invoke(self):
+        pass
+
+    def _invoke_build(self):
+        pass
+
+    def _invoke_install(self):
         pass
 
     def fetch_package(self, package):
