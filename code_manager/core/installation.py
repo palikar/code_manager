@@ -4,6 +4,7 @@ from abc import abstractmethod
 
 from code_manager.utils.logger import debug_red
 from code_manager.utils.logger import debug_cyan
+from code_manager.utils.utils import sanitize_input_variable
 from code_manager.utils.importing import import_modules_from_folder
 from code_manager.core.configuration import ConfigurationAware
 
@@ -19,13 +20,31 @@ class BasicInstaller(ConfigurationAware):
     def __init__(self):
         pass
 
-    def get_optional(self, attr, action):
-
-        if not hasattr(action, '__call__'):
-            raise AttributeError('Action must be callable')
+    def get_optional(self, attr, action=None):
+        assert attr is not None
 
         if attr in self.node.keys():
-            action(self.node[attr])
+            value = self.node[attr]
+            if action is not None and value.strip() != '':
+                if not hasattr(action, '__call__'):
+                    raise AttributeError('Action must be callable')
+                action(value)
+
+    def append_optional(self, attr, command):
+        assert attr is not None
+        assert isinstance(command, list)
+
+        self.get_optional(attr,
+                          lambda arg: command.append(sanitize_input_variable(arg)))
+        return command
+
+    def append_manditory(self, attr, command):
+        assert attr is not None
+        assert isinstance(command, list)
+
+        command.apend(sanitize_input_variable(self.node[attr]))
+
+        return command
 
     @abstractmethod
     def execute(self, name):
@@ -41,6 +60,7 @@ class Installation(ConfigurationAware):
     installers = {}
     installer_objects = {}
     update = False
+    root = None
 
     def __init__(self):
         self.installers_dir = os.path.dirname(code_manager.installers.__file__)
@@ -87,12 +107,13 @@ class Installation(ConfigurationAware):
 
         node = self.packages[name]
         installer_obj.node = node
+        installer_obj.root = self.root
 
         if hasattr(installer_obj, 'manditory_attr') and isinstance(installer_obj.manditory_attr, list):
             for attr in installer_obj.manditory_attr:
                 if attr not in node.keys():
                     logging.critical('The attribute %s is mandatory for the installer %s\
-                    but it is not in the package node of %s.',
+but it is not in the package node of %s.',
                                      attr, installer_obj.name, name)
         if self.update:
             result = installer_obj.update(name)
@@ -102,7 +123,7 @@ class Installation(ConfigurationAware):
         if result is None:
             logging.critical('The installer [%s] failed to execute properly', installer_obj.name)
 
-    def install(self, package, update=False):
+    def install(self, package, root, update=False):
         assert package is not None
         node = self.packages[package]
 
@@ -110,6 +131,7 @@ class Installation(ConfigurationAware):
             return 0
 
         self.update = update
+        self.root = root
 
         installer = node['install']
         if isinstance(installer, str):
@@ -121,7 +143,7 @@ class Installation(ConfigurationAware):
             return 0
         else:
             logging.critical('Can\'t install %s.\
-            Installation node is nor a list, nor a string.', package)
+Installation node is nor a list, nor a string.', package)
             exit(1)
             return None
 
@@ -214,31 +236,6 @@ class Installation(ConfigurationAware):
 #         print(f'Command: sh {command}')
 #         return os.system(f'{command}')
 
-#     def install_with_cmake(self, name, package, reinstall=False):
-#         assert(name is not None)
-#         assert(package is not None)
-
-#         cmake_args = (package['cmake_args']
-#                       if 'cmake_args' in package.keys() else '')
-#         cmake_args = os.path.expanduser(cmake_args)
-#         cmake_args = os.path.expandvars(cmake_args)
-#         if 'DCMAKE_INSTALL_PREFIX' not in cmake_args:
-#             cmake_args = cmake_args + f' -DCMAKE_INSTALL_PREFIX={self.usr_dir}'
-#         make_args = (package['make_args']
-#                      if 'make_args' in package.keys() else '')
-#         make_args = os.path.expanduser(make_args)
-#         make_args = os.path.expandvars(make_args)
-#         curr_dir = os.curdir
-#         build_dir = os.path.join(curr_dir, 'build')
-#         if not os.path.isdir(build_dir):
-#             os.makedirs(build_dir)
-#         os.chdir(build_dir)
-#         print(f'Command: cmake .. {cmake_args}')
-#         print(f'Command: cmake --build ./ -- {make_args}')
-#         print(f'Command:sudo make install')
-#         res = os.system('cmake .. {} && cmake --build ./ \
-#             -- {} && sudo make install'.format(cmake_args, make_args))
-#         return res
 
 #     def install_with_emacs(self, name, package, reinstall=False):
 #         assert(name is not None)

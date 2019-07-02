@@ -4,6 +4,12 @@ import os
 import re
 
 
+def sanitize_input_variable(var):
+    var = os.path.expanduser(var)
+    var = os.path.expandvars(var)
+    return var
+
+
 def recursive_items(dictionary, dicts=False):
 
     if isinstance(dictionary, dict):

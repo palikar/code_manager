@@ -1,4 +1,5 @@
 import logging
+import os
 
 from code_manager.core.installation import Installation
 from code_manager.core.fetcher import Fetcher
@@ -7,6 +8,8 @@ from code_manager.core.configuration import ConfigurationAware
 from code_manager.core.debgrapher import DebGrapher
 from code_manager.core.cache_container import CacheContainer
 from code_manager.utils.utils import flatten
+
+# TODO: extract each step in function per package
 
 
 class Manager(ConfigurationAware):
@@ -58,6 +61,7 @@ class Manager(ConfigurationAware):
                     if self.fetcher.download(pack, pack) is None:
                         logging.critical("The fetching of '%s' failed.", pack)
                     cache.set_fetched(pack, True)
+                    cache.set_root(pack, os.path.join(self.code_dir, pack))
                 else:
                     logging.info("\'%s\' is already fetched", pack)
 
@@ -72,7 +76,8 @@ class Manager(ConfigurationAware):
         for pack in self.install_queue:
             with self.cache as cache:
                 cache.set_built(pack, False)
-                if self.installation.install(pack, update=True) == 0:
+                if self.installation.install(pack, cache.get_root(pack),
+                                             update=True) == 0:
                     logging.info("\'%s\' was build", pack)
                     cache.set_built(pack, True)
 
@@ -94,6 +99,7 @@ class Manager(ConfigurationAware):
                     if self.fetcher.download(pack, pack) is None:
                         logging.critical("The fetching of '%s' failed.", pack)
                     cache.set_fetched(pack, True)
+                    cache.set_root(pack, os.path.join(self.code_dir, pack))
                 else:
                     logging.info("\'%s\' is already fetched", pack)
 
@@ -101,16 +107,18 @@ class Manager(ConfigurationAware):
                 # installation means 'for the first time'
                 if not cache.is_installed(pack):
                     logging.info("Trying to install \'%s\'", pack)
-                    if self.installation.install(pack) == 0:
+                    if self.installation.install(pack, cache.get_root(pack)) == 0:
                         logging.info("\'%s\' was installed", pack)
                         cache.set_installed(pack, True)
-                # if the package is not installed, we want to build it
-                # build means 'install again'
+                # if the package is installed, we want to update it
+                # 'update' means 'install again'
                 else:
                     logging.info("\'%s\' is already installed", pack)
-                    logging.info("Trying to build \'%s\'", pack)
+                    logging.info("Trying to update \'%s\'", pack)
                     cache.set_built(pack, False)
-                    if self.installation.install(pack, update=True) == 0:
+                    if self.installation.install(pack,
+                                                 cache.get_root(pack),
+                                                 update=True) == 0:
                         logging.info("\'%s\' was build", pack)
                         cache.set_built(pack, True)
 

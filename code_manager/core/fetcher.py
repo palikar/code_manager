@@ -66,6 +66,7 @@ class Fetcher(ConfigurationAware):
 
         git_node = package['git']
         url = git_node['url']
+        # TODO: Do not join the root here but pass it from above
         path = os.path.join(self.code_dir, root)
 
         cmd = []
@@ -165,7 +166,7 @@ class Fetcher(ConfigurationAware):
         _ = child.communicate()[0]
         ret_code = child.returncode
         if ret_code != 0:
-            debug_red('The checkint out failed!')
+            debug_red('The fetching failed!')
             return None
 
         return 0
