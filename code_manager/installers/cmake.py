@@ -10,6 +10,7 @@ from code_manager.utils.logger import debug_red
 class CmakeInstaller(BasicInstaller, ConfigurationAware):
 
     name = 'cmake'
+    manditory_attr = []
 
     def __init__(self):
         BasicInstaller.__init__(self)

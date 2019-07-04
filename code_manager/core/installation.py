@@ -217,24 +217,11 @@ Installation node is nor a list, nor a string.', package)
 #         print(f'Command: sh {command}')
 #         return os.system(f'{command}')
 
-#     def install_with_setup_py(self, name, package, reinstall=False):
 
-#         assert(name is not None)
-#         assert(package is not None)
 
-#         if not os.path.isfile('setup.py'):
-#             print('There isn\'t a setup.py file at the root of the package.')
-#             return -1
 
-#         setup_args = (package['setup_args']
-#                       if 'setup_args' in package.keys() else '')
-#         setup_args = os.path.expanduser(setup_args)
-#         setup_args = os.path.expandvars(setup_args)
 
-#         prefix = self.usr_dir
-#         command = f'python setup.py install --prefix {prefix} {setup_args}'
-#         print(f'Command: sh {command}')
-#         return os.system(f'{command}')
+
 
 
 #     def install_with_emacs(self, name, package, reinstall=False):
