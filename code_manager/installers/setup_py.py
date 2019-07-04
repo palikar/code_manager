@@ -1,5 +1,11 @@
+import os
+import subprocess
+import logging
+
 from code_manager.core.installation import BasicInstaller
 from code_manager.core.configuration import ConfigurationAware
+from code_manager.utils.logger import debug_red
+from code_manager.utils.contextmanagers import output_header
 
 
 class SetupPyInstaller(BasicInstaller, ConfigurationAware):
@@ -15,7 +21,7 @@ class SetupPyInstaller(BasicInstaller, ConfigurationAware):
 
         setup_file = os.path.join(self.root, 'setup.py')
 
-        if not os.path.isfile('setup.py'):
+        if not os.path.isfile(setup_file):
             debug_red('There isn\'t a setup.py file at the root of the package %s.', name)
             return None
 
@@ -23,7 +29,7 @@ class SetupPyInstaller(BasicInstaller, ConfigurationAware):
         setup_command.append('setup.py')
 
         self.append_optional('setup_args', setup_command)
-        
+
         setup_command.append('install')
         setup_command.append('--prefix')
         setup_command.append(self.usr_dir)
@@ -34,17 +40,14 @@ class SetupPyInstaller(BasicInstaller, ConfigurationAware):
 
         with output_header("Setup.py"):
             child = subprocess.Popen(setup_command,
-                                     cwd=build_dir)
-
+                                     cwd=self.root)
             _ = child.communicate()[0]
             ret_code = child.returncode
-            
 
         if ret_code != 0:
             debug_red('Running setup.py failed')
             return None
 
-        
         return 0
 
     def update(self, name):

@@ -5,6 +5,7 @@ import logging
 from code_manager.core.installation import BasicInstaller
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.utils.logger import debug_red
+from code_manager.utils.contextmanagers import output_header
 
 
 class CmakeInstaller(BasicInstaller, ConfigurationAware):

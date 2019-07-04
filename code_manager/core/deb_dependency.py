@@ -19,16 +19,16 @@ class Depender:
         pkgs = self._available_packages()
         for deb in packages:
             if deb in pkgs:
-                print(f"'{deb}' is already installed")
+                print("'{}' is already installed".format(deb))
             else:
-                print(f"{deb} is not there")
+                print("{} is not there".format(deb))
                 self.install(deb)
 
     def install(self, deb):  # pylint: disable=R0201
         assert deb is not None
 
-        print(f"Installing package \'{deb}\'")
+        print("Installing package \'{}\'".format(deb))
 
         options = "--allow-unauthenticated  --allow-change-held-packages"
 
-        return os.system(f"sudo apt-get install -y  {deb} {options}")
+        return os.system("sudo apt-get install -y  {} {}".format(deb, options))
