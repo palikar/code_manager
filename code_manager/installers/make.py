@@ -5,6 +5,7 @@ import logging
 from code_manager.core.installation import BasicInstaller
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.utils.logger import debug_red
+from code_manager.utils.contextmanagers import output_header
 
 
 class MakeInstaller(BasicInstaller, ConfigurationAware):
@@ -28,13 +29,13 @@ class MakeInstaller(BasicInstaller, ConfigurationAware):
         logging.debug('Running make with: %s', ' '.join(make_command))
         logging.debug('Build directory: %s', build_dir)
 
-        # TODO: Abstract this into a context control
-        print("Make output =================>\n")
-        child = subprocess.Popen(make_command,
-                                 cwd=build_dir)
-        _ = child.communicate()[0]
-        ret_code = child.returncode
-        print("\n<================= Make output ")
+        
+        with output_header("Make"):
+            child = subprocess.Popen(make_command,
+                                     cwd=build_dir)
+            _ = child.communicate()[0]
+            ret_code = child.returncode
+
 
         if ret_code != 0:
             debug_red('Running make failed')
@@ -48,16 +49,15 @@ class MakeInstaller(BasicInstaller, ConfigurationAware):
             make_command.append(target)
             logging.debug('Running make with: %s', ' '.join(make_command))
             
-            print("Make output =================>\n")
-            child = subprocess.Popen(make_command,
-                                     cwd=build_dir)
-            _ = child.communicate()[0]
-            ret_code = child.returncode
-            print("\n<================= Make output ")
+            with output_header("Make"):
+                child = subprocess.Popen(make_command,
+                                         cwd=build_dir)
+                _ = child.communicate()[0]
+                ret_code = child.returncode
+            
             if ret_code != 0:
                 debug_red('Running make target %s failed', target)
                 return None
-            
         
         return 0
 

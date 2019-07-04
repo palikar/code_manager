@@ -32,13 +32,13 @@ class SetupPyInstaller(BasicInstaller, ConfigurationAware):
 
         logging.debug('Running setup.py with: %s', ' '.join(setup_command))
 
-        print("setup.py output =================>\n")
-        child = subprocess.Popen(setup_command,
-                                 cwd=build_dir)
+        with output_header("Setup.py"):
+            child = subprocess.Popen(setup_command,
+                                     cwd=build_dir)
 
-        _ = child.communicate()[0]
-        ret_code = child.returncode
-        print("\n<================= setup.py output ")
+            _ = child.communicate()[0]
+            ret_code = child.returncode
+            
 
         if ret_code != 0:
             debug_red('Running setup.py failed')

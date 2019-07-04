@@ -37,13 +37,12 @@ class CmakeInstaller(BasicInstaller, ConfigurationAware):
         logging.debug('Build directory: %s', build_dir)
 
         # TODO: Abstract this into a context control
-        print("Cmake output =================>\n")
-        child = subprocess.Popen(cmake_command,
-                                 cwd=build_dir)
+        with output_header("CMake"):
+            child = subprocess.Popen(cmake_command,
+                                     cwd=build_dir)
 
-        _ = child.communicate()[0]
-        ret_code = child.returncode
-        print("\n<================= Cmake output ")
+            _ = child.communicate()[0]
+            ret_code = child.returncode
 
         if ret_code != 0:
             debug_red('Running cmake failed')
