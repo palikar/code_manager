@@ -149,27 +149,21 @@ Installation node is nor a list, nor a string.', package)
 
 
 # class Installer:
-
 #     def __init__(self,
 #                  usr_dir, install_scripts_dir,
 #                  noinstall=True):
-
 #         self.installers = dict()
 #         self.installers['script'] = self.install_with_script
 #         self.installers['command'] = self.install_with_command
 #         self.installers['cmake'] = self.install_with_cmake
 #         self.installers['setup.py'] = self.install_with_setup_py
 #         self.installers['emacs'] = self.install_with_emacs
-
 #         self.usr_dir = usr_dir
 #         self.noinstall = noinstall
 #         self.install_scripts_dir = install_scripts_dir
-
 #         self._load_extra_installers()
-
 #     def _load_extra_installers(self):
 #         pass
-
 #     def install(self, name, package, reinstall=False):
 #         if self.noinstall:
 #             return 0
@@ -181,14 +175,11 @@ Installation node is nor a list, nor a string.', package)
 #             return self.installers[package['install']](name,
 #                                                        package,
 #                                                        reinstall=reinstall)
-
 #     def install_with_script(self, name, package, reinstall=False):
 #         print(f'Installing {name} with script file')
-
 #         assert(name is not None)
 #         assert(package is not None)
 #         assert('script' in package)
-
 #         script = os.path.join(self.install_scripts_dir, package['script'])
 #         script = os.path.expanduser(script)
 #         script = os.path.expandvars(script)
@@ -201,14 +192,11 @@ Installation node is nor a list, nor a string.', package)
 #         cmd_args = cmd_args + f'-p {self.usr_dir}'
 #         print(f'Command: sh {script} {cmd_args}')
 #         return os.system(f'sh {script} ' + cmd_args)
-
 #     def install_with_command(self, name, package, reinstall=False):
 #         print(f'Installing {name} with command')
-
 #         assert(name is not None)
 #         assert(package is not None)
 #         assert('command' in package)
-
 #         command = (
 #             package['command'] if reinstall is False
 #             else package['reinstall_command'])
@@ -216,23 +204,12 @@ Installation node is nor a list, nor a string.', package)
 #         command = os.path.expandvars(command)
 #         print(f'Command: sh {command}')
 #         return os.system(f'{command}')
-
-
-
-
-
-
-
-
 #     def install_with_emacs(self, name, package, reinstall=False):
 #         assert(name is not None)
 #         assert(package is not None)
-
 #         if 'el_files' not in package.keys():
 #             return 0
-
 #         emacs_load_file = get_emacs_load_file()
-
 #         load_file = open(emacs_load_file, 'a')
 #         load_file.write(f';; Files from package {name}\n')
 #         el_files = package['el_files']
@@ -240,5 +217,4 @@ Installation node is nor a list, nor a string.', package)
 #             path = os.path.join(os.getcwd(), el_f)
 #             load_file.write(f'(load-file \"{path}\")\n')
 #         load_file.close()
-
 #         return 0
