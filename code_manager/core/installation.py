@@ -147,51 +147,9 @@ Installation node is nor a list, nor a string.', package)
             exit(1)
             return None
 
-
-# class Installer:
-#     def __init__(self,
-#                  usr_dir, install_scripts_dir,
-#                  noinstall=True):
-#         self.installers = dict()
-#         self.installers['script'] = self.install_with_script
-#         self.installers['command'] = self.install_with_command
-#         self.installers['cmake'] = self.install_with_cmake
-#         self.installers['setup.py'] = self.install_with_setup_py
-#         self.installers['emacs'] = self.install_with_emacs
-#         self.usr_dir = usr_dir
-#         self.noinstall = noinstall
-#         self.install_scripts_dir = install_scripts_dir
-#         self._load_extra_installers()
-#     def _load_extra_installers(self):
-#         pass
-#     def install(self, name, package, reinstall=False):
-#         if self.noinstall:
-#             return 0
-#         if package['install'] not in self.installers.keys():
-#             print('Unknown installer {} \
-#             for package {name}'.format(package['install']))
-#             return -1
-#         else:
-#             return self.installers[package['install']](name,
-#                                                        package,
-#                                                        reinstall=reinstall)
 #     def install_with_script(self, name, package, reinstall=False):
-#         print(f'Installing {name} with script file')
-#         assert(name is not None)
-#         assert(package is not None)
-#         assert('script' in package)
-#         script = os.path.join(self.install_scripts_dir, package['script'])
-#         script = os.path.expanduser(script)
-#         script = os.path.expandvars(script)
-#         script = os.path.abspath(script)
-#         print(f'Used script: {script}')
-#         cmd_args = package['script_args'] if 'script_args' in package else ''
-#         cmd_args = os.path.expanduser(cmd_args)
-#         cmd_args = os.path.expandvars(cmd_args)
-#         cmd_args = cmd_args + (' -r' if reinstall else '')
-#         cmd_args = cmd_args + f'-p {self.usr_dir}'
-#         print(f'Command: sh {script} {cmd_args}')
-#         return os.system(f'sh {script} ' + cmd_args)
+
+
 #     def install_with_command(self, name, package, reinstall=False):
 #         print(f'Installing {name} with command')
 #         assert(name is not None)
@@ -204,6 +162,7 @@ Installation node is nor a list, nor a string.', package)
 #         command = os.path.expandvars(command)
 #         print(f'Command: sh {command}')
 #         return os.system(f'{command}')
+
 #     def install_with_emacs(self, name, package, reinstall=False):
 #         assert(name is not None)
 #         assert(package is not None)

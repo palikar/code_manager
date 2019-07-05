@@ -26,7 +26,7 @@ class CommandInstaller(BasicInstaller, ConfigurationAware):
             command.extend(command_field)
 
         logging.debug('Running command with: %s', ' '.join(command))
-        if execute_sanitized('command', command, self.root) is None:
+        if execute_sanitized('Command', command, self.root) is None:
             return None
 
         return 0
