@@ -146,34 +146,3 @@ but it is not in the package node of %s.',
 Installation node is nor a list, nor a string.', package)
             exit(1)
             return None
-
-#     def install_with_script(self, name, package, reinstall=False):
-
-
-#     def install_with_command(self, name, package, reinstall=False):
-#         print(f'Installing {name} with command')
-#         assert(name is not None)
-#         assert(package is not None)
-#         assert('command' in package)
-#         command = (
-#             package['command'] if reinstall is False
-#             else package['reinstall_command'])
-#         command = os.path.expanduser(command)
-#         command = os.path.expandvars(command)
-#         print(f'Command: sh {command}')
-#         return os.system(f'{command}')
-
-#     def install_with_emacs(self, name, package, reinstall=False):
-#         assert(name is not None)
-#         assert(package is not None)
-#         if 'el_files' not in package.keys():
-#             return 0
-#         emacs_load_file = get_emacs_load_file()
-#         load_file = open(emacs_load_file, 'a')
-#         load_file.write(f';; Files from package {name}\n')
-#         el_files = package['el_files']
-#         for el_f in el_files:
-#             path = os.path.join(os.getcwd(), el_f)
-#             load_file.write(f'(load-file \"{path}\")\n')
-#         load_file.close()
-#         return 0
