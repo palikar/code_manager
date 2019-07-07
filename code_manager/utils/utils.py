@@ -68,6 +68,7 @@ will be loaded here\n")
         emacs_init = "~/.emacs.el"
     if not os.path.isfile(emacs_init):
         emacs_init = "~/.emacs.d/init.el"
+    emacs_init = os.path.expanduser(emacs_init)
 
     with open(emacs_init, 'r') as file:
         content = file.read()
