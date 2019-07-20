@@ -48,3 +48,5 @@ def get_output(name, command, cwd, supress_output=False):
         ret_code = child.returncode
     if ret_code != 0:
         debug_red('Running %s failed', name)
+        return None
+    return 0
