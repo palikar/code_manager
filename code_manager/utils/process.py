@@ -14,9 +14,12 @@ def execute_sanitized(name, command, cwd, supress_output=False):
     command = list(map(sanitize_input_variable, command))
     stdout = subprocess.PIPE if supress_output else None
     with output_header(name):
-        child = subprocess.Popen(command,
+        # TODO: This is very dangerous wiht shell=True
+        # Think of something better at some point
+        child = subprocess.Popen(' '.join(command),
                                  cwd=cwd,
-                                 stdout=stdout)
+                                 stdout=stdout,
+                                 shell=True)
         _ = child.communicate()[0]
         ret_code = child.returncode
     if ret_code != 0:

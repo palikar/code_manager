@@ -61,6 +61,9 @@ class CofigurationResolver:
         return success
 
     def resolve_string(self, string):
+        if not isinstance(string, str):
+            return string
+
         for match in self._VAR_RE.finditer(string):
             if match.group(1) is not None:
                 var = match.group(1)[1:]

@@ -35,12 +35,12 @@ class Manager(ConfigurationAware):
         self.depender.verify_packages_tree()
 
     def _invoke(self):
-        logging.info('Invoking installation with: %s',
+        logging.info('Invoking pipeline with: %s',
                      ','.join(self.install_queue))
-        logging.info('Steps configuration:')
-        logging.info('\tInstall:%s', self.install)
-        logging.info('\tBuild:%s', self.build)
-        logging.info('\tFetching:%s', self.fetching)
+        logging.debug('Configuration steps :')
+        logging.debug('\tInstall:%s', self.install)
+        logging.debug('\tBuild:%s', self.build)
+        logging.debug('\tFetching:%s', self.fetching)
 
         self.depender.verify_package_list(self.install_queue)
 

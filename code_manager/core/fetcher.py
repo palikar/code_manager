@@ -2,11 +2,14 @@ import os
 import subprocess
 import logging
 import re
+import shutil
 
 from contextlib import suppress
 
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.utils.logger import debug_red
+from code_manager.utils.process import execute_sanitized
+from code_manager.utils.path_utils import move_tree
 
 
 class Fetcher(ConfigurationAware):
@@ -27,6 +30,9 @@ class Fetcher(ConfigurationAware):
 
         logging.debug('Fetchers: %s.', ','.join(self.download_methods.keys()))
 
+        self.archive_extensions = ['.zip', '.tar.gz', '.tar.7z', '.tar.bz2']
+        self.extract_queue = []
+
         # TODO: load the extra fetching functions
 
     def download(self, name, root):   # pylint: disable=R0201
@@ -37,20 +43,44 @@ class Fetcher(ConfigurationAware):
 
         package = self.packages[name]
         fetcher = package["fetch"]
+        self.extract_queue = []
 
+        # Download
         if isinstance(fetcher, list):
             for fetch in fetcher:
                 if self.download_methods[fetch](name, package, root) is None:
                     return None
-                else:
-                    return 0
         elif isinstance(fetcher, str):
-            return self.download_methods[fetcher](name, package, root)
+            if self.download_methods[fetcher](name, package, root) is None:
+                return None
         else:
             debug_red('The fetcher field of the package \'%s\' is invalid: %s', name, fetcher)
             return None
 
+        # Extract
+        extract_node = package.get('extract', {})
+        if extract_node:
+            self.run_extract()
+        return 0
+
+    def run_extract(self):
+        # TODO: Better checks for file extensions
+        for file_path in self.extract_queue:
+            logging.info("Extracting: %s", file_path)
+
+            shutil.unpack_archive(file_path, os.path.dirname(file_path))
+
+            for ext in self.archive_extensions:
+                if file_path.endswith(ext):
+                    extr_dir = file_path[:-len(ext)] + '/'
+
+            dest_dir = os.path.dirname(file_path)
+            move_tree(extr_dir, dest_dir)
+            shutil.rmtree(extr_dir)
+
     def get_available_fetcheres(self):
+        # TODO: Implement pretty function for diplaying
+        # how a package can be fetched
         pass
 
     def _download_git(self, name, package, root):   # pylint: disable=R0201,R0911
@@ -141,6 +171,7 @@ class Fetcher(ConfigurationAware):
         curl_node = package['curl']
         url = curl_node['url']
         path = os.path.join(self.code_dir, root)
+        file_name = file_name = url.split('/')[-1]
 
         with suppress(OSError):
             os.makedirs(path)
@@ -157,17 +188,19 @@ class Fetcher(ConfigurationAware):
         if 'output' in curl_node.keys() and isinstance(curl_node['output'], str):
             cmd.append('-o')
             cmd.append(curl_node['output'])
+            file_name = curl_node['output']
         else:
             cmd.append('-O')
 
         logging.debug('Fetching with curl and command: %s', cmd)
-
-        child = subprocess.Popen(cmd, cwd=path, stdout=subprocess.PIPE)
-        _ = child.communicate()[0]
-        ret_code = child.returncode
-        if ret_code != 0:
-            debug_red('The fetching failed!')
+        if execute_sanitized('curl', cmd, path) is None:
             return None
+
+        file_path = os.path.join(path, file_name)
+        for ext in self.archive_extensions:
+            if file_path.endswith(ext):
+                self.extract_queue.append(file_path)
+                break
 
         return 0
 
