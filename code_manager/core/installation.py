@@ -95,6 +95,8 @@ class Installation(ConfigurationAware):
         self.installers[InstallerClass.name] = InstallerClass
 
     def run_installer(self, name, installer):
+        assert name is not None
+        assert installer is not None
 
         if installer not in self.installers.keys():
             logging.critical('There is no installer with the name %s', installer)

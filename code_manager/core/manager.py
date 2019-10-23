@@ -149,6 +149,8 @@ Installation node is nor a list, nor a string.', pack)
             self.install_queue.append(thing)
 
     def install_thing(self, thing, install=True, fetch=False, build=False):
+        assert thing is not None
+
         if install:
             self.install = True
             self.fetching = False

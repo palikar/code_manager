@@ -22,6 +22,8 @@ class ShutdownHandler(logging.Handler):
 
 
 def setup_logging(args, opt):
+    assert args is not None
+    assert opt is not None
 
     logging.getLogger().handlers = []
 

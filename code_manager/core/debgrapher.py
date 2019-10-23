@@ -69,6 +69,8 @@ of %s but it is not in the packages.json", deb, pack)
                     exit(1)
 
     def get_dependencies(self, package):
+        assert package is not None
+
         if package not in self.packages.keys():  # pylint: disable=E1101
             logging.critical("The package %s\
 is not in the packages.json.", package)  # pylint: disable=E1136
@@ -79,6 +81,8 @@ is not in the packages.json.", package)  # pylint: disable=E1136
             return []
 
     def get_deep_dependencies(self, package):
+        assert package is not None
+
         deps = set()
         packs_to_check = set(self.get_dependencies(package))
         while packs_to_check:
@@ -89,12 +93,16 @@ is not in the packages.json.", package)  # pylint: disable=E1136
         return list(deps)
 
     def get_list_dependencies(self, packages):
+        assert packages is not None
+
         deps = set()
         for pack in packages:
             deps.update(self.get_deep_dependencies(pack))
         return deps
 
     def get_build_order(self, packages):
+        assert packages is not None
+
         sub_tree = {}
         for pack in sorted(packages):
             sub_tree[pack] = set()

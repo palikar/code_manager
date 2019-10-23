@@ -11,6 +11,7 @@ def sanitize_input_variable(var):
 
 
 def recursive_items(dictionary, dicts=False):
+    assert dictionary is not None
 
     if isinstance(dictionary, dict):
         for key, value in dictionary.items():
@@ -35,6 +36,8 @@ def recursive_items(dictionary, dicts=False):
 
 
 def merge_two_dicts(first, second):
+    assert first is not None
+
     new = first.copy()
     new.update(second)
     return new

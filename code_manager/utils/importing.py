@@ -3,6 +3,9 @@ import sys
 
 
 def import_file(path, name, core_package="code_manager"):
+    assert path is not None
+    assert name is not None
+
     if sys.version_info > (3, 5):
         # python 3.5 - 3.7
         import importlib.util
@@ -22,6 +25,10 @@ def import_file(path, name, core_package="code_manager"):
 
 
 def import_modules_from_folder(folder, module, handler):
+    assert folder is not None
+    assert module is not None
+    assert handler is not None
+
     module_paths = [os.path.join(folder, f) for f in os.listdir(folder)
                     if
                     os.path.isfile(os.path.join(folder, f))

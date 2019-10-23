@@ -35,7 +35,10 @@ class Fetcher(ConfigurationAware):
 
         # TODO: load the extra fetching functions
 
-    def download(self, name, root):   # pylint: disable=R0201
+    def download(self, name, root):   # pylint: disable=R0201,R0915
+        assert name is not None
+        assert root is not None
+
         logging.debug('Trying download %s in folder %s', name, root)
         if name not in self.packages.keys():
             debug_red('The package %s is not in the package file.', name)
@@ -45,7 +48,6 @@ class Fetcher(ConfigurationAware):
         fetcher = package["fetch"]
         self.extract_queue = []
 
-        # Download
         if isinstance(fetcher, list):
             for fetch in fetcher:
                 if self.download_methods[fetch](name, package, root) is None:
@@ -57,11 +59,14 @@ class Fetcher(ConfigurationAware):
             debug_red('The fetcher field of the package \'%s\' is invalid: %s', name, fetcher)
             return None
 
-        # Extract
+        self._try_extract(package)
+
+        return 0
+
+    def _try_extract(self, package):
         extract_node = package.get('extract', False)
         if extract_node:
             self.run_extract()
-        return 0
 
     def run_extract(self):
         # TODO: Better checks for file extensions
@@ -84,6 +89,10 @@ class Fetcher(ConfigurationAware):
         pass
 
     def _download_git(self, name, package, root):   # pylint: disable=R0201,R0911
+        assert name is not None
+        assert root is not None
+        assert package is not None
+
         logging.info('Trying to fetch with git.')
 
         if 'git' not in package.keys() or not isinstance(package['git'], dict):
@@ -100,8 +109,7 @@ class Fetcher(ConfigurationAware):
         path = os.path.join(self.code_dir, root)
 
         cmd = []
-        cmd.append(self.GIT_COMMAND)
-        cmd.append('clone')
+        cmd.extend([self.GIT_COMMAND, 'clone'])
 
         if 'args' in git_node.keys() and isinstance(git_node['args'], str):
             cmd.append(git_node['args'])
