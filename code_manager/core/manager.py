@@ -140,7 +140,7 @@ Installation node is nor a list, nor a string.', pack)
                 r"\`%s\` is a group. Installing all packages in it.", thing)
             self.install_queue = (
                 self.install_queue + self.config["packages_list"][thing])
-
+            
         elif thing in flatten(self.packages_list.values()):
             logging.debug(r"\`%s\` is a package. Installing it.", thing)
             self.install_queue.append(thing)

@@ -19,11 +19,8 @@ from code_manager.version import VERSION
 
 VERSION_MSG = [
     "code-manager version: {0}".format(VERSION),
-    (
-        "Python version: {0}".format(
-            " ".join(line.strip() for line in sys.version.splitlines())
-        )
-    ),
+    "Python version: {0}".format(
+        " ".join(line.strip() for line in sys.version.splitlines())),
     "Locale: {0}".format(".".join(str(s) for s in locale.getlocale())),
 ]
 

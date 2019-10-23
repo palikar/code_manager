@@ -113,8 +113,7 @@ class Installation(ConfigurationAware):
             for attr in installer_obj.manditory_attr:
                 if attr not in node.keys():
                     logging.critical('The attribute %s is mandatory for the installer %s\
-but it is not in the package node of %s.',
-                                     attr, installer_obj.name, name)
+but it is not in the package node of %s.', attr, installer_obj.name, name)
         if self.update:
             result = installer_obj.update(name)
         else:

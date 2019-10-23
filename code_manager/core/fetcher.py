@@ -58,7 +58,7 @@ class Fetcher(ConfigurationAware):
             return None
 
         # Extract
-        extract_node = package.get('extract', {})
+        extract_node = package.get('extract', False)
         if extract_node:
             self.run_extract()
         return 0
