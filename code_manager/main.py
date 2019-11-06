@@ -14,6 +14,7 @@ from code_manager.core.manager import Manager
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.utils.utils import flatten
 from code_manager.utils.logger import setup_logging
+from code_manager.utils.read_input import promt_yes_no
 from code_manager.version import VERSION
 
 
@@ -98,7 +99,7 @@ def get_arg_parser():
     subparsers = parser.add_subparsers(
         title="Commands",
         description="A list\
-        of avialble commands",
+        of available commands",
         dest="command",
         metavar="Command",
     )
@@ -233,9 +234,9 @@ def list_cache(_, core):
 
 def clear_cache(_, core):
     logging.info("Clearing cache file %s", CACHE)
-    # TODO : Add "Are you sure check here"; It's too easy now
-    handle = open(CACHE, "w")
-    handle.close()
+    if promt_yes_no("Are you sure you want to clear the cache?"):
+        handle = open(CACHE, "w")
+        handle.close()
 
 
 def get_commands_map():
