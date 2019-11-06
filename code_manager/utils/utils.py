@@ -2,6 +2,7 @@
 
 import os
 import re
+import sys
 
 
 def sanitize_input_variable(var):
@@ -85,3 +86,14 @@ will be loaded here\n")
             file.write('(load-file \"~/.emacs.d/code-manager-packages.el\")')
 
     return load_file
+
+
+def is_venv():
+    return hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)
+
+
+def venv():
+    if is_venv():
+        return sys.prefix
+    else:
+        return None
