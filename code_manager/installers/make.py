@@ -22,6 +22,8 @@ class MakeInstaller(BasicInstaller, ConfigurationAware):
         make_command = ['make']
         self.append_optional('make_args', make_command)
         build_dir = os.path.join(self.root, 'build/')
+        if not os.path.isdir(build_dir):
+            build_dir = self.root
 
         if not os.path.isdir(build_dir):
             debug_red('There is no build directory. Connot run make')
