@@ -1,8 +1,4 @@
-
-
 import os
-import sys
-
 
 # Information
 __license__ = 'GNU GPL v3'

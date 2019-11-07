@@ -1,7 +1,8 @@
 [Config]
         code = ${HOME}/core.d/code
         usr = ${HOME}/core.d/usr
-        debug = true
+				venv = ${HOME}/core.d/Env
+				debug = true
 
 [Download]
         git_ssh = true

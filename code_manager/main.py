@@ -8,13 +8,19 @@ import json
 import configparser
 import locale
 import logging
+import subprocess
+import contextlib
+
 import code_manager
 
 from code_manager.core.manager import Manager
 from code_manager.core.configuration import ConfigurationAware
-from code_manager.utils.utils import flatten
 from code_manager.utils.logger import setup_logging
-from code_manager.utils.read_input import promt_yes_no
+from code_manager.utils.read_input import promt_yes_no, promt
+from code_manager.utils.utils import venv, is_venv
+from code_manager.utils.utils import flatten
+from code_manager.utils.setenv import get_default_setenv
+from code_manager.utils.utils import sanitize_input_variable
 from code_manager.version import VERSION
 
 
@@ -252,14 +258,7 @@ def get_commands_map():
     return commands
 
 
-def setup_config_files(args, opt):
-
-    global CACHE
-    global CONFIG
-    global USR_DIR
-    global CODE_DIR
-    global INSTALL_SCRIPTS_DIR
-    global PACKAGES_FILE
+def copy_config():
 
     private_data_dir = os.path.join(code_manager.CMDIR, "data")
 
@@ -283,26 +282,34 @@ def setup_config_files(args, opt):
             os.path.join(code_manager.CONFDIR, "install_scripts"),
         )
 
+
+def setup_config_files(args, opt):
+
+    global CACHE
+    global CONFIG
+    global USR_DIR
+    global CODE_DIR
+    global INSTALL_SCRIPTS_DIR
+    global PACKAGES_FILE
+
     INSTALL_SCRIPTS_DIR = os.path.join(code_manager.CONFDIR, "install_scripts")
 
-    opt.read(os.path.join(os.path.join(code_manager.CONFDIR, "conf")))
-
     if args.code_dir is not None:
-        code_dir = os.path.abspath(os.path.expanduser(args.code_dir))
+        code_dir = os.path.abspath(sanitize_input_variable(args.code_dir))
     else:
         code_dir = os.path.abspath(
-            os.path.expanduser(os.path.expandvars(opt["Config"]["code"]))
+            os.path.expanduser(sanitize_input_variable(opt["Config"]["code"]))
         )
 
     if args.usr_dir is not None:
-        usr_dir = os.path.abspath(os.path.expanduser(args.usr_dir))
+        usr_dir = os.path.abspath(sanitize_input_variable(args.usr_dir))
     else:
         usr_dir = os.path.abspath(
-            os.path.expanduser(os.path.expandvars(opt["Config"]["usr"]))
+            os.path.expanduser(sanitize_input_variable(opt["Config"]["usr"]))
         )
 
     if args.packages_file is not None:
-        packages_file = os.path.abspath(os.path.expanduser(args.packages_file))
+        packages_file = os.path.abspath(sanitize_input_variable(args.packages_file))
     else:
         packages_file = os.path.join(code_manager.CONFDIR, "packages.json")
 
@@ -313,9 +320,9 @@ def setup_config_files(args, opt):
         handle.close()
 
     if not os.path.isdir(usr_dir):
-        os.makedirs(usr_dir)
+        raise SystemError("The code direcotry does not exist:{}".format(usr_dir))
     if not os.path.isdir(code_dir):
-        os.makedirs(code_dir)
+        raise SystemError("The usr direcotry does not exist:{}".format(usr_dir))
 
     CODE_DIR = code_dir
     USR_DIR = usr_dir
@@ -325,19 +332,78 @@ def setup_config_files(args, opt):
         CONFIG = json.load(config_file)
 
 
+def venv_check(args, opt):
+    if is_venv():
+        env = venv()
+        cm_env = sanitize_input_variable(opt['Config']['venv'])
+        if env != cm_env:
+            logging.info("The activated virtual environment is not the one of code manageger.\
+You have to source the 'setenv.sh' fist.")
+            raise SystemExit
+    else:
+        logging.info("No virtual environment is active. You have to source the 'setenv.sh' fist.")
+        raise SystemExit
+
+
+def venv_setup(args, opt):
+
+    python_ver = promt('Python executable', 'python3')
+    env_root = promt('Python executable', sanitize_input_variable(opt['Config']['venv']))
+    opt['Config']['venv'] = env_root
+
+    if not os.path.isdir(os.path.abspath(os.path.join(env_root, os.pardir))):
+        os.makedirs(os.path.abspath(os.path.join(env_root, os.pardir)))
+
+    logging.info('Python version: %s', python_ver)
+    logging.info('VEnv root:%s', env_root)
+
+    venv_command = ['virtualenv',
+                    '--system-site-packages',
+                    '-p', python_ver,
+                    env_root]
+
+    logging.info('Creating a virtual environment for code_manager')
+    logging.debug(" ".join(venv_command))
+    subprocess.Popen(venv_command).wait()
+
+    with open(os.path.join(opt['Config']['code'], 'setenv.sh'), 'w') as file_handle:
+        file_handle.write(get_default_setenv(args, opt))
+
+    logging.info('The environment is now ready. You should source the\
+\'setenv.sh\' file to use code_manager')
+
+
+def dir_setup(args, opt):
+    opt['Config']['code'] = promt('Code direcotry:', sanitize_input_variable(opt['Config']['code'])).strip()
+    opt['Config']['usr'] = promt('Usr direcotry:', sanitize_input_variable(opt['Config']['usr'])).strip()
+
+    with contextlib.suppress(FileExistsError):
+        os.makedirs(opt['Config']['code'])
+    with contextlib.suppress(FileExistsError):
+        os.makedirs(opt['Config']['usr'])
+
+
 def main():
 
     parser = get_arg_parser()
     args = parser.parse_args()
     opt = configparser.ConfigParser()
 
-    setup_config_files(args, opt)
-
+    copy_config()
+    opt.read(os.path.join(code_manager.CONFDIR, "conf"))
     setup_logging(args, opt)
 
     if args.setup:
-        logging.info("Setup for config files done.")
+        logging.info("Setting up direcories and file for code_manger.")
+        dir_setup(args, opt)
+        venv_setup(args, opt)
+
+        with open(os.path.join(os.path.join(code_manager.CONFDIR, "conf")), 'w') as configfile:
+            opt.write(configfile)
         raise SystemExit
+
+    setup_config_files(args, opt)
+    venv_check(args, opt)
 
     if args.command is None:
         parser.print_help()

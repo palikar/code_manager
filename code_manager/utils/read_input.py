@@ -22,3 +22,10 @@ def promt_yes_no(text, tries=5):
         else:
             continue
     return False
+
+
+def promt(text, default):
+    line = input('{} : (default: {})  '.format(text, default)).strip()
+    if not line:
+        return default
+    return line
