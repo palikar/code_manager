@@ -297,16 +297,20 @@ def setup_config_files(args, opt):
     if args.code_dir is not None:
         code_dir = os.path.abspath(sanitize_input_variable(args.code_dir))
     else:
-        code_dir = os.path.abspath(
-            os.path.expanduser(sanitize_input_variable(opt["Config"]["code"]))
-        )
+        code_dir = os.environ.get('CODE_DIR')
+        if code_dir is None:
+            code_dir = os.path.abspath(
+                os.path.expanduser(sanitize_input_variable(opt["Config"]["code"]))
+            )
 
     if args.usr_dir is not None:
         usr_dir = os.path.abspath(sanitize_input_variable(args.usr_dir))
     else:
-        usr_dir = os.path.abspath(
-            os.path.expanduser(sanitize_input_variable(opt["Config"]["usr"]))
-        )
+        usr_dir = os.environ.get('USR_DIR')
+        if usr_dir is None:
+            usr_dir = os.path.abspath(
+                os.path.expanduser(sanitize_input_variable(opt["Config"]["usr"]))
+            )
 
     if args.packages_file is not None:
         packages_file = os.path.abspath(sanitize_input_variable(args.packages_file))
@@ -383,6 +387,11 @@ def dir_setup(args, opt):
         os.makedirs(opt['Config']['usr'])
 
 
+def save_opt(opt):
+    with open(os.path.join(os.path.join(code_manager.CONFDIR, "conf")), 'w') as configfile:
+        opt.write(configfile)
+
+
 def main():
 
     parser = get_arg_parser()
@@ -397,9 +406,7 @@ def main():
         logging.info("Setting up direcories and file for code_manger.")
         dir_setup(args, opt)
         venv_setup(args, opt)
-
-        with open(os.path.join(os.path.join(code_manager.CONFDIR, "conf")), 'w') as configfile:
-            opt.write(configfile)
+        save_opt(opt)
         raise SystemExit
 
     setup_config_files(args, opt)
