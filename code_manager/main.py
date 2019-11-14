@@ -11,6 +11,9 @@ import logging
 import subprocess
 import contextlib
 
+
+import termtables
+
 import code_manager
 
 from code_manager.core.manager import Manager
@@ -19,6 +22,7 @@ from code_manager.utils.logger import setup_logging
 from code_manager.utils.read_input import promt_yes_no, promt
 from code_manager.utils.utils import venv, is_venv
 from code_manager.utils.utils import flatten
+from code_manager.utils.printing import less
 from code_manager.utils.setenv import get_default_setenv
 from code_manager.utils.utils import sanitize_input_variable
 from code_manager.version import VERSION
@@ -196,7 +200,34 @@ def get_arg_parser():
         description="Lists the installed packages",
         help="Lists the installed packages.",
     )
-    subparsers.add_parser("list-cache", help="Show the entries in the cache")
+    list_cache_parser = subparsers.add_parser("list-cache",
+                                              help="Show the entries in the cache")
+    list_cache_parser.add_argument(
+        '-p',
+        "--plain",
+        action="store_true",
+        default=False,
+        help="Print the the packages in cache in\
+a simple, one line manner",
+    )
+
+    list_cache_parser.add_argument(
+        "--skip-header",
+        action="store_true",
+        dest='skip_header',
+        default=False,
+        help="Don't print the first line when printing packages with --plain",
+    )
+
+    
+    list_cache_parser.add_argument(
+        "--no-pager",
+        action="store_true",
+        dest='no_pager',
+        default=False,
+        help="Disable the pager while printing the packeges in a table form.",
+    )
+    
     subparsers.add_parser("clear-cache", help="Clears the entries in the cach file")
 
     return parser
@@ -229,13 +260,32 @@ def list_packages(args, core):
         print(pack)
 
 
-def list_cache(_, core):
+def list_cache(args, core):
     logging.debug("Dumping cache file %s", CACHE)
-    handle = open(CACHE, "r")
-    cont = handle.read()
-    # TODO : Pretty printing; some sort of table
-    print(cont)
-    handle.close()
+
+    cache = core.get_cache_content()
+    
+    if args.plain:
+        if not args.skip_header:
+            print('name, fetched, built, installed, root')
+        for values in [f.values() for f in cache]:
+            line = ','.join(str(val) for val in values)
+            print(line)
+    else:
+        header = ["Name", "Fetched", "Built", "Installed", "Root"]
+        rows = list(map(lambda x : list(x.values()), cache))
+        string = termtables.to_string(
+            rows,
+            header=header,
+            style=termtables.styles.ascii_thin_double,
+            padding=(0, 1),
+            alignment="lcccc")
+        if len(string.split('\n')) > 10 and not args.no_pager:
+            less(bytes(string, 'utf-8'))
+        else:
+            print(string)
+    
+            
 
 
 def clear_cache(_, core):
