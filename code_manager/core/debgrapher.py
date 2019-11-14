@@ -1,3 +1,4 @@
+import sys
 import logging
 import difflib
 
@@ -29,7 +30,7 @@ class DebGrapher(ConfigurationAware):
 in the list with packags.", pack)
                 logging.info("Did you mean any of the following: %s",
                              ",".join(difflib.get_close_matches(pack, all_packs, 5)))
-                exit(1)
+                sys.exit(1)
         return 0
 
     def verify_packages_tree(self):
@@ -47,7 +48,7 @@ in the list with packags.", pack)
         if broken:
             logging.critical("Inconsistent packages file!\
 The packages [%s] are not in any group", ','.join(broken))
-            exit(1)
+            sys.exit(1)
 
         broken = []
         # Every package in a group is in the nodes
@@ -58,7 +59,7 @@ The packages [%s] are not in any group", ','.join(broken))
         if broken:
             logging.critical("Incosistant packages file!\
 The packages [%s] do not have node", ','.join(broken))
-            exit(1)
+            sys.exit(1)
 
         # Every dependency is in the packages.json
         for pack in all_packs_nodes:
@@ -66,7 +67,7 @@ The packages [%s] do not have node", ','.join(broken))
                 if deb not in all_packs_nodes:
                     logging.critical("%s is dependency\
 of %s but it is not in the packages.json", deb, pack)
-                    exit(1)
+                    sys.exit(1)
 
     def get_dependencies(self, package):
         assert package is not None
@@ -74,7 +75,7 @@ of %s but it is not in the packages.json", deb, pack)
         if package not in self.packages.keys():  # pylint: disable=E1101
             logging.critical("The package %s\
 is not in the packages.json.", package)  # pylint: disable=E1136
-            exit(1)
+            sys.exit(1)
         if 'dependencies' in self.packages[package].keys():
             return self.packages[package]['dependencies']  # pylint: disable=E1136
         else:
@@ -118,7 +119,7 @@ is not in the packages.json.", package)  # pylint: disable=E1136
             if not available:
                 logging.critical('Build order cannot be generated.\
 The packages tree is maybe broken.')
-                exit(1)
+                sys.exit(1)
             for pack in available:
                 build_order.append(pack)
                 del sub_tree[pack]

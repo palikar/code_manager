@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 
 from code_manager.core.installation import Installation
 from code_manager.core.fetcher import Fetcher
@@ -131,7 +132,7 @@ class Manager(ConfigurationAware):
             if not isinstance(installer, str) and not isinstance(installer, list):
                 logging.critical('Can\'t install %s.\
 Installation node is nor a list, nor a string.', pack)
-                exit(1)
+                sys.exit(1)
 
     def _install_thing(self, thing):
 

@@ -202,6 +202,17 @@ def get_arg_parser():
     )
     list_cache_parser = subparsers.add_parser("list-cache",
                                               help="Show the entries in the cache")
+
+    list_cache_parser.add_argument(
+        'packages',
+        action="store",
+        default=None,
+        nargs="*",
+        help="if given, print information about specific\
+packege in the cache",
+    )
+
+
     list_cache_parser.add_argument(
         '-p',
         "--plain",
@@ -219,7 +230,7 @@ a simple, one line manner",
         help="Don't print the first line when printing packages with --plain",
     )
 
-    
+
     list_cache_parser.add_argument(
         "--no-pager",
         action="store_true",
@@ -227,7 +238,7 @@ a simple, one line manner",
         default=False,
         help="Disable the pager while printing the packeges in a table form.",
     )
-    
+
     subparsers.add_parser("clear-cache", help="Clears the entries in the cach file")
 
     return parser
@@ -264,16 +275,17 @@ def list_cache(args, core):
     logging.debug("Dumping cache file %s", CACHE)
 
     cache = core.get_cache_content()
-    
+    header = ["Name", "Fetched", "Built", "Installed", "Root"]
+    rows = list(map(lambda x: list(x.values()), cache))
+
+    if args.packages:
+        rows = list(filter(lambda x: x[0] in args.packages, rows))
+
     if args.plain:
-        if not args.skip_header:
-            print('name, fetched, built, installed, root')
-        for values in [f.values() for f in cache]:
+        for values in rows:
             line = ','.join(str(val) for val in values)
             print(line)
     else:
-        header = ["Name", "Fetched", "Built", "Installed", "Root"]
-        rows = list(map(lambda x : list(x.values()), cache))
         string = termtables.to_string(
             rows,
             header=header,
@@ -284,8 +296,6 @@ def list_cache(args, core):
             less(bytes(string, 'utf-8'))
         else:
             print(string)
-    
-            
 
 
 def clear_cache(_, core):

@@ -1,5 +1,7 @@
 import os
 import logging
+import sys
+
 from abc import abstractmethod
 
 from code_manager.utils.logger import debug_red
@@ -145,5 +147,5 @@ but it is not in the package node of %s.', attr, installer_obj.name, name)
         else:
             logging.critical('Can\'t install %s.\
 Installation node is nor a list, nor a string.', package)
-            exit(1)
+            sys.exit(1)
             return None
