@@ -5,7 +5,7 @@ import sys
 from abc import abstractmethod
 
 from code_manager.utils.logger import debug_red
-from code_manager.utils.logger import debug_cyan
+from code_manager.utils.logger import debug_cyan, info_blue
 from code_manager.utils.utils import sanitize_input_variable
 from code_manager.utils.importing import import_modules_from_folder
 from code_manager.core.configuration import ConfigurationAware
@@ -118,6 +118,7 @@ class Installation(ConfigurationAware):
                 if attr not in node.keys():
                     logging.critical('The attribute %s is mandatory for the installer %s\
 but it is not in the package node of %s.', attr, installer_obj.name, name)
+        info_blue('Running installer: %s', installer_obj.name)
         if self.update:
             result = installer_obj.update(name)
         else:
