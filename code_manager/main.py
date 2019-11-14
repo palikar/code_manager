@@ -241,6 +241,24 @@ a simple, one line manner",
 
     subparsers.add_parser("clear-cache", help="Clears the entries in the cach file")
 
+    groups_parser = subparsers.add_parser("list-groups", help="List the avaialble groups or the packeges in them")
+
+    groups_parser.add_argument(
+        'groups',
+        action="store",
+        default=None,
+        nargs="*",
+        help="Groups to list. Will list every group if not given",
+    )
+
+    # groups_parser.add_argument(
+    #     "-p",
+    #     "--packages",
+    #     action="store_true",
+    #     default=False,
+    #     help="List the packages in a group",
+    # )
+
     return parser
 
 
@@ -298,6 +316,20 @@ def list_cache(args, core):
             print(string)
 
 
+def list_groups(args, core):
+
+    if not args.groups:
+        groups = core.get_groups()
+        string = '\n'.join(groups)
+        print(string)
+    else:
+        for group in args.groups:
+            packs = core.get_group_packages(group)
+            string = '\n'.join(packs)
+            print(string)
+
+
+
 def clear_cache(_, core):
     logging.info("Clearing cache file %s", CACHE)
     if promt_yes_no("Are you sure you want to clear the cache?"):
@@ -314,6 +346,8 @@ def get_commands_map():
     commands["list-packages"] = list_packages
     commands["list-cache"] = list_cache
     commands["clear-cache"] = clear_cache
+    commands["list-groups"] = list_groups
+
 
     return commands
 

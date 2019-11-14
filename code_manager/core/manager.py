@@ -186,3 +186,9 @@ Installation node is nor a list, nor a string.', pack)
                                       'installed' : self.cache.is_installed(pack),
                                       'root' : self.cache.get_root(pack)})
         return cache_content
+    def get_group_packages(self, group):
+        if group not in self.packages_list.keys():
+            return []
+        return self.packages_list[group]
+    def get_groups(self):
+        return list(self.packages_list.keys())
