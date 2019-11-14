@@ -21,6 +21,8 @@ Build status:
 [![Build Status](https://pyup.io/repos/github/palikar/code_manager/shield.svg)](https://pyup.io/repos/github/palikar/code_manager)
 [![Build Status](https://pyup.io/repos/github/palikar/code_manager/python-3-shield.svg)](https://pyup.io/repos/github/palikar/code_manager/)
 [![Coverage Status](https://coveralls.io/repos/github/palikar/code_manager/badge.svg?branch=master)](https://coveralls.io/github/palikar/code_manager?branch=master)
+[![PyPi](https://img.shields.io/pypi/pyversions/CodeManager)](https://pypi.org/project/CodeManager/)
+[![PyPi](https://img.shields.io/pypi/v/CodeManager)](https://pypi.org/project/CodeManager/)
 #+END_EXAMPLE
 
 * Code Manager

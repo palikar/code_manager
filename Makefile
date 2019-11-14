@@ -41,7 +41,8 @@ help:
 	@echo 'make doc:          Create the pydoc documentation'
 	@echo 'make test:         Test everything'
 	@echo 'make snapshot:     Create a tar.gz of the current git revision'
-	@echo 'make pypi_sdist:   Release a new sdist to PyPI'
+	@echo 'make dist:         Release a new sdist to PyPI'
+	@echo 'make dist_test:    Release a new sdist to PyPI (legacy)'
 
 test: test_pylint test_flake8 test_pytest
 	@echo "All test ran..."
@@ -74,6 +75,7 @@ clean:
 	rm -rf ./build
 	rm -rf ./CodeManager.egg-info
 	rm -rf ./htmlcov
+	rm -rf ./dist
 
 build:
 	@echo 'Building the project'
@@ -89,5 +91,14 @@ coverage:
 
 coverage_html:
 	py.test --cov=code_manager --cov-report=html $(TEST_FILES)
+
+dist_test:
+	$(PYTHON) setup.py sdist bdist_wheel;
+	$(PYTHON) -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+dist:
+	$(PYTHON) setup.py sdist bdist_wheel;
+	$(PYTHON) -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
+
 
 .PHONY: clean compile build install
