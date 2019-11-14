@@ -1,5 +1,6 @@
 from subprocess import Popen, PIPE
 
+
 def less(data):
     process = Popen(["less"], stdin=PIPE)
     try:

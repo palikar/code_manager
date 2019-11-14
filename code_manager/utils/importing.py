@@ -8,18 +8,18 @@ def import_file(path, name, core_package="code_manager"):
 
     if sys.version_info > (3, 5):
         # python 3.5 - 3.7
-        import importlib.util # pylint: disable=C0415
+        import importlib.util  # pylint: disable=C0415
         spec = importlib.util.spec_from_file_location(
             '{}.{}'.format(core_package, name), path)
         imported = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(imported)
     elif sys.version_info >= (3, 3):
         # python 3.3 - 3.4
-        from importlib.machinery import SourceFileLoader # pylint: disable=C0415
+        from importlib.machinery import SourceFileLoader  # pylint: disable=C0415
         imported = SourceFileLoader('code_manager.{}'.format(name), path).load_module()  # pylint: disable=W1505,E1120
     else:
         # python 2
-        import imp # pylint: disable=C0415
+        import imp  # pylint: disable=C0415
         imported = imp.load_source('{0}.{1}'.format(core_package, name), path)
     return imported
 

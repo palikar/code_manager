@@ -112,8 +112,7 @@ class Manager(ConfigurationAware):
                     logging.info("Trying to install \'%s\'", pack)
                     if self.dep_depender.check(pack) != 0:
                         raise SystemExit
-                    else:
-                        logging.debug('No missing debian packages.')
+                    logging.debug('No missing debian packages.')
                     if self.installation.install(pack, cache.get_root(pack)) == 0:
                         logging.info("\'%s\' was installed", pack)
                         cache.set_installed(pack, True)
@@ -186,15 +185,17 @@ Installation node is nor a list, nor a string.', pack)
         cache_content = []
         for pack in self.packages.keys():
             if self.cache.in_cache(pack):
-                cache_content.append({'name' : pack,
-                                      'fetched' : self.cache.is_fetched(pack),
-                                      'built' : self.cache.is_built(pack),
-                                      'installed' : self.cache.is_installed(pack),
-                                      'root' : self.cache.get_root(pack)})
+                cache_content.append({'name': pack,
+                                      'fetched': self.cache.is_fetched(pack),
+                                      'built': self.cache.is_built(pack),
+                                      'installed': self.cache.is_installed(pack),
+                                      'root': self.cache.get_root(pack)})
         return cache_content
+
     def get_group_packages(self, group):
         if group not in self.packages_list.keys():
             return []
         return self.packages_list[group]
+
     def get_groups(self):
         return list(self.packages_list.keys())

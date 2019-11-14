@@ -212,7 +212,6 @@ def get_arg_parser():
 packege in the cache",
     )
 
-
     list_cache_parser.add_argument(
         '-p',
         "--plain",
@@ -229,7 +228,6 @@ a simple, one line manner",
         default=False,
         help="Don't print the first line when printing packages with --plain",
     )
-
 
     list_cache_parser.add_argument(
         "--no-pager",
@@ -311,7 +309,6 @@ def list_groups(args, core):
             print(string)
 
 
-
 def clear_cache(_, core):
     logging.info("Clearing cache file %s", CACHE)
     if promt_yes_no("Are you sure you want to clear the cache?"):
@@ -329,7 +326,6 @@ def get_commands_map():
     commands["list-cache"] = list_cache
     commands["clear-cache"] = clear_cache
     commands["list-groups"] = list_groups
-
 
     return commands
 

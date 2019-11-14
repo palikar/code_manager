@@ -19,20 +19,19 @@ class EmacsInstaller(BasicInstaller, ConfigurationAware):
 
         el_files = self.node['el_files']
         emacs_load_file = get_emacs_load_file()
-        logging.debug('Emacs file:', emacs_load_file)
+        logging.debug('Emacs file: %s', emacs_load_file)
 
         with open(emacs_load_file, 'r') as load_file:
             emacs_load_file_lines = load_file.readlines()
 
         with open(emacs_load_file, 'a') as load_file:
-            load_file.write(';; Files from package {}\n'.format(name))
-
             for el_f in el_files:
                 path = os.path.join(self.root, el_f)
                 line = '(load-file \"{}\")\n'.format(path)
 
                 if line not in emacs_load_file_lines:
                     logging.debug('Adding %s to the Emacs load file', path)
+                    load_file.write(';; Files from package {}\n'.format(name))
                     load_file.write(line)
 
         return 0
