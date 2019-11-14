@@ -174,3 +174,14 @@ Installation node is nor a list, nor a string.', pack)
 
         if self.install_queue:
             self._invoke()
+
+    def get_cache_content(self):
+        cache_content = []
+        for pack in self.packages.keys():
+            if self.cache.in_cache(pack):
+                cache_content.append({'name' : pack,
+                                      'fetched' : self.cache.is_fetched(pack),
+                                      'built' : self.cache.is_built(pack),
+                                      'installed' : self.cache.is_installed(pack),
+                                      'root' : self.cache.get_root(pack)})
+        return cache_content
