@@ -19,6 +19,7 @@ class EmacsInstaller(BasicInstaller, ConfigurationAware):
 
         el_files = self.node['el_files']
         emacs_load_file = get_emacs_load_file()
+        logging.debug('Emacs file:', emacs_load_file)
 
         with open(emacs_load_file, 'r') as load_file:
             emacs_load_file_lines = load_file.readlines()

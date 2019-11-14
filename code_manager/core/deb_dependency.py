@@ -1,8 +1,11 @@
-import os
 import subprocess
+import logging
+
+from code_manager.utils.lazy_property import lazy_property
+from code_manager.core.configuration import ConfigurationAware
 
 
-class Depender:
+class Depender(ConfigurationAware):
 
     def __init__(self):
         pass
@@ -15,20 +18,37 @@ class Depender:
         pkgs = pkgs.split("\n")
         return list(map(lambda deb: deb.split(':')[0], pkgs))
 
+    @lazy_property
+    def debian_packages(self):
+        return self._available_packages()
+
+    def check(self, package):
+        assert package is not None
+
+        dependencies = self.packages[package].get('deb_packages', [])
+        if not dependencies:
+            return 0
+        return self.install_deb_packages(dependencies)
+
     def install_deb_packages(self, packages):
-        pkgs = self._available_packages()
+        assert isinstance(packages, list)
+
+        install_queue = []
         for deb in packages:
-            if deb in pkgs:
-                print("'{}' is already installed".format(deb))
+            if deb in self.debian_packages:
+                logging.debug('\'%s\' is already installed', deb)
             else:
-                print("{} is not there".format(deb))
-                self.install(deb)
+                logging.debug('\'%s\' is not installed', deb)
+                install_queue.append(deb)
+        return self.install(install_queue)
 
     def install(self, deb):  # pylint: disable=R0201
         assert deb is not None
 
-        print("Installing package \'{}\'".format(deb))
+        if not deb:
+            return 0
 
-        options = "--allow-unauthenticated  --allow-change-held-packages"
-
-        return os.system("sudo apt-get install -y  {} {}".format(deb, options))
+        print('\n\tRun \'sudo apt-get install -y {}\'\n'.format(' '.join(deb)))
+        return 1
+        # options = "--allow-unauthenticated  --allow-change-held-packages"
+        # return os.system("sudo apt-get install -y  {} {}".format(deb, options))

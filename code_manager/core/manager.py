@@ -5,6 +5,7 @@ import sys
 from code_manager.core.installation import Installation
 from code_manager.core.fetcher import Fetcher
 from code_manager.core.configuration import ConfigurationAware
+from code_manager.core.deb_dependency import Depender
 
 from code_manager.core.debgrapher import DebGrapher
 from code_manager.core.cache_container import CacheContainer
@@ -27,6 +28,7 @@ class Manager(ConfigurationAware):
         self.cache = CacheContainer()
         self.fetcher = Fetcher()
         self.depender = DebGrapher()
+        self.dep_depender = Depender()
 
         self._setup_all()
 
@@ -89,7 +91,7 @@ class Manager(ConfigurationAware):
         logging.debug('Extended queue: %s', ','.join(extended_queue))
 
         ordered_packages = self.depender.get_build_order(list(extended_queue))
-        logging.debug('Build order: %s', ','.join(ordered_packages))
+        logging.debug('Build order: [ %s ]', ','.join(ordered_packages))
 
         self._check_install_nodes(ordered_packages)
 
@@ -108,6 +110,10 @@ class Manager(ConfigurationAware):
                 # installation means 'for the first time'
                 if not cache.is_installed(pack):
                     logging.info("Trying to install \'%s\'", pack)
+                    if self.dep_depender.check(pack) != 0:
+                        raise SystemExit
+                    else:
+                        logging.debug('No missing debian packages.')
                     if self.installation.install(pack, cache.get_root(pack)) == 0:
                         logging.info("\'%s\' was installed", pack)
                         cache.set_installed(pack, True)

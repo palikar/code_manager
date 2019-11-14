@@ -154,6 +154,6 @@ class ConfigurationAware:
 
     def __getattr__(self, item):
         opt = ConfigurationAware.opt
-        if item in opt["Common"].keys():
-            return opt["Common"][item]
+        # if item in opt.get("Common", {}).keys():
+        #     return opt["Common"][item]
         return None
