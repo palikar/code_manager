@@ -9,6 +9,8 @@ Build status:
 
 # Code Manager
 
+![img](./logo.png)
+
 
 ## Abstract
 
