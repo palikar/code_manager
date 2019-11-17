@@ -239,6 +239,16 @@ a simple, one line manner",
 
     subparsers.add_parser("clear-cache", help="Clears the entries in the cach file")
 
+    groups_parser = subparsers.add_parser("list-groups", help="List the avaialble groups or the packeges in them")
+
+    groups_parser.add_argument(
+        'groups',
+        action="store",
+        default=None,
+        nargs="*",
+        help="Groups to list. Will list every group if not given",
+    )
+
     return parser
 
 
