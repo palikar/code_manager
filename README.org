@@ -25,8 +25,9 @@ Build status:
 [![PyPi](https://img.shields.io/pypi/v/CodeManager)](https://pypi.org/project/CodeManager/)
 #+END_EXAMPLE
 
-* Code Manager
 [[./logo.png]]
+
+* Code Manager
 
 ** Abstract
 
@@ -113,15 +114,15 @@ The file contains all of the relevant information needed to install a certain pa
         "base": "git@github.com:palikar"
     },
 
-    "packages_list": [
+    "packages_list": {
         "group_1" : ["package_1_1", "package_2_1"],
         "group_2" : ["package_1_2", "package_2_2"]
-    ],
+    },
 
-    "debian_packages": [
+    "debian_packages": {
         "group_1" : ["deb_package_1_1", "deb_package_2_1"],
         "group_2" : ["deb_package_1_2", "deb_package_2_2"]
-    ],
+    },
 
     "packages": {
         "package_1_1": {
@@ -130,11 +131,10 @@ The file contains all of the relevant information needed to install a certain pa
                 "url" : "...."
             },
             "install" : ["cmake", "command", "make"],
-            "make_args": "-j4"
+            "make_args": "-j4",
             "make_extra_targets": [],
             "command" : "echo Ruuning some command"
-    },
-
+    }
 }
 #+END_SRC
 
@@ -157,9 +157,9 @@ At the start of the file, the ~vars~ node defines several "variables" that later
 ~fetch~  - the fetching method for the package or how it will be downloaded. the field can be either a string or a list of strings. Possible string values are  ~git~ \ ~curl~. These can also be given in a list. ~code_manger~ will execute each fetcher in the list or the single fetcher given a string. If the ~git~ fetcher is executed, the package object must also contain a ~git~ node:
 #+BEGIN_SRC json
 "git" : {
-    "url" : "url for the git clone command",
-    "checkout": "optional commit ID that will be checked out to"
-    "args" : "optional extra artuments for the git clone command"
+    "url": "url for the git clone command",
+    "checkout": "optional commit ID that will be checked out to",
+    "args": "optional extra artuments for the git clone command"
 } 
 #+END_SRC
 If ~curl~ is executed the package object must contain a curl node:

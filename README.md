@@ -6,10 +6,10 @@ Build status:
     [![PyPi](https://img.shields.io/pypi/pyversions/CodeManager)](https://pypi.org/project/CodeManager/)
     [![PyPi](https://img.shields.io/pypi/v/CodeManager)](https://pypi.org/project/CodeManager/)
 
+![img](./logo.png)
+
 
 # Code Manager
-
-![img](./logo.png)
 
 
 ## Abstract
@@ -98,15 +98,15 @@ The file contains all of the relevant information needed to install a certain pa
         "base": "git@github.com:palikar"
     },
 
-    "packages_list": [
+    "packages_list": {
         "group_1" : ["package_1_1", "package_2_1"],
         "group_2" : ["package_1_2", "package_2_2"]
-    ],
+    },
 
-    "debian_packages": [
+    "debian_packages": {
         "group_1" : ["deb_package_1_1", "deb_package_2_1"],
         "group_2" : ["deb_package_1_2", "deb_package_2_2"]
-    ],
+    },
 
     "packages": {
         "package_1_1": {
@@ -115,11 +115,10 @@ The file contains all of the relevant information needed to install a certain pa
                 "url" : "...."
             },
             "install" : ["cmake", "command", "make"],
-            "make_args": "-j4"
+            "make_args": "-j4",
             "make_extra_targets": [],
             "command" : "echo Ruuning some command"
-    },
-
+    }
 }
 ```
 
@@ -143,9 +142,9 @@ At the start of the file, the `vars` node defines several &ldquo;variables&rdquo
 
 ```json
 "git" : {
-    "url" : "url for the git clone command",
-    "checkout": "optional commit ID that will be checked out to"
-    "args" : "optional extra artuments for the git clone command"
+    "url": "url for the git clone command",
+    "checkout": "optional commit ID that will be checked out to",
+    "args": "optional extra artuments for the git clone command"
 } 
 ```
 
