@@ -27,9 +27,13 @@ class BasicInstaller(ConfigurationAware):
 
         if attr in self.node.keys():
             value = self.node[attr]
-            if action is not None and value.strip() != '':
-                if not hasattr(action, '__call__'):
-                    raise AttributeError('Action must be callable')
+            if not hasattr(action, '__call__'):
+                raise AttributeError('Action must be callable')
+
+            if isinstance(value, str) and value.strip() != '':
+                action(value)
+
+            if isinstance(value, list) and value:
                 action(value)
 
     def append_optional(self, attr, command):

@@ -26,10 +26,10 @@ class CmakeInstaller(BasicInstaller, ConfigurationAware):
 
         self.append_optional('cmake_args', cmake_command)
 
-        if 'DCMAKE_INSTALL_PREFIX' not in cmake_command[-1]:
+        if 'DCMAKE_INSTALL_PREFIX' not in cmake_command:
             cmake_command.append('-DCMAKE_INSTALL_PREFIX={}'.format(self.usr_dir))
 
-        build_dir = os.path.join(self.root, 'build/')
+        build_dir = os.path.join(self.root, 'build')
 
         if not os.path.isdir(build_dir):
             os.makedirs(build_dir)
