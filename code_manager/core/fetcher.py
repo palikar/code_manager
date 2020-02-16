@@ -84,9 +84,7 @@ class Fetcher(ConfigurationAware):
             shutil.rmtree(extr_dir)
 
     def get_available_fetcheres(self):
-        # TODO: Implement pretty function for diplaying
-        # how a package can be fetched
-        pass
+        return list(self.download_methods.keys())
 
     def _download_git(self, name, package, root):   # pylint: disable=R0201,R0911
         assert name is not None

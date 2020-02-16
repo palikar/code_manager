@@ -195,11 +195,26 @@ def get_arg_parser():
         help="If present, packages will only be build but not installed.",
     )
 
-    subparsers.add_parser(
+    list_packages_parser = subparsers.add_parser(
         "list-packages",
         description="Lists the installed packages",
         help="Lists the installed packages.",
     )
+
+    list_packages_parser.add_argument(
+        "--no-pager",
+        action="store_true",
+        dest='no_pager',
+        default=False,
+        help="Disable the pager while printing the packeges.",
+    )
+
+    subparsers.add_parser(
+        "list-fetchers",
+        description="Lists the available fetchers",
+        help="Lists fetchers.",
+    )
+
     list_cache_parser = subparsers.add_parser("list-cache",
                                               help="Show the entries in the cache")
 
@@ -275,8 +290,11 @@ def build(args, core):
 
 def list_packages(args, core):
     logging.debug("Available packages:")
-    for pack in flatten(CONFIG["packages_list"].values()):
-        print(pack)
+    packs = flatten(CONFIG["packages_list"].values())
+    if len(packs) > 10 and not args.no_pager:
+        less(bytes('\n'.join(packs), 'utf-8'))
+        return
+    print('\n'.join(packs))
 
 
 def list_cache(args, core):
@@ -326,6 +344,12 @@ def clear_cache(_, core):
         handle.close()
 
 
+def list_fetchers(_, core):
+    print('Currently available fetchers:')
+    for fetcher in core.get_fetchers():
+        print('\t - {}'.format(fetcher))
+
+
 def get_commands_map():
     commands = dict()
 
@@ -336,6 +360,7 @@ def get_commands_map():
     commands["list-cache"] = list_cache
     commands["clear-cache"] = clear_cache
     commands["list-groups"] = list_groups
+    commands["list-fetchers"] = list_fetchers
 
     return commands
 

@@ -199,3 +199,6 @@ Installation node is nor a list, nor a string.', pack)
 
     def get_groups(self):
         return list(self.packages_list.keys())
+
+    def get_fetchers(self):
+        return self.fetcher.get_available_fetcheres()
