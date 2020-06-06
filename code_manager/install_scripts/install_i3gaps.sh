@@ -35,4 +35,3 @@ make
 sudo make install
 
 echo "Script finished"
-

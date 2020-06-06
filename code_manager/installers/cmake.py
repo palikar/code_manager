@@ -1,11 +1,11 @@
+import logging
 import os
 import subprocess
-import logging
 
-from code_manager.core.installation import BasicInstaller
 from code_manager.core.configuration import ConfigurationAware
-from code_manager.utils.logger import debug_red
+from code_manager.core.installation import BasicInstaller
 from code_manager.utils.contextmanagers import output_header
+from code_manager.utils.logger import debug_red
 
 
 class CmakeInstaller(BasicInstaller, ConfigurationAware):
@@ -27,7 +27,7 @@ class CmakeInstaller(BasicInstaller, ConfigurationAware):
         self.append_optional('cmake_args', cmake_command)
 
         if 'DCMAKE_INSTALL_PREFIX' not in cmake_command:
-            cmake_command.append('-DCMAKE_INSTALL_PREFIX={}'.format(self.usr_dir))
+            cmake_command.append(f'-DCMAKE_INSTALL_PREFIX={self.usr_dir}')
 
         build_dir = os.path.join(self.root, 'build')
 
@@ -38,9 +38,11 @@ class CmakeInstaller(BasicInstaller, ConfigurationAware):
         logging.debug('Build directory: %s', build_dir)
 
         # TODO: Abstract this into a context control
-        with output_header("CMake"):
-            child = subprocess.Popen(cmake_command,
-                                     cwd=build_dir)
+        with output_header('CMake'):
+            child = subprocess.Popen(
+                cmake_command,
+                cwd=build_dir,
+            )
 
             _ = child.communicate()[0]
             ret_code = child.returncode

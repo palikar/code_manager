@@ -12,7 +12,7 @@ NO_OPT = ['no', 'n']
 def promt_yes_no(text, tries=5):
     for _ in range(tries):
         try:
-            line = input('{} [Yes/No]: '.format(text)).lower()
+            line = input(f'{text} [Yes/No]: ').lower()
         except KeyboardInterrupt:
             return False
         if line in YES_OPT:
@@ -25,7 +25,7 @@ def promt_yes_no(text, tries=5):
 
 
 def promt(text, default):
-    line = input('{} : (default: {})  '.format(text, default)).strip()
+    line = input(f'{text} : (default: {default})  ').strip()
     if not line:
         return default
     return line

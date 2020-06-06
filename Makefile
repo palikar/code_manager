@@ -82,7 +82,7 @@ build:
 	$(PYTHON) setup.py build
 
 install:
-	@echo 'Installing on the system'	
+	@echo 'Installing on the system'
 	$(PYTHON) setup.py install $(SETUPOPTS) \
 		'--prefix=$(PREFIX)' '--root=$(DESTDIR)' \
 		--optimize=$(PYOPTIMIZE)

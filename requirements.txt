@@ -1,16 +1,18 @@
 ## The following requirements were added by pip freeze:
 autopep8==1.4.4
-entrypoints==0.3
-docopt==0.6.2
 coverage==4.5.3
 coveralls==1.8.1
+docopt==0.6.2
+entrypoints==0.3
+flake8==3.7.7
 mock==3.0.5
 more-itertools==7.1.0
 packaging==19.0
+pre-commit
 pycodestyle==2.5.0
-flake8==3.7.7
 pyflakes==2.1.1
 pylint==2.4.4
-pytest-cov==2.7.1
 pytest==5.0.0
+pytest-cov==2.7.1
 termtables==0.1.1
+virtualenv

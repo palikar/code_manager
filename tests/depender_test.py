@@ -1,7 +1,7 @@
 import unittest
 
-# from unittest.mock import patch
 from code_manager.core.debgrapher import DebGrapher
+# from unittest.mock import patch
 
 
 class TestDown(unittest.TestCase):
@@ -28,13 +28,21 @@ class TestDown(unittest.TestCase):
 
         deb = DebGrapher()
 
-        self.assertListEqual(deb.get_packages(),
-                             ['mock', 'mocker', 'mockito',
-                              'mock2', 'mocker2', 'mockito2'])
-        self.assertListEqual(deb.get_packages(group='g1'),
-                             ['mock', 'mocker', 'mockito'])
-        self.assertListEqual(deb.get_packages(group='g2'),
-                             ['mock2', 'mocker2', 'mockito2'])
+        self.assertListEqual(
+            deb.get_packages(),
+            [
+                'mock', 'mocker', 'mockito',
+                'mock2', 'mocker2', 'mockito2',
+            ],
+        )
+        self.assertListEqual(
+            deb.get_packages(group='g1'),
+            ['mock', 'mocker', 'mockito'],
+        )
+        self.assertListEqual(
+            deb.get_packages(group='g2'),
+            ['mock2', 'mocker2', 'mockito2'],
+        )
 
     def test_verify_graph_1(self):
 
@@ -48,8 +56,8 @@ class TestDown(unittest.TestCase):
         try:
             deb.verify_packages_tree()
         except SystemExit:
-            self.fail("verify_packages_tree()\
-raised SystemExit unexpectedly!")
+            self.fail('verify_packages_tree()\
+raised SystemExit unexpectedly!')
 
     def test_verify_graph_2(self):
         DebGrapher.packages_list = {}
@@ -109,8 +117,10 @@ raised SystemExit unexpectedly!")
         DebGrapher.packages['mock2'] = {}
         DebGrapher.packages['mock2']['dependencies'] = ['mockito']
         deb = DebGrapher()
-        self.assertListEqual(sorted(deb.get_deep_dependencies('mock1')),
-                             sorted(['mock2', 'mockito']))
+        self.assertListEqual(
+            sorted(deb.get_deep_dependencies('mock1')),
+            sorted(['mock2', 'mockito']),
+        )
 
     def test_get_list_dep(self):
         DebGrapher.packages_list = {}
@@ -122,8 +132,10 @@ raised SystemExit unexpectedly!")
         DebGrapher.packages['mock2'] = {}
         DebGrapher.packages['mock2']['dependencies'] = ['mockito']
         deb = DebGrapher()
-        self.assertListEqual(sorted(deb.get_list_dependencies(['mock1', 'mock2'])),
-                             sorted(['mock2', 'mockito']))
+        self.assertListEqual(
+            sorted(deb.get_list_dependencies(['mock1', 'mock2'])),
+            sorted(['mock2', 'mockito']),
+        )
 
     def test_buld_order_1(self):
         DebGrapher.packages_list = {}
@@ -137,7 +149,8 @@ raised SystemExit unexpectedly!")
         deb = DebGrapher()
         self.assertListEqual(
             deb.get_build_order(['mock1', 'mock2', 'mockito']),
-            ['mockito', 'mock2', 'mock1'])
+            ['mockito', 'mock2', 'mock1'],
+        )
 
     def test_buld_order_2(self):
         DebGrapher.packages_list = {}

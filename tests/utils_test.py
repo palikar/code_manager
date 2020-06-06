@@ -3,8 +3,8 @@ import unittest
 
 from code_manager.utils.utils import flatten
 from code_manager.utils.utils import merge_two_dicts
-from code_manager.utils.utils import sanitize_input_variable
 from code_manager.utils.utils import recursive_items
+from code_manager.utils.utils import sanitize_input_variable
 
 
 class TestDown(unittest.TestCase):
@@ -31,23 +31,23 @@ class TestDown(unittest.TestCase):
 
     def test_recursive_items(self):
         test_dict = {
-            "key1": "item1",
-            "key_1": {
-                "key2": "item2",
-                "key3": "item3",
-                "key_2": {
-                    "key4": "item4",
-                    "key5": "item5"
-                }
+            'key1': 'item1',
+            'key_1': {
+                'key2': 'item2',
+                'key3': 'item3',
+                'key_2': {
+                    'key4': 'item4',
+                    'key5': 'item5',
+                },
             },
-            "key_3": {
-                "key6": "item6",
-                "key7": "item7"
-            }
+            'key_3': {
+                'key6': 'item6',
+                'key7': 'item7',
+            },
         }
         items = []
         for i in range(1, 8):
-            items.append(('key{}'.format(i), 'item{}'.format(i)))
+            items.append((f'key{i}', f'item{i}'))
 
         gen_items = []
         for i in recursive_items(test_dict):

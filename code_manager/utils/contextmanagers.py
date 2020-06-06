@@ -5,7 +5,7 @@ import contextlib
 def output_header(text):
     assert text is not None
     try:
-        print("{} output =================>".format(text))
+        print(f'{text} output =================>')
         yield
     finally:
-        print("<================= {} output".format(text))
+        print(f'<================= {text} output')

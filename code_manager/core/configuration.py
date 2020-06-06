@@ -1,9 +1,6 @@
-from __future__ import absolute_import, division, print_function
-
 import logging
-import re
 import os
-
+import re
 
 from code_manager.utils.utils import flatten
 from code_manager.utils.utils import recursive_items
@@ -11,14 +8,14 @@ from code_manager.utils.utils import recursive_items
 
 class CofigurationResolver:
 
-    _VAR_RE = re.compile(r"(@\w+)|(\\@)")
-    _VAR_NAME_RE = re.compile(r"\w+")
+    _VAR_RE = re.compile(r'@(\w+)?@|(\\@)')
+    _VAR_NAME_RE = re.compile(r'\w+')
     config = None
     variables = {}
 
-    PACKAGES_LIST_NODE = "packages_list"
-    PACKAGES_NODE = "packages"
-    VARS_NODE = "vars"
+    PACKAGES_LIST_NODE = 'packages_list'
+    PACKAGES_NODE = 'packages'
+    VARS_NODE = 'vars'
 
     def __init__(self):
         pass
@@ -26,21 +23,21 @@ class CofigurationResolver:
     def _check_integrity(self, config):
 
         success = True
-        if "packages_list" not in config.keys():
+        if 'packages_list' not in config.keys():
             logging.debug("The 'packages_list' is missing in the package file")
             success = False
 
-        if "packages" not in config.keys():
+        if 'packages' not in config.keys():
             logging.debug("The 'packages' is missing in the package file")
             success = False
 
-        if "vars" in config.keys():
+        if 'vars' in config.keys():
 
-            if not isinstance(config["vars"], dict):
+            if not isinstance(config['vars'], dict):
                 logging.debug("The 'vars' are not an proper object.")
                 success = False
 
-            for var, val in config["vars"].items():
+            for var, val in config['vars'].items():
                 if not self._VAR_NAME_RE.fullmatch(var):
                     logging.debug("The variable '%s' has invalid identifier.", var)
                     success = False
@@ -48,9 +45,9 @@ class CofigurationResolver:
                     logging.debug("The variable '%s' has invalid value '%s'.", var, val)
                     success = False
 
-        packages_list = flatten(config["packages_list"].values())
+        packages_list = flatten(config['packages_list'].values())
         for pack in packages_list:
-            if pack not in config["packages"].keys():
+            if pack not in config['packages'].keys():
                 logging.debug(
                     "The '%s' packages is in the list but does\
                 not have a node",
@@ -66,11 +63,11 @@ class CofigurationResolver:
 
         for match in self._VAR_RE.finditer(string):
             if match.group(1) is not None:
-                var = match.group(1)[1:]
+                var = match.group(1)
                 value = self.variables[var]
-                return string.replace(match.group(1), value)
+                return string.replace(match.group(0), value)
             if match.group(2) is not None:
-                return string.replace("\\@", "")
+                return string.replaceAll('@', '')
 
         return string
 
@@ -78,12 +75,12 @@ class CofigurationResolver:
         self.config = config
 
         if not self._check_integrity(config):
-            logging.debug("The package file has some issues.")
+            logging.debug('The package file has some issues.')
             raise SystemExit
 
-        if "vars" in config.keys():
-            self.variables = config["vars"]
-            config.pop("vars")
+        if 'vars' in config.keys():
+            self.variables = config['vars']
+            config.pop('vars')
 
         # pylint: disable=R1702
         cur_dicts = {}
@@ -119,26 +116,26 @@ class ConfigurationAware:
 
     @staticmethod
     def packages_list():
-        return ConfigurationAware.config["packages_list"]
+        return ConfigurationAware.config['packages_list']
 
     @staticmethod
     def variables():
-        return ConfigurationAware.config["vars"]
+        return ConfigurationAware.config['vars']
 
     @staticmethod
     def set_configuration(config, install_scripts_dir, cache_file, opt):
 
         ConfigurationAware.opt = opt
-        ConfigurationAware.usr_dir = os.path.expandvars(opt["Config"]["usr"])
-        ConfigurationAware.code_dir = os.path.expandvars(opt["Config"]["code"])
+        ConfigurationAware.usr_dir = os.path.expandvars(opt['Config']['usr'])
+        ConfigurationAware.code_dir = os.path.expandvars(opt['Config']['code'])
 
         ConfigurationAware.resolver = CofigurationResolver()
         ConfigurationAware.config = ConfigurationAware.resolver.configuration_dict(
-            config
+            config,
         )
 
-        ConfigurationAware.packages_list = ConfigurationAware.config["packages_list"]
-        ConfigurationAware.packages = ConfigurationAware.config["packages"]
+        ConfigurationAware.packages_list = ConfigurationAware.config['packages_list']
+        ConfigurationAware.packages = ConfigurationAware.config['packages']
         ConfigurationAware.variables = ConfigurationAware.resolver.variables
 
         ConfigurationAware.install_scripts_dir = install_scripts_dir
@@ -146,14 +143,14 @@ class ConfigurationAware:
         ConfigurationAware.cache_file = cache_file
 
         ConfigurationAware.debug = (
-            "debug" in opt["Config"].keys() and opt["Config"]["debug"] == "true"
+            'debug' in opt['Config'].keys() and opt['Config']['debug'] == 'true'
         )
         ConfigurationAware.git_ssh = (
-            "git_ssh" in opt["Download"].keys() and opt["Download"]["git_ssh"] == "true"
+            'git_ssh' in opt['Download'].keys() and opt['Download']['git_ssh'] == 'true'
         )
 
     def __getattr__(self, item):
         opt = ConfigurationAware.opt
-        if item in opt.get("Common", {}).keys():
-            return opt["Common"][item]
+        if item in opt.get('Common', {}).keys():
+            return opt['Common'][item]
         return None

@@ -1,11 +1,11 @@
+import logging
 import os
 import subprocess
-import logging
 
-from code_manager.core.installation import BasicInstaller
 from code_manager.core.configuration import ConfigurationAware
-from code_manager.utils.logger import debug_red
+from code_manager.core.installation import BasicInstaller
 from code_manager.utils.contextmanagers import output_header
+from code_manager.utils.logger import debug_red
 
 
 class SetupPyInstaller(BasicInstaller, ConfigurationAware):
@@ -38,9 +38,11 @@ class SetupPyInstaller(BasicInstaller, ConfigurationAware):
 
         logging.debug('Running setup.py with: %s', ' '.join(setup_command))
 
-        with output_header("Setup.py"):
-            child = subprocess.Popen(setup_command,
-                                     cwd=self.root)
+        with output_header('Setup.py'):
+            child = subprocess.Popen(
+                setup_command,
+                cwd=self.root,
+            )
             _ = child.communicate()[0]
             ret_code = child.returncode
 

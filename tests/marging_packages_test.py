@@ -1,7 +1,8 @@
-import unittest
+import json
 import os
 import tempfile
-import json
+import unittest
+
 from code_manager.merge_packages_lists import merge_package_file
 
 
@@ -9,8 +10,8 @@ class TestDown(unittest.TestCase):
 
     def test_merging(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        input1 = os.path.join(dir_path, "data", "packages1.json")
-        input2 = os.path.join(dir_path, "data", "packages2.json")
+        input1 = os.path.join(dir_path, 'data', 'packages1.json')
+        input2 = os.path.join(dir_path, 'data', 'packages2.json')
         outfile_path = tempfile.mkstemp()[1]
         print(outfile_path)
         merge_package_file([input1, input2], outfile_path)

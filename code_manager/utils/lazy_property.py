@@ -9,7 +9,7 @@ class lazy_property():  # pylint: disable=invalid-name,too-few-public-methods
         if input_obj is None:
             return None
 
-        reset_function_name = self.__name__ + "__reset"
+        reset_function_name = self.__name__ + '__reset'
 
         if not hasattr(input_obj, reset_function_name):
             def reset_function():

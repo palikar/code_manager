@@ -1,8 +1,7 @@
-import sys
-import os
-import logging
-import logging.handlers
 import datetime
+import logging.handlers
+import os
+import sys
 
 
 RESET = '\033[0m'

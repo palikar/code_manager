@@ -31,7 +31,7 @@ Build status:
 
 ** Abstract
 
-This is my personal tool now for managing my github repositories, some system software that I use and pretty much everything that can be downloaded, compiled locally and then installed on a Debian based Linux system. Through this utility one can quickly download and install random things from all over the internet. I've always wanted some small program that would allow me to quickly bring my github repositories on my local machine so I end it up writing this in my spare time. The program is focused on automation but also on flexibility in the installation process. A lot of software is compiled and installed in some standard way but there are also things that are a little bit trickier. The utility - named appropriately ~code_manager~ - aims to provide a unified interface for the installation process of all types of software -- the trickier kind included. 
+This is my personal tool now for managing my github repositories, some system software that I use and pretty much everything that can be downloaded, compiled locally and then installed on a Debian based Linux system. Through this utility one can quickly download and install random things from all over the internet. I've always wanted some small program that would allow me to quickly bring my github repositories on my local machine so I end it up writing this in my spare time. The program is focused on automation but also on flexibility in the installation process. A lot of software is compiled and installed in some standard way but there are also things that are a little bit trickier. The utility - named appropriately ~code_manager~ - aims to provide a unified interface for the installation process of all types of software -- the trickier kind included.
 
 
 Currently the project is not on [[https://pypi.org/][PyPi]] so you have to clone the repo yourself and then use the ~setup.py~ file for a manual installation.
@@ -76,7 +76,7 @@ As the name suggests, the file contains some basic configuration. The default ~c
 
 [Download]
         git_ssh = true
-        
+
 [Cache]
         cache = ${HOME}/.config/code_manager/cache
 
@@ -160,7 +160,7 @@ At the start of the file, the ~vars~ node defines several "variables" that later
     "url": "url for the git clone command",
     "checkout": "optional commit ID that will be checked out to",
     "args": "optional extra artuments for the git clone command"
-} 
+}
 #+END_SRC
 If ~curl~ is executed the package object must contain a curl node:
 #+BEGIN_SRC json
@@ -204,7 +204,7 @@ cmake .. <cmake_args>
 
 - ~setup.py~ - installs the package by calling ~python setup.py install~ in the root directory.
 
-- ~emacs~ -  (=~/.emacs= or =~/.emacs.d/init.el=) 
+- ~emacs~ -  (=~/.emacs= or =~/.emacs.d/init.el=)
 
 - ~make~ - executes one or several specified make targets in the build directory of the package.
 
@@ -232,7 +232,7 @@ Some installers require specific field to be present in the package object node.
   *Requirements:*
   + ~make_extra_targets~ : optional list of strings. Each string specifies a make target to be executed.
   + ~make_args~ : optional list of strings. Each string specifies an extra argument to be passed to the make command while executing each one of the targets
-    
+
 - ~"install" : "script"~
   *Requirements:*
   + ~script~ : a string that specifies which installation script should be executed in the root directory of the package. The script must be present in the ~~/.config/code_manager/install_scripts~
@@ -308,5 +308,3 @@ fi
 echo "Install prefix: ${prefix}"
 echo "Script finished"
 #+END_SRC
-
- 

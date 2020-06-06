@@ -1,15 +1,14 @@
-import os
-import subprocess
 import logging
+import os
 import re
 import shutil
-
+import subprocess
 from contextlib import suppress
 
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.utils.logger import debug_red
-from code_manager.utils.process import execute_sanitized
 from code_manager.utils.path_utils import move_tree
+from code_manager.utils.process import execute_sanitized
 
 
 class Fetcher(ConfigurationAware):
@@ -24,8 +23,8 @@ class Fetcher(ConfigurationAware):
     def __init__(self):
 
         self.download_methods = {}
-        self.download_methods["git"] = self._download_git
-        self.download_methods["curl"] = self._download_curl
+        self.download_methods['git'] = self._download_git
+        self.download_methods['curl'] = self._download_curl
         # self.download_methods["wget"] = self._download_wget
 
         logging.debug('Fetchers: %s.', ','.join(self.download_methods.keys()))
@@ -45,7 +44,7 @@ class Fetcher(ConfigurationAware):
             return None
 
         package = self.packages[name]
-        fetcher = package["fetch"]
+        fetcher = package['fetch']
         self.extract_queue = []
 
         if isinstance(fetcher, list):
@@ -71,7 +70,7 @@ class Fetcher(ConfigurationAware):
     def run_extract(self):
         # TODO: Better checks for file extensions
         for file_path in self.extract_queue:
-            logging.info("Extracting: %s", file_path)
+            logging.info('Extracting: %s', file_path)
 
             shutil.unpack_archive(file_path, os.path.dirname(file_path))
 

@@ -1,16 +1,15 @@
-import os
 import logging
+import os
 import sys
-
 from abc import abstractmethod
 
-from code_manager.utils.logger import debug_red
-from code_manager.utils.logger import debug_cyan, info_blue
-from code_manager.utils.utils import sanitize_input_variable
-from code_manager.utils.importing import import_modules_from_folder
-from code_manager.core.configuration import ConfigurationAware
-
 import code_manager.installers
+from code_manager.core.configuration import ConfigurationAware
+from code_manager.utils.importing import import_modules_from_folder
+from code_manager.utils.logger import debug_cyan
+from code_manager.utils.logger import debug_red
+from code_manager.utils.logger import info_blue
+from code_manager.utils.utils import sanitize_input_variable
 
 
 class BasicInstaller(ConfigurationAware):
@@ -40,8 +39,10 @@ class BasicInstaller(ConfigurationAware):
         assert attr is not None
         assert isinstance(command, list)
 
-        self.get_optional(attr,
-                          lambda arg: command.append(sanitize_input_variable(arg)))
+        self.get_optional(
+            attr,
+            lambda arg: command.append(sanitize_input_variable(arg)),
+        )
         return command
 
     def append_manditory(self, attr, command):
@@ -120,8 +121,10 @@ class Installation(ConfigurationAware):
         if hasattr(installer_obj, 'manditory_attr') and isinstance(installer_obj.manditory_attr, list):
             for attr in installer_obj.manditory_attr:
                 if attr not in node.keys():
-                    logging.critical('The attribute %s is mandatory for the installer %s\
-but it is not in the package node of %s.', attr, installer_obj.name, name)
+                    logging.critical(
+                        'The attribute %s is mandatory for the installer %s\
+but it is not in the package node of %s.', attr, installer_obj.name, name,
+                    )
         info_blue('Running installer: %s', installer_obj.name)
         if self.update:
             result = installer_obj.update(name)
@@ -150,7 +153,9 @@ but it is not in the package node of %s.', attr, installer_obj.name, name)
                 self.run_installer(package, inst)
             return 0
         else:
-            logging.critical('Can\'t install %s.\
-Installation node is nor a list, nor a string.', package)
+            logging.critical(
+                'Can\'t install %s.\
+Installation node is nor a list, nor a string.', package,
+            )
             sys.exit(1)
             return None

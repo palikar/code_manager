@@ -16,7 +16,7 @@ class CacheContainer(ConfigurationAware):
     def load_cache(self):
         logging.debug('Loading cache from the cache file %s ', self.cache_file)
         try:
-            self.cache = json.load(open(self.cache_file, 'r'))
+            self.cache = json.load(open(self.cache_file))
             self.preupdate_cache()
         except json.decoder.JSONDecodeError:
             logging.debug('Invalid or empty cache. Starting with clean cache')
@@ -29,19 +29,22 @@ class CacheContainer(ConfigurationAware):
                 if package not in self.cache.keys():
                     self.cache[package] = dict()
                     self.cache[package]['node'] = (
-                        self.config['packages'][package])
+                        self.config['packages'][package]
+                    )
                     self.cache[package]['installed'] = False
                     self.cache[package]['fetched'] = False
                     self.cache[package]['built'] = False
                     self.cache[package]['group'] = group
-                    self.cache[package]['root'] = ""
+                    self.cache[package]['root'] = ''
 
         self.save_cache()
 
     def save_cache(self):
         logging.debug('Dumping the cache in the cache file.')
-        json.dump(self.cache, open(self.cache_file, 'w'),
-                  indent=4, separators=(',', ' : '))
+        json.dump(
+            self.cache, open(self.cache_file, 'w'),
+            indent=4, separators=(',', ' : '),
+        )
         self.dirty = False
 
     def update_cache(self, name, prop, value):

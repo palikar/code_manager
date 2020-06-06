@@ -1,7 +1,7 @@
 import logging
 
-from code_manager.core.installation import BasicInstaller
 from code_manager.core.configuration import ConfigurationAware
+from code_manager.core.installation import BasicInstaller
 from code_manager.utils.process import execute_sanitized
 
 

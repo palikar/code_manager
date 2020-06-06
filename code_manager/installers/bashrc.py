@@ -1,12 +1,12 @@
+import logging
 import os
 import subprocess
-import logging
 import tempfile
 
-from code_manager.core.installation import BasicInstaller
 from code_manager.core.configuration import ConfigurationAware
-from code_manager.utils.utils import sanitize_input_variable
+from code_manager.core.installation import BasicInstaller
 from code_manager.utils.logger import debug_red
+from code_manager.utils.utils import sanitize_input_variable
 
 
 class BashrcInstaller(BasicInstaller, ConfigurationAware):
@@ -45,20 +45,24 @@ class BashrcInstaller(BasicInstaller, ConfigurationAware):
         target_file = '~/.bashrc' if in_bashrc else os.path.join(self.code_dir, 'setenv.sh')
         target_file = sanitize_input_variable(target_file)
 
-        with open(target_file, 'r') as target:
+        with open(target_file) as target:
             target_file_lines = target.readlines()
 
         with open(target_file, 'a') as target:
             for line in bash_lines:
 
                 if not BashrcInstaller._check_line(line):
-                    debug_red('Skipping bash line.\
- The line is invalid:%s', line)
+                    debug_red(
+                        'Skipping bash line.\
+ The line is invalid:%s', line,
+                    )
                     continue
 
                 if line in target_file_lines:
-                    debug_red('Skipping bash line.\
- The line is already in the file:%s', line)
+                    debug_red(
+                        'Skipping bash line.\
+ The line is already in the file:%s', line,
+                    )
                     continue
                 logging.debug('Writing bahs line in %s', target_file)
                 target.write(line)

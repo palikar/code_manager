@@ -1,6 +1,6 @@
-import sys
-import logging
 import difflib
+import logging
+import sys
 
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.utils.utils import flatten
@@ -9,27 +9,33 @@ from code_manager.utils.utils import flatten
 class DebGrapher(ConfigurationAware):
 
     def __init__(self):
-        logging.debug("Initializing the DepGrapher")
+        logging.debug('Initializing the DepGrapher')
 
-    def get_packages(self, group=""):  # pylint: disable=R1705
-        if group == "":
+    def get_packages(self, group=''):  # pylint: disable=R1705
+        if group == '':
             return flatten(self.packages_list.values())
         else:
             if group in self.packages_list.keys():
                 return self.packages_list[group]  # pylint: disable=E1136
             else:
-                logging.critical("There is no group\
-                with the name %s.", group)
+                logging.critical(
+                    'There is no group\
+                with the name %s.', group,
+                )
                 return None
 
     def verify_package_list(self, package_names):
         all_packs = set(flatten(self.packages_list.values()))
         for pack in package_names:
             if pack not in all_packs:
-                logging.info("The package %s is not\
-in the list with packags.", pack)
-                logging.info("Did you mean any of the following: %s",
-                             ",".join(difflib.get_close_matches(pack, all_packs, 5)))
+                logging.info(
+                    'The package %s is not\
+in the list with packags.', pack,
+                )
+                logging.info(
+                    'Did you mean any of the following: %s',
+                    ','.join(difflib.get_close_matches(pack, all_packs, 5)),
+                )
                 sys.exit(1)
         return 0
 
@@ -46,8 +52,10 @@ in the list with packags.", pack)
                 broken.append(pack)
 
         if broken:
-            logging.critical("Inconsistent packages file!\
-The packages [%s] are not in any group", ','.join(broken))
+            logging.critical(
+                'Inconsistent packages file!\
+The packages [%s] are not in any group', ','.join(broken),
+            )
             sys.exit(1)
 
         broken = []
@@ -57,24 +65,30 @@ The packages [%s] are not in any group", ','.join(broken))
                 broken.append(pack)
 
         if broken:
-            logging.critical("Incosistant packages file!\
-The packages [%s] do not have node", ','.join(broken))
+            logging.critical(
+                'Incosistant packages file!\
+The packages [%s] do not have node', ','.join(broken),
+            )
             sys.exit(1)
 
         # Every dependency is in the packages.json
         for pack in all_packs_nodes:
             for deb in self.get_dependencies(pack):
                 if deb not in all_packs_nodes:
-                    logging.critical("%s is dependency\
-of %s but it is not in the packages.json", deb, pack)
+                    logging.critical(
+                        '%s is dependency\
+of %s but it is not in the packages.json', deb, pack,
+                    )
                     sys.exit(1)
 
     def get_dependencies(self, package):
         assert package is not None
 
         if package not in self.packages.keys():  # pylint: disable=E1101
-            logging.critical("The package %s\
-is not in the packages.json.", package)  # pylint: disable=E1136
+            logging.critical(
+                'The package %s\
+is not in the packages.json.', package,
+            )  # pylint: disable=E1136
             sys.exit(1)
         if 'dependencies' in self.packages[package].keys():
             return self.packages[package]['dependencies']  # pylint: disable=E1136

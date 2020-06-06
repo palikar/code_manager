@@ -66,7 +66,7 @@ As the name suggests, the file contains some basic configuration. The default `c
 
 [Download]
         git_ssh = true
-        
+
 [Cache]
         cache = ${HOME}/.config/code_manager/cache
 
@@ -145,7 +145,7 @@ At the start of the file, the `vars` node defines several &ldquo;variables&rdquo
     "url": "url for the git clone command",
     "checkout": "optional commit ID that will be checked out to",
     "args": "optional extra artuments for the git clone command"
-} 
+}
 ```
 
 If `curl` is executed the package object must contain a curl node:
@@ -177,51 +177,51 @@ If `curl` is executed the package object must contain a curl node:
 1.  Installers
 
     For now the supported installation methods are:
-    
+
     -   `cmake` - executes the standard procedure for CMake project in the root directory of the package. It&rsquo;s like running:
-    
+
     ```sh
     mkdir build
     cd build
     cmake .. <cmake_args>
     ```
-    
+
     -   `command` - executes a given shell command in the root directory of the package
-    
+
     -   `script` - executes a given shell script in the root directory of the package
-    
+
     -   `setup.py` - installs the package by calling `python setup.py install` in the root directory.
-    
+
     -   `emacs` - (`~/.emacs` or `~/.emacs.d/init.el`)
-    
+
     -   `make` - executes one or several specified make targets in the build directory of the package.
 
 2.  Installer requirements.
 
     Some installers require specific field to be present in the package object node. This section summarizes these requirements.
-    
+
     -   `"install" : "command"` **Requirements:**
         -   `command` : a string or a list of strings. If the value is a string, it will be treated as a single command to be executed in a shell inside of the root directory of the package. If the value is a list, each string will be treated as a part of a shell command. The whole list still specifies one shell command.
-    
+
     -   `"install" : "setup.py"` **Requirements:**
         -   `setup_args` : a list of strings. Each string specifies and extra argument to be passed to the `python setup.py install` command.
-    
+
     -   `"install" : "cmake"` **Requirements:**
         -   `cmake_args` : optional list of strings. Each string will be treated as an extra argument for the cmake command.
-    
+
     -   `"install" : "emacs"` **Requirements:**
         -   `el_files` : a list of strings. Each string specifies an emacs-lisp file that should be included in your Emacs startup script.
-    
+
     -   `"install" : "make"` **Requirements:**
         -   `make_extra_targets` : optional list of strings. Each string specifies a make target to be executed.
         -   `make_args` : optional list of strings. Each string specifies an extra argument to be passed to the make command while executing each one of the targets
-    
+
     -   `"install" : "script"` **Requirements:**
         -   `script` : a string that specifies which installation script should be executed in the root directory of the package. The script must be present in the `~/.config/code_manager/install_scripts`
         -   `script_args` : optional list of strings. Each string specifies and extra argument to be passed to the executed script.
-    
+
     To note again, all required or optional fields for the installers are given in the package object node. The next snippet demonstrates a package using the cmake, make and command installers.
-    
+
     ```json
     "example": {
         "fetch": "git",
@@ -241,7 +241,7 @@ If `curl` is executed the package object must contain a curl node:
 
 The main (and for one only one) interface for the utility is the command line program `code-mamanger`. A simple call of `code-mamanger --help` gives:
 
-    
+
 
 The majority of the arguments are self-explanatory. The following table presents explanations for some of the other ones.
 

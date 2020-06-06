@@ -2,13 +2,12 @@ import logging
 import os
 import sys
 
-from code_manager.core.installation import Installation
-from code_manager.core.fetcher import Fetcher
+from code_manager.core.cache_container import CacheContainer
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.core.deb_dependency import Depender
-
 from code_manager.core.debgrapher import DebGrapher
-from code_manager.core.cache_container import CacheContainer
+from code_manager.core.fetcher import Fetcher
+from code_manager.core.installation import Installation
 from code_manager.utils.utils import flatten
 
 # TODO: extract each step in function per package
@@ -38,8 +37,10 @@ class Manager(ConfigurationAware):
         self.depender.verify_packages_tree()
 
     def _invoke(self):
-        logging.info('Invoking pipeline with: %s',
-                     ','.join(self.install_queue))
+        logging.info(
+            'Invoking pipeline with: %s',
+            ','.join(self.install_queue),
+        )
         logging.debug('Configuration steps :')
         logging.debug('\tInstall:%s', self.install)
         logging.debug('\tBuild:%s', self.build)
@@ -79,8 +80,10 @@ class Manager(ConfigurationAware):
         for pack in self.install_queue:
             with self.cache as cache:
                 cache.set_built(pack, False)
-                if self.installation.install(pack, cache.get_root(pack),
-                                             update=True) == 0:
+                if self.installation.install(
+                    pack, cache.get_root(pack),
+                    update=True,
+                ) == 0:
                     logging.info("\'%s\' was build", pack)
                     cache.set_built(pack, True)
 
@@ -122,9 +125,11 @@ class Manager(ConfigurationAware):
                     logging.info("\'%s\' is already installed", pack)
                     logging.info("Trying to update \'%s\'", pack)
                     cache.set_built(pack, False)
-                    if self.installation.install(pack,
-                                                 cache.get_root(pack),
-                                                 update=True) == 0:
+                    if self.installation.install(
+                        pack,
+                        cache.get_root(pack),
+                        update=True,
+                    ) == 0:
                         logging.info("\'%s\' was build", pack)
                         cache.set_built(pack, True)
 
@@ -135,20 +140,24 @@ class Manager(ConfigurationAware):
                 continue
             installer = pack_node['install']
             if not isinstance(installer, str) and not isinstance(installer, list):
-                logging.critical('Can\'t install %s.\
-Installation node is nor a list, nor a string.', pack)
+                logging.critical(
+                    'Can\'t install %s.\
+Installation node is nor a list, nor a string.', pack,
+                )
                 sys.exit(1)
 
     def _install_thing(self, thing):
 
         if thing in self.packages_list.keys():
             logging.debug(
-                r"\`%s\` is a group. Installing all packages in it.", thing)
+                r'\`%s\` is a group. Installing all packages in it.', thing,
+            )
             self.install_queue = (
-                self.install_queue + self.config["packages_list"][thing])
+                self.install_queue + self.config['packages_list'][thing]
+            )
 
         elif thing in flatten(self.packages_list.values()):
-            logging.debug(r"\`%s\` is a package. Installing it.", thing)
+            logging.debug(r'\`%s\` is a package. Installing it.', thing)
             self.install_queue.append(thing)
 
         else:
@@ -185,11 +194,13 @@ Installation node is nor a list, nor a string.', pack)
         cache_content = []
         for pack in self.packages.keys():
             if self.cache.in_cache(pack):
-                cache_content.append({'name': pack,
-                                      'fetched': self.cache.is_fetched(pack),
-                                      'built': self.cache.is_built(pack),
-                                      'installed': self.cache.is_installed(pack),
-                                      'root': self.cache.get_root(pack)})
+                cache_content.append({
+                    'name': pack,
+                    'fetched': self.cache.is_fetched(pack),
+                    'built': self.cache.is_built(pack),
+                    'installed': self.cache.is_installed(pack),
+                    'root': self.cache.get_root(pack),
+                })
         return cache_content
 
     def get_group_packages(self, group):

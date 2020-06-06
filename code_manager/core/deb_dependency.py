@@ -1,8 +1,8 @@
-import subprocess
 import logging
+import subprocess
 
-from code_manager.utils.lazy_property import lazy_property
 from code_manager.core.configuration import ConfigurationAware
+from code_manager.utils.lazy_property import lazy_property
 
 
 class Depender(ConfigurationAware):
@@ -11,11 +11,14 @@ class Depender(ConfigurationAware):
         pass
 
     def _available_packages(self):  # pylint: disable=R0201
-        pkgs = subprocess.Popen(('dpkg-query', '--list'),
-                                stdout=subprocess.PIPE)
+        pkgs = subprocess.Popen(
+            ('dpkg-query', '--list'),
+            stdout=subprocess.PIPE,
+        )
         pkgs = subprocess.check_output(
-            ('awk', '{print $2}'), stdin=pkgs.stdout, universal_newlines=True)
-        pkgs = pkgs.split("\n")
+            ('awk', '{print $2}'), stdin=pkgs.stdout, universal_newlines=True,
+        )
+        pkgs = pkgs.split('\n')
         return list(map(lambda deb: deb.split(':')[0], pkgs))
 
     @lazy_property
