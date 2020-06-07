@@ -15,8 +15,9 @@ def execute_sanitized(name, command, cwd, supress_output=False):
     with output_header(name):
         # TODO: This is very dangerous wiht shell=True
         # Think of something better at some point
+        command = ' '.join(command) if isinstance(command, list) else command
         child = subprocess.Popen(
-            ' '.join(command),
+            command,
             cwd=cwd,
             stdout=stdout,
             shell=True,

@@ -22,10 +22,14 @@ class CommandInstaller(BasicInstaller, ConfigurationAware):
         if isinstance(command_field, str):
             commands.append(command_field)
         elif isinstance(command_field, list):
-            commands.extend(command_field)
+            if isinstance(command_field[0], str):
+                commands.append(command_field)
+            else:
+                for com in command_field:
+                    commands.append(com)
 
         for command in commands:
-            logging.debug('Running command with: %s', ' '.join(command))
+            logging.debug('Running command with: %s', command)
             if execute_sanitized('Command', command, self.root) is None:
                 return None
 
