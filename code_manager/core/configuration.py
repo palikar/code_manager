@@ -136,6 +136,9 @@ class ConfigurationAware:
 
         ConfigurationAware.packages_list = ConfigurationAware.config['packages_list']
         ConfigurationAware.packages = ConfigurationAware.config['packages']
+
+        ConfigurationAware.packages_config = ConfigurationAware.config.get('packages_config', {})
+
         ConfigurationAware.variables = ConfigurationAware.resolver.variables
 
         ConfigurationAware.install_scripts_dir = install_scripts_dir
