@@ -54,17 +54,17 @@ class BashrcInstaller(BasicInstaller, ConfigurationAware):
                 if not BashrcInstaller._check_line(line):
                     debug_red(
                         'Skipping bash line.\
- The line is invalid:%s', line,
+ The line is invalid: %s', line,
                     )
                     continue
 
                 if line in target_file_lines:
                     debug_red(
                         'Skipping bash line.\
- The line is already in the file:%s', line,
+ The line is already in the file: %s', line,
                     )
                     continue
-                logging.debug('Writing bahs line in %s', target_file)
+                logging.debug('Writing bashrc line in %s', target_file)
                 target.write(line)
 
         return 0
