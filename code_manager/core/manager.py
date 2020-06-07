@@ -61,11 +61,14 @@ class Manager(ConfigurationAware):
         for pack in self.install_queue:
             with self.cache as cache:
 
+                package = self.packages[pack]
+                root = pack
+                root = os.path.join(package.get('root', ''), root).strip('/')
                 if not cache.is_fetched(pack):
-                    if self.fetcher.download(pack, pack) is None:
-                        logging.critical("The fetching of '%s' failed.", pack)
+                    if self.fetcher.download(pack, root) is None:
+                        logging.critical("The fetching of '%s' failed.", root)
                     cache.set_fetched(pack, True)
-                    cache.set_root(pack, os.path.join(self.code_dir, pack))
+                    cache.set_root(pack, os.path.join(self.code_dir, root))
                 else:
                     logging.info("\'%s\' is already fetched", pack)
 

@@ -26,13 +26,12 @@ class Fetcher(ConfigurationAware):
         self.download_methods['git'] = self._download_git
         self.download_methods['curl'] = self._download_curl
         # self.download_methods["wget"] = self._download_wget
+        # TODO: load the extra fetching functions
 
         logging.debug('Fetchers: %s.', ','.join(self.download_methods.keys()))
 
         self.archive_extensions = ['.zip', '.tar.gz', '.tar.7z', '.tar.bz2']
         self.extract_queue = []
-
-        # TODO: load the extra fetching functions
 
     def download(self, name, root):   # pylint: disable=R0201,R0915
         assert name is not None
@@ -157,7 +156,7 @@ class Fetcher(ConfigurationAware):
             logging.debug('Checking out a git repository with %s ', ','.join(cmd))
 
             if subprocess.call(cmd) != 0:
-                debug_red('The checkint out failed!')
+                debug_red('The checking out failed!')
                 return None
 
         return 0
