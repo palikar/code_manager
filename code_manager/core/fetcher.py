@@ -30,7 +30,7 @@ class Fetcher(ConfigurationAware):
 
         logging.debug('Fetchers: %s.', ','.join(self.download_methods.keys()))
 
-        self.archive_extensions = ['.zip', '.tar.gz', '.tar.7z', '.tar.bz2']
+        self.archive_extensions = ['.zip', '.tar.gz', '.tar.7z', '.tar.bz2', '.tar.xz']
         self.extract_queue = []
 
     def download(self, name, root):   # pylint: disable=R0201,R0915
@@ -153,9 +153,9 @@ class Fetcher(ConfigurationAware):
             cmd.append('checkout')
             cmd.append(git_node['checkout'])
 
-            logging.debug('Checking out a git repository with %s ', ','.join(cmd))
-
-            if subprocess.call(cmd) != 0:
+            logging.debug('Checking out a git repository with "%s" ', ' '.join(cmd))
+            res = subprocess.run(cmd, cwd=path)
+            if res.returncode != 0:
                 debug_red('The checking out failed!')
                 return None
 

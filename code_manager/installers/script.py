@@ -8,7 +8,7 @@ from code_manager.utils.process import execute_sanitized
 
 class ScriptInstaller(BasicInstaller, ConfigurationAware):
 
-    name = 'scripts'
+    name = 'script'
     manditory_attr = ['script']
 
     def __init__(self):

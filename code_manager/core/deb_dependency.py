@@ -19,7 +19,8 @@ class Depender(ConfigurationAware):
             ('awk', '{print $2}'), stdin=pkgs.stdout, universal_newlines=True,
         )
         pkgs = pkgs.split('\n')
-        return list(map(lambda deb: deb.split(':')[0], pkgs))
+        pkgs = list(map(lambda deb: deb.split(':')[0], pkgs))
+        return pkgs
 
     @lazy_property
     def debian_packages(self):

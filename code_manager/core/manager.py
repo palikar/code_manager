@@ -121,10 +121,11 @@ class Manager(ConfigurationAware):
             with self.cache as cache:
                 if not cache.is_fetched(pack):
                     logging.info("Trying to fetch \'%s\'", pack)
-                    if self.fetcher.download(pack, pack) is None:
+                    root = self._get_root(pack)
+                    if self.fetcher.download(pack, root) is None:
                         logging.critical("The fetching of '%s' failed.", pack)
                     cache.set_fetched(pack, True)
-                    cache.set_root(pack, os.path.join(self.code_dir, pack))
+                    cache.set_root(pack, os.path.join(self.code_dir, root))
                 else:
                     logging.info("\'%s\' is already fetched", pack)
 
