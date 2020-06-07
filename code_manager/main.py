@@ -153,14 +153,10 @@ def get_arg_parser():
         'packages', nargs='*', default=None, help='A list of packages to fetch',
     )
 
-    # TODO: Add support for foce clear
-    # parser_fetch.add_argument(
-    #     "--focre--clear",
-    #     dest="force_clear",
-    #     action="store_true",
-    #     default=False,
-    #     help="Will delete anyfolders that stay on its way",
-    # )
+    parser_fetch.add_argument(
+        '-f', '--force', default=False, dest='force',
+        action='store_true', help='Will delete anyfolders that stay on its way',
+    )
 
     parser_fetch.add_argument(
         '--group',
@@ -279,9 +275,9 @@ def install(args, core):
 
 def fetch(args, core):
     if args.group is not None:
-        core.install_thing(args.group, fetch=True)
+        core.install_thing(args.group, fetch=True, force=args.force)
     else:
-        core.install_thing(args.packages, fetch=True)
+        core.install_thing(args.packages, fetch=True, force=args.force)
 
 
 def build(args, core):

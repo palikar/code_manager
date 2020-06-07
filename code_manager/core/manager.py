@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 import sys
 
 from code_manager.core.cache_container import CacheContainer
@@ -76,15 +77,24 @@ class Manager(ConfigurationAware):
         if self.build:
             self._invoke_build()
 
+    def _do_fetch(self, pack, root, cache):
+        if self.fetcher.download(pack, root) is None:
+            logging.critical("The fetching of '%s' failed.", root)
+        cache.set_fetched(pack, True)
+        cache.set_root(pack, os.path.join(self.code_dir, root))
+
     def _invoke_fetch(self):
         for pack in self.install_queue:
             with self.cache as cache:
                 root = self._get_root(pack)
-                if not cache.is_fetched(pack):
-                    if self.fetcher.download(pack, root) is None:
-                        logging.critical("The fetching of '%s' failed.", root)
-                    cache.set_fetched(pack, True)
-                    cache.set_root(pack, os.path.join(self.code_dir, root))
+                root_dir = (os.path.join(self.code_dir, root))
+                if os.path.exists(root_dir) and self.force:
+                    logging.info('Force mode. Removing folder: %s', root)
+                    shutil.rmtree(root_dir)
+
+                if not cache.is_fetched(pack) or self.force:
+                    cache.set_fetched(pack, False)
+                    self._do_fetch(pack, root, cache)
                 else:
                     logging.info("\'%s\' is already fetched", pack)
 
@@ -119,9 +129,15 @@ class Manager(ConfigurationAware):
 
         for pack in ordered_packages:
             with self.cache as cache:
-                if not cache.is_fetched(pack):
+                root = self._get_root(pack)
+                root_dir = (os.path.join(self.code_dir, root))
+                if os.path.exists(root_dir) and self.force:
+                    logging.info('Force mode. Removing folder: %s', root)
+                    shutil.rmtree(root_dir)
+
+                if not cache.is_fetched(pack) or self.force:
                     logging.info("Trying to fetch \'%s\'", pack)
-                    root = self._get_root(pack)
+
                     if self.fetcher.download(pack, root) is None:
                         logging.critical("The fetching of '%s' failed.", pack)
                     cache.set_fetched(pack, True)
@@ -183,7 +199,7 @@ Installation node is nor a list, nor a string.', pack,
         else:
             self.install_queue.append(thing)
 
-    def install_thing(self, thing, install=True, fetch=False, build=False):
+    def install_thing(self, thing, install=True, fetch=False, build=False, force=False):
         assert thing is not None
 
         if install:
@@ -200,6 +216,8 @@ Installation node is nor a list, nor a string.', pack,
             self.install = False
             self.fetching = True
             self.build = False
+
+        self.force = force
 
         if isinstance(thing, list):
             for name in thing:

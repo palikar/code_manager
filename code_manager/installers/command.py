@@ -16,17 +16,18 @@ class CommandInstaller(BasicInstaller, ConfigurationAware):
     def execute(self, name):
         assert name is not None
 
-        command = []
+        commands = []
         command_field = self.node['command']
 
         if isinstance(command_field, str):
-            command.append(command_field)
+            commands.append(command_field)
         elif isinstance(command_field, list):
-            command.extend(command_field)
+            commands.extend(command_field)
 
-        logging.debug('Running command with: %s', ' '.join(command))
-        if execute_sanitized('Command', command, self.root) is None:
-            return None
+        for command in commands:
+            logging.debug('Running command with: %s', ' '.join(command))
+            if execute_sanitized('Command', command, self.root) is None:
+                return None
 
         return 0
 
