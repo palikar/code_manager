@@ -20,6 +20,8 @@ class Fetcher(ConfigurationAware):
     GIT_HTTPS_RE = re.compile(r'https:\/\/(.*?)\/(.*)')
     GIT_SSH_RE = re.compile(r'git@(.*?):(.*)')
 
+    ARCH_EXTENSIONS = ['.zip', '.tar.gz', '.tar.7z', '.tar.bz2', '.tar.xz']
+
     def __init__(self):
 
         self.download_methods = {}
@@ -30,7 +32,7 @@ class Fetcher(ConfigurationAware):
 
         logging.debug('Fetchers: %s.', ','.join(self.download_methods.keys()))
 
-        self.archive_extensions = ['.zip', '.tar.gz', '.tar.7z', '.tar.bz2', '.tar.xz']
+        self.archive_extensions = Fetcher.ARCH_EXTENSIONS
         self.extract_queue = []
 
     def download(self, name, root):   # pylint: disable=R0201,R0915
@@ -67,7 +69,6 @@ class Fetcher(ConfigurationAware):
             self.run_extract()
 
     def run_extract(self):
-        # TODO: Better checks for file extensions
         for file_path in self.extract_queue:
             logging.info('Extracting: %s', file_path)
 
@@ -147,6 +148,12 @@ class Fetcher(ConfigurationAware):
 
         # TODO: Mark somehow that the contents have been cloned but the step is not fully complete
 
+        if self.checkout(git_node, path) is None:
+            return None
+
+        return 0
+
+    def checkout(self, git_node, path):
         if 'checkout' in git_node.keys() and isinstance(git_node['checkout'], str):
             cmd = []
             cmd.append(self.GIT_COMMAND)
@@ -158,8 +165,6 @@ class Fetcher(ConfigurationAware):
             if res.returncode != 0:
                 debug_red('The checking out failed!')
                 return None
-
-        return 0
 
     def _download_curl(self, name, package, root):   # pylint: disable=R0201
         logging.info('Trying to fetch with curl.')

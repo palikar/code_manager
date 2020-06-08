@@ -37,7 +37,6 @@ class CmakeInstaller(BasicInstaller, ConfigurationAware):
         logging.debug('Running cmake with: %s', ' '.join(cmake_command))
         logging.debug('Build directory: %s', build_dir)
 
-        # TODO: Abstract this into a context control
         with output_header('CMake'):
             child = subprocess.Popen(
                 cmake_command,

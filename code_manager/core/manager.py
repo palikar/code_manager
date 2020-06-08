@@ -199,6 +199,9 @@ Installation node is nor a list, nor a string.', pack,
         else:
             self.install_queue.append(thing)
 
+    def get_cache(self):
+        return self.cache
+
     def install_thing(self, thing, install=True, fetch=False, build=False, force=False):
         assert thing is not None
 
@@ -251,3 +254,20 @@ Installation node is nor a list, nor a string.', pack,
 
     def get_fetchers(self):
         return self.fetcher.get_available_fetcheres()
+
+    def remove_package(self, packs):
+        if packs is None:
+            return
+        for pack in packs:
+            if self.cache.in_cache(pack):
+                logging.info("\'%s\' is not a packcage", pack)
+
+            with self.cache as cache:
+                logging.info("Removing package: \'%s\'", pack)
+                root = cache.get_root(pack)
+                if os.path.exists(root):
+                    shutil.rmtree(root)
+                cache.set_fetched(pack, False)
+                cache.set_root(pack, '')
+                cache.set_built(pack, False)
+                cache.set_installed(pack, False)

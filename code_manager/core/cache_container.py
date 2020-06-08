@@ -98,6 +98,14 @@ class CacheContainer(ConfigurationAware):
     def get_packages(self):
         return self.cache.values()
 
+    def drop(self, name):
+        if name not in self.cache.keys():
+            logging.debug('%s is not in the cache', name)
+            return False
+        self.cache.pop(name, None)
+        self.dirty = True
+        return True
+
     def __enter__(self):
         if not self.loaded:
             self.load_cache()

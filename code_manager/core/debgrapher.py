@@ -40,8 +40,6 @@ in the list with packags.', pack,
         return 0
 
     def verify_packages_tree(self):
-        # TODO: Check if the builds are there
-        # TODO: Check for circular dependencies
         all_packs_list = set(flatten(self.packages_list.values()))
         all_packs_nodes = set(self.packages.keys())  # pylint: disable=E1101
 

@@ -174,7 +174,7 @@ def get_arg_parser():
         help='Builds the project of package',
     )
     parser_build.add_argument(
-        'packages', nargs='*', default=None, help='A list of packages to fetch.',
+        'packages', nargs='*', default=None, help='A list of packages to build.',
     )
     parser_build.add_argument(
         '--group',
@@ -190,6 +190,16 @@ def get_arg_parser():
         action='store_true',
         default=False,
         help='If present, packages will only be build but not installed.',
+    )
+
+    parser_remove = subparsers.add_parser(
+        'remove',
+        description='Remove a package',
+        help='Remove a package and its sources from the code directory',
+    )
+
+    parser_remove.add_argument(
+        'packages', nargs='*', default=None, help='A list of packages to remove.',
     )
 
     list_packages_parser = subparsers.add_parser(
@@ -251,7 +261,16 @@ a simple, one line manner',
         help='Disable the pager while printing the packeges in a table form.',
     )
 
-    subparsers.add_parser('clear-cache', help='Clears the entries in the cach file')
+    clear_parser = subparsers.add_parser('clear-cache', help='Clears the entries in the cache file')
+
+    clear_parser.add_argument(
+        'packages', nargs='*', default=None, help='A list of packages to remove from cache.',
+    )
+
+    clear_parser.add_argument(
+        '-a', '--all', dest='all', action='store_true',
+        default=False, help='Clear the enitrety of the cache file.',
+    )
 
     groups_parser = subparsers.add_parser('list-groups', help='List the avaialble groups or the packeges in them')
 
@@ -285,6 +304,10 @@ def build(args, core):
         core.install_thing(args.group, build=True)
     else:
         core.install_thing(args.packages, build=True)
+
+
+def remove(args, core):
+    core.remove_package(args.packages)
 
 
 def list_packages(args, core):
@@ -337,11 +360,18 @@ def list_groups(args, core):
             print(string)
 
 
-def clear_cache(_, core):
-    logging.info('Clearing cache file %s', CACHE)
-    if promt_yes_no('Are you sure you want to clear the cache?'):
-        handle = open(CACHE, 'w')
-        handle.close()
+def clear_cache(args, core):
+
+    if args.all:
+        logging.info('Clearing cache file %s', CACHE)
+        if promt_yes_no('Are you sure you want to clear the cache?'):
+            handle = open(CACHE, 'w')
+            handle.close()
+    if args.packages is not None:
+        for pack in args.packages:
+            logging.info('Removing %s from the cache file %s', pack, CACHE)
+            with core.get_cache() as cache:
+                cache.drop(pack)
 
 
 def list_fetchers(_, core):
@@ -361,6 +391,7 @@ def get_commands_map():
     commands['clear-cache'] = clear_cache
     commands['list-groups'] = list_groups
     commands['list-fetchers'] = list_fetchers
+    commands['remove'] = remove
 
     return commands
 
