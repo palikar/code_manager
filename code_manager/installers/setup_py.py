@@ -31,8 +31,10 @@ class SetupPyInstaller(BasicInstaller, ConfigurationAware):
         self.append_optional('setup_args', setup_command)
 
         setup_command.append('install')
-        setup_command.append('--prefix')
-        setup_command.append(self.usr_dir)
+
+        if self.node.get('prefix', False):
+            setup_command.append('--prefix')
+            setup_command.append(self.usr_dir)
 
         self.append_optional('setup_install_args', setup_command)
 
