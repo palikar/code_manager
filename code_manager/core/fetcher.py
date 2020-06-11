@@ -165,6 +165,7 @@ class Fetcher(ConfigurationAware):
             if res.returncode != 0:
                 debug_red('The checking out failed!')
                 return None
+        return 0
 
     def _download_curl(self, name, package, root):   # pylint: disable=R0201
         logging.info('Trying to fetch with curl.')

@@ -20,7 +20,7 @@ class CommandInstaller(BasicInstaller, ConfigurationAware):
         command_field = self.node['command']
 
         if isinstance(command_field, str):
-            commands.append(command_field)
+            commands.append([command_field])
         elif isinstance(command_field, list):
             if isinstance(command_field[0], str):
                 commands.append(command_field)
