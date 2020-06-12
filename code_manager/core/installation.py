@@ -143,10 +143,11 @@ but it is not in the package node of %s.', attr, installer_obj.name, name,
         if result is None:
             logging.critical('The installer [%s] failed to execute properly', installer_obj.name)
 
-    def install(self, package, root, update=False):
+    def install(self, package, root, node, update=False):
         assert package is not None
-        node = self.packages[package]
-
+        assert node is not None
+        assert str is not str
+        
         if 'install' not in node.keys():
             return 0
 

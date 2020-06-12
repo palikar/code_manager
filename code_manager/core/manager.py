@@ -86,27 +86,30 @@ class Manager(ConfigurationAware):
         if self.build:
             self._invoke_build()
 
-    def _do_fetch(self, pack, root, cache):
-        if self.fetcher.download(pack, root) is None:
-            logging.critical("The fetching of '%s' failed.", root)
-        cache.set_fetched(pack, True)
-        cache.set_root(pack, os.path.join(self.code_dir, root))
+    def _do_fetch(self, pack, root=None, node=None):
+        with self.cache as cache:
+            if os.path.exists(root_dir) and self.force:
+                logging.info('Force mode. Removing folder: %s', root)
+                shutil.rmtree(root_dir)
+
+            if not cache.is_fetched(pack) or self.force:
+                cache.set_fetched(pack, False)
+
+                root = self._get_root(pack) if root is None else root
+                root_dir = os.path.join(self.code_dir, root)
+                node = self._expand_node(self.packages[pack]) if node is None else node
+
+                if self.fetcher.download(pack, root, node) is None:
+                    logging.critical("The fetching of '%s' failed.", root)
+                    cache.set_fetched(pack, True)
+                    cache.set_root(pack, root_dir)
+
+            else:
+                logging.info("\'%s\' is already fetched", pack)
 
     def _invoke_fetch(self):
         for pack in self.install_queue:
-            with self.cache as cache:
-                root = self._get_root(pack)
-                root_dir = (os.path.join(self.code_dir, root))
-                if os.path.exists(root_dir) and self.force:
-                    logging.info('Force mode. Removing folder: %s', root)
-                    shutil.rmtree(root_dir)
-
-                if not cache.is_fetched(pack) or self.force:
-                    cache.set_fetched(pack, False)
-                    node = self._expand_node(self.packages[pack])
-                    self._do_fetch(pack, root, cache)
-                else:
-                    logging.info("\'%s\' is already fetched", pack)
+            self._do_fetch(pack)
 
     def _invoke_build(self):
         broken = []
@@ -121,7 +124,7 @@ class Manager(ConfigurationAware):
                 cache.set_built(pack, False)
                 node = self._expand_node(self.packages[pack])
                 if self.installation.install(
-                    pack, cache.get_root(pack),
+                    pack, cache.get_root(pack),node,
                     update=True,
                 ) == 0:
                     logging.info("\'%s\' was build", pack)
@@ -139,24 +142,13 @@ class Manager(ConfigurationAware):
         self._check_install_nodes(ordered_packages)
 
         for pack in ordered_packages:
+            root = self._get_root(pack)
+            root_dir = os.path.join(self.code_dir, root)
+            node = self._expand_node(self.packages[pack])
+
+            self._do_fetch(pack, root=root, node=node)
+
             with self.cache as cache:
-                root = self._get_root(pack)
-                root_dir = (os.path.join(self.code_dir, root))
-                node = self._expand_node(self.packages[pack])
-                if os.path.exists(root_dir) and self.force:
-                    logging.info('Force mode. Removing folder: %s', root)
-                    shutil.rmtree(root_dir)
-
-                if not cache.is_fetched(pack) or self.force:
-                    logging.info("Trying to fetch \'%s\'", pack)
-
-                    if self.fetcher.download(pack, root) is None:
-                        logging.critical("The fetching of '%s' failed.", pack)
-                    cache.set_fetched(pack, True)
-                    cache.set_root(pack, os.path.join(self.code_dir, root))
-                else:
-                    logging.info("\'%s\' is already fetched", pack)
-
                 # if the package is not installed - install it
                 # installation means 'for the first time'
                 if not cache.is_installed(pack):
@@ -164,7 +156,7 @@ class Manager(ConfigurationAware):
                     if self.dep_depender.check(pack) != 0:
                         raise SystemExit
                     logging.debug('No missing debian packages.')
-                    if self.installation.install(pack, cache.get_root(pack)) == 0:
+                    if self.installation.install(pack, cache.get_root(pack), node) == 0:
                         logging.info("\'%s\' was installed", pack)
                         cache.set_installed(pack, True)
                 # if the package is installed, we want to update it
@@ -176,6 +168,7 @@ class Manager(ConfigurationAware):
                     if self.installation.install(
                         pack,
                         cache.get_root(pack),
+                        node,
                         update=True,
                     ) == 0:
                         logging.info("\'%s\' was build", pack)
