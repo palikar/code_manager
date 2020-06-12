@@ -64,6 +64,8 @@ class CofigurationResolver:
         for match in self._VAR_RE.finditer(string):
             if match.group(1) is not None:
                 var = match.group(1)
+                if var not in self.variables.keys():
+                    return string
                 value = self.variables[var]
                 return string.replace(match.group(0), value)
             if match.group(2) is not None:
@@ -72,7 +74,6 @@ class CofigurationResolver:
         return string
 
     def configuration_dict(self, config):
-        self.config = config
 
         if not self._check_integrity(config):
             logging.debug('The package file has some issues.')
@@ -82,13 +83,19 @@ class CofigurationResolver:
             self.variables = config['vars']
             config.pop('vars')
 
-        # pylint: disable=R1702
-        cur_dicts = {}
+        return self.resolve_nodes(config)
+
+    def resolve_nodes(self, config):
+        self.config = config
+        cur_dicts = config
+        dicts = []
         for key, value in recursive_items(config, dicts=True):
 
             if isinstance(value, dict):
+                dicts.append((value, len(value)))
                 cur_dicts = value
             else:
+
                 if isinstance(value, list):
                     for idx, item in enumerate(value):
                         if not isinstance(item, list) and not isinstance(item, dict):
@@ -99,6 +106,16 @@ class CofigurationResolver:
                     new_val = self.resolve_string(value)
                     if new_val is not None and new_val != value:
                         cur_dicts[key] = new_val
+                if dicts:
+                    dicts[-1] = (dicts[-1][0], dicts[-1][1] - 1)
+
+            if dicts:
+                if dicts[-1][1] == 0:
+                    dicts.pop(-1)
+                    if len(dicts) == 0:
+                        cur_dicts = config
+                    else:
+                        cur_dicts = dicts[-1][0]
 
         return config
 
