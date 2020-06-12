@@ -4,6 +4,7 @@ import sys
 from abc import abstractmethod
 
 import code_manager.installers
+from code_manager.core.configuration import CofigurationResolver
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.utils.importing import import_modules_from_folder
 from code_manager.utils.logger import debug_cyan
@@ -70,6 +71,11 @@ class Installation(ConfigurationAware):
     root = None
 
     def __init__(self):
+        self.resolver = CofigurationResolver()
+
+        self.resolver.variables['code_dir'] = self.code_dir
+        self.resolver.variables['usr_dir'] = self.usr_dir
+
         self.installers_dir = os.path.dirname(code_manager.installers.__file__)
 
     def load_installer(self):
@@ -101,7 +107,10 @@ class Installation(ConfigurationAware):
         debug_cyan('Loading installer: \'%s\'', InstallerClass.name)
         self.installers[InstallerClass.name] = InstallerClass
 
-    def run_installer(self, name, installer):
+    def _expand_package_node(self, node):
+        return self.resolver.resolve_nodes(node)
+
+    def run_installer(self, name, installer, node):
         assert name is not None
         assert installer is not None
 
@@ -114,7 +123,6 @@ class Installation(ConfigurationAware):
         else:
             installer_obj = self.installer_objects[installer]
 
-        node = self.packages[name]
         installer_obj.node = node
         installer_obj.root = self.root
 
@@ -125,6 +133,7 @@ class Installation(ConfigurationAware):
                         'The attribute %s is mandatory for the installer %s\
 but it is not in the package node of %s.', attr, installer_obj.name, name,
                     )
+
         info_blue('Running installer: %s', installer_obj.name)
         if self.update:
             result = installer_obj.update(name)
@@ -144,13 +153,17 @@ but it is not in the package node of %s.', attr, installer_obj.name, name,
         self.update = update
         self.root = root
 
+        self.resolver.variables['root'] = self.root
+
+        node = self._expand_package_node(node)
+
         installer = node['install']
         if isinstance(installer, str):
-            self.run_installer(package, installer)
+            self.run_installer(package, installer, node)
             return 0
         elif isinstance(installer, list):
             for inst in installer:
-                self.run_installer(package, inst)
+                self.run_installer(package, inst, node)
             return 0
         else:
             logging.critical(
