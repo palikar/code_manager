@@ -4,6 +4,7 @@ import shutil
 import sys
 
 from code_manager.core.cache_container import CacheContainer
+from code_manager.core.configuration import CofigurationResolver
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.core.deb_dependency import Depender
 from code_manager.core.debgrapher import DebGrapher
@@ -29,6 +30,7 @@ class Manager(ConfigurationAware):
         self.fetcher = Fetcher()
         self.depender = DebGrapher()
         self.dep_depender = Depender()
+        self.resolver = CofigurationResolver()
 
         self._setup_all()
 
@@ -55,6 +57,13 @@ class Manager(ConfigurationAware):
         self.installation.load_installer()
         self.cache.load_cache()
         self.depender.verify_packages_tree()
+
+        for pack in self.packages.keys():
+            pack_root = os.path.join(self.code_dir, self._get_root(pack))
+            self.resolver.variables['root_' + pack] = pack_root
+
+    def _expand_node(self, node):
+        return self.resolver.resolve_nodes(node)
 
     def _invoke(self):
         logging.info(
@@ -94,6 +103,7 @@ class Manager(ConfigurationAware):
 
                 if not cache.is_fetched(pack) or self.force:
                     cache.set_fetched(pack, False)
+                    node = self._expand_node(self.packages[pack])
                     self._do_fetch(pack, root, cache)
                 else:
                     logging.info("\'%s\' is already fetched", pack)
@@ -109,6 +119,7 @@ class Manager(ConfigurationAware):
         for pack in self.install_queue:
             with self.cache as cache:
                 cache.set_built(pack, False)
+                node = self._expand_node(self.packages[pack])
                 if self.installation.install(
                     pack, cache.get_root(pack),
                     update=True,
@@ -131,6 +142,7 @@ class Manager(ConfigurationAware):
             with self.cache as cache:
                 root = self._get_root(pack)
                 root_dir = (os.path.join(self.code_dir, root))
+                node = self._expand_node(self.packages[pack])
                 if os.path.exists(root_dir) and self.force:
                     logging.info('Force mode. Removing folder: %s', root)
                     shutil.rmtree(root_dir)
