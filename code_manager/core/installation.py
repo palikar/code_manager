@@ -146,8 +146,8 @@ but it is not in the package node of %s.', attr, installer_obj.name, name,
     def install(self, package, root, node, update=False):
         assert package is not None
         assert node is not None
-        assert str is not str
-        
+        assert root is not str
+
         if 'install' not in node.keys():
             return 0
 

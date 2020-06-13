@@ -87,6 +87,7 @@ class Manager(ConfigurationAware):
             self._invoke_build()
 
     def _do_fetch(self, pack, root=None, node=None):
+        root_dir = os.path.join(self.code_dir, root)
         with self.cache as cache:
             if os.path.exists(root_dir) and self.force:
                 logging.info('Force mode. Removing folder: %s', root)
@@ -124,7 +125,7 @@ class Manager(ConfigurationAware):
                 cache.set_built(pack, False)
                 node = self._expand_node(self.packages[pack])
                 if self.installation.install(
-                    pack, cache.get_root(pack),node,
+                    pack, cache.get_root(pack), node,
                     update=True,
                 ) == 0:
                     logging.info("\'%s\' was build", pack)
@@ -143,7 +144,6 @@ class Manager(ConfigurationAware):
 
         for pack in ordered_packages:
             root = self._get_root(pack)
-            root_dir = os.path.join(self.code_dir, root)
             node = self._expand_node(self.packages[pack])
 
             self._do_fetch(pack, root=root, node=node)
