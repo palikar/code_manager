@@ -1,5 +1,4 @@
 import logging
-import os
 import subprocess
 
 from code_manager.core.configuration import ConfigurationAware
@@ -18,7 +17,7 @@ class GradleInstaller(BasicInstaller, ConfigurationAware):
 
     def execute(self, name):
         assert name is not None
-
+        build_dir = self.root
         extra_targets = []
         self.get_optional('gradle_targets', extra_targets.extend)
         for target in extra_targets:
