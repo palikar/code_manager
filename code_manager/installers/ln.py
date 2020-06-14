@@ -21,20 +21,15 @@ class LinkInstaller(BasicInstaller, ConfigurationAware):
         ln_node = self.node['ln']
 
         for copy in ln_node:
-            ln_command = ['ln', '-s']
+            ln_command = ['sudo', 'ln', '-s', '-f']
             if isinstance(copy['source'], str):
                 source = sanitize_input_variable(copy['source'])
-                ln_command += [source]
-            else:
-                source = map(sanitize_input_variable, copy['source'])
-                ln_command += source
+                ln_command += [os.path.join(self.root, source)]
 
             dest = sanitize_input_variable(copy['dest'])
-            if not os.path.exists(dest):
-                os.makedirs(dest)
             ln_command += [dest]
 
-            logging.debug('Running copy command: %s', ln_command)
+            logging.debug('Running copy command: [%s]', ' '.join(ln_command))
 
             if execute_sanitized('ln', ln_command, self.root) is None:
                 return None
