@@ -35,7 +35,7 @@ class Fetcher(ConfigurationAware):
         self.archive_extensions = Fetcher.ARCH_EXTENSIONS
         self.extract_queue = []
 
-    def download(self, name, root):   # pylint: disable=R0201,R0915
+    def download(self, name, root, node):   # pylint: disable=R0201,R0915
         assert name is not None
         assert root is not None
 
@@ -69,18 +69,21 @@ class Fetcher(ConfigurationAware):
             self.run_extract()
 
     def run_extract(self):
-        for file_path in self.extract_queue:
+        for file_path, name in self.extract_queue:
             logging.info('Extracting: %s', file_path)
 
             shutil.unpack_archive(file_path, os.path.dirname(file_path))
 
-            for ext in self.archive_extensions:
-                if file_path.endswith(ext):
-                    extr_dir = file_path[:-len(ext)] + '/'
-
-            dest_dir = os.path.dirname(file_path)
-            move_tree(extr_dir, dest_dir)
-            shutil.rmtree(extr_dir)
+            if not self.packages[name].get('no_move_up', False):
+                dirs = [
+                    os.path.join(os.path.dirname(file_path), f) for f in os.listdir(os.path.dirname(file_path))
+                    if os.path.isdir(os.path.join(os.path.dirname(file_path), f))
+                ]
+                extr_dir = dirs[0]
+                dest_dir = os.path.dirname(file_path)
+                logging.info('Moving the top level archive folder: %s -> %s', extr_dir, dest_dir)
+                move_tree(extr_dir, dest_dir)
+                shutil.rmtree(extr_dir)
 
     def get_available_fetcheres(self):
         return list(self.download_methods.keys())
@@ -209,7 +212,7 @@ class Fetcher(ConfigurationAware):
         file_path = os.path.join(path, file_name)
         for ext in self.archive_extensions:
             if file_path.endswith(ext):
-                self.extract_queue.append(file_path)
+                self.extract_queue.append((file_path, name))
                 break
 
         return 0

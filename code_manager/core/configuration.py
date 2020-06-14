@@ -140,13 +140,16 @@ class ConfigurationAware:
         return ConfigurationAware.config['vars']
 
     @staticmethod
-    def set_configuration(config, install_scripts_dir, cache_file, opt):
+    def set_configuration(config, install_scripts_dir, cache_file, opt, extra_configs=[]):
 
         ConfigurationAware.opt = opt
         ConfigurationAware.usr_dir = os.path.expandvars(opt['Config']['usr'])
         ConfigurationAware.code_dir = os.path.expandvars(opt['Config']['code'])
 
         ConfigurationAware.resolver = CofigurationResolver()
+
+        # TODO: merge the dicts here "somehow"
+
         ConfigurationAware.config = ConfigurationAware.resolver.configuration_dict(
             config,
         )

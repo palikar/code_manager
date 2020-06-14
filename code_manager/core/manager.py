@@ -87,8 +87,13 @@ class Manager(ConfigurationAware):
             self._invoke_build()
 
     def _do_fetch(self, pack, root=None, node=None):
+        root = self._get_root(pack) if root is None else root
         root_dir = os.path.join(self.code_dir, root)
+
         with self.cache as cache:
+            if cache.is_fetched(pack) and not self.force:
+                return 0
+
             if os.path.exists(root_dir) and self.force:
                 logging.info('Force mode. Removing folder: %s', root)
                 shutil.rmtree(root_dir)
@@ -96,8 +101,6 @@ class Manager(ConfigurationAware):
             if not cache.is_fetched(pack) or self.force:
                 cache.set_fetched(pack, False)
 
-                root = self._get_root(pack) if root is None else root
-                root_dir = os.path.join(self.code_dir, root)
                 node = self._expand_node(self.packages[pack]) if node is None else node
 
                 if self.fetcher.download(pack, root, node) is None:
