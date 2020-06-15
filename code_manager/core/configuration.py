@@ -151,6 +151,7 @@ class ConfigurationAware:
     @staticmethod
     def _load_pack_form_link(link):
         r = requests.get(link)
+        breakpoint()
         try:
             config = json.loads(r.content)
         except json.JSONDecodeError:
@@ -189,9 +190,11 @@ class ConfigurationAware:
         if extra_configs:
             for pack in extra_configs:
 
-                if re.match(pack, ConfigurationAware.URL_REGEX):
+                if re.match(ConfigurationAware.URL_REGEX, pack):
+                    logging.debug('Loading extra packages.json from link: %s', pack)
                     con = ConfigurationAware._load_pack_form_link(pack)
                 elif os.path.exists(pack):
+                    logging.debug('Loading extra packages.json file: %s', os.path.abspath(pack))
                     with open(pack) as config_file:
                         con = json.load(config_file)
                 else:
