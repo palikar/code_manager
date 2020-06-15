@@ -1,9 +1,13 @@
+import json
 import logging
 import os
 import re
 
+import requests
+
 from code_manager.utils.utils import flatten
 from code_manager.utils.utils import recursive_items
+from code_manager.utils.utils import sanitize_input_variable
 
 
 class CofigurationResolver:
@@ -121,6 +125,38 @@ class CofigurationResolver:
 
 
 class ConfigurationAware:
+
+    URL_REGEX = re.compile(r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))")
+
+    @staticmethod
+    def _load_extra_pack(primary_config, config):
+        primary_config.setdefault('vars', {})
+        for var, value in config.get('vars', {}).items():
+            primary_config['vars'][var] = value
+
+        primary_config.setdefault('packages_list', {})
+        for group_name, group_list in config.get('packages_list', {}).items():
+            primary_config['packages_list'].setdefault(group_name, group_list)
+
+        primary_config.setdefault('debian_packages', {})
+        for list_name, list_list in config.get('debian_packages', {}).items():
+            primary_config['debian_packages'].setdefault(list_name, list_list)
+
+        primary_config.setdefault('packages', {})
+        for pack_name, pack_node in config.get('packages', {}).items():
+            primary_config['packages'].setdefault(pack_name, pack_node)
+
+        return primary_config
+
+    @staticmethod
+    def _load_pack_form_link(link):
+        r = requests.get(link)
+        try:
+            config = json.loads(r.content)
+        except json.JSONDecodeError:
+            return None
+        return config
+
     @staticmethod
     def var(name):
         if name in ConfigurationAware.resovler.variables.keys():
@@ -142,13 +178,27 @@ class ConfigurationAware:
     @staticmethod
     def set_configuration(config, install_scripts_dir, cache_file, opt, extra_configs=[]):
 
+        ConfigurationAware.config_dir = sanitize_input_variable('${HOME}/.config/code_manager/')
+        ConfigurationAware.usr_dir = sanitize_input_variable(opt['Config']['usr'])
+        ConfigurationAware.code_dir = sanitize_input_variable(opt['Config']['code'])
+
         ConfigurationAware.opt = opt
-        ConfigurationAware.usr_dir = os.path.expandvars(opt['Config']['usr'])
-        ConfigurationAware.code_dir = os.path.expandvars(opt['Config']['code'])
 
         ConfigurationAware.resolver = CofigurationResolver()
 
-        # TODO: merge the dicts here "somehow"
+        if extra_configs:
+            for pack in extra_configs:
+
+                if re.match(pack, ConfigurationAware.URL_REGEX):
+                    con = ConfigurationAware._load_pack_form_link(pack)
+                elif os.path.exists(pack):
+                    with open(pack) as config_file:
+                        con = json.load(config_file)
+                else:
+                    con = None
+
+                if con is not None:
+                    config = ConfigurationAware._load_extra_pack(config, con)
 
         ConfigurationAware.config = ConfigurationAware.resolver.configuration_dict(
             config,

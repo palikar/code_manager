@@ -80,7 +80,16 @@ def get_arg_parser():
         dest='packages_file',
         action='store',
         help='File to read the packages from',
-        metavar='packages.json',
+        metavar='PACK_FILE',
+    )
+
+    parser.add_argument(
+        '--pack',
+        '-p',
+        dest='packs',
+        action='append',
+        default=[],
+        help='Extra packages.json files to load packages from.',
     )
 
     parser.add_argument(
@@ -195,7 +204,7 @@ def get_arg_parser():
     parser_remove = subparsers.add_parser(
         'remove',
         description='Remove a package',
-        help='Remove a package and its sources from the code directory',
+        help='Remove a package and its sources',
     )
 
     parser_remove.add_argument(
@@ -490,7 +499,7 @@ You have to source the 'setenv.sh' fist.")
 def venv_setup(args, opt):
 
     python_ver = promt('Python executable', 'python3')
-    env_root = promt('Python executable', sanitize_input_variable(opt['Config']['venv']))
+    env_root = promt('Virtual environment location', sanitize_input_variable(opt['Config']['venv']))
     opt['Config']['venv'] = env_root
 
     if not os.path.isdir(os.path.abspath(os.path.join(env_root, os.pardir))):
@@ -558,7 +567,7 @@ def main():
 
     commands = get_commands_map()
 
-    ConfigurationAware.set_configuration(CONFIG, INSTALL_SCRIPTS_DIR, CACHE, opt)
+    ConfigurationAware.set_configuration(CONFIG, INSTALL_SCRIPTS_DIR, CACHE, opt, extra_configs=args.packs)
 
     logging.debug('Code dir: %s', CODE_DIR)
     logging.debug('Usr dir: %s', USR_DIR)

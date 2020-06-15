@@ -12,8 +12,6 @@ from code_manager.core.fetcher import Fetcher
 from code_manager.core.installation import Installation
 from code_manager.utils.utils import flatten
 
-# TODO: extract each step in function per package
-
 
 class Manager(ConfigurationAware):
 
@@ -279,3 +277,6 @@ Installation node is nor a list, nor a string.', pack,
                 cache.set_root(pack, '')
                 cache.set_built(pack, False)
                 cache.set_installed(pack, False)
+
+    def run_command(self, command, args):
+        pass
