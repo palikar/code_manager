@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import re
@@ -122,6 +123,26 @@ class CofigurationResolver:
 
 class ConfigurationAware:
     @staticmethod
+    def _load_extra_pack(primary_config, config):
+        primary_config.setdefault('vars', {})
+        for var, value in config.get('vars', {}).items():
+            primary_config['vars'][var] = value
+
+        primary_config.setdefault('packages_list', {})
+        for group_name, group_list in config.get('packages_list', {}).items():
+            primary_config['packages_list'].setdefault(group_name, group_list)
+
+        primary_config.setdefault('debian_packages', {})
+        for list_name, list_list in config.get('debian_packages', {}).items():
+            primary_config['debian_packages'].setdefault(list_name, list_list)
+
+        primary_config.setdefault('packages', {})
+        for pack_name, pack_node in config.get('packages', {}).items():
+            primary_config['packages'].setdefault(pack_name, pack_node)
+
+        return primary_config
+
+    @staticmethod
     def var(name):
         if name in ConfigurationAware.resovler.variables.keys():
             return ConfigurationAware.resovler.variables[name]
@@ -148,7 +169,11 @@ class ConfigurationAware:
 
         ConfigurationAware.resolver = CofigurationResolver()
 
-        # TODO: merge the dicts here "somehow"
+        if extra_configs:
+            for pack in extra_configs:
+                with open(pack) as config_file:
+                    con = json.load(config_file)
+                config = ConfigurationAware._load_extra_pack(config, con)
 
         ConfigurationAware.config = ConfigurationAware.resolver.configuration_dict(
             config,
