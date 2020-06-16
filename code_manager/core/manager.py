@@ -279,5 +279,25 @@ Installation node is nor a list, nor a string.', pack,
                 cache.set_built(pack, False)
                 cache.set_installed(pack, False)
 
+    def rebuild_cache(self, asume_installed=True):
+
+        for pack, _ in self.packages.items():
+            root = self._get_root(pack)
+            pack_root = os.path.join(self.code_dir, root)
+
+            if asume_installed and os.path.exists(pack_root) and os.path.isdir(pack_root):
+                logging.debug('Assuming \'%s\' is installed in \'%s\'', pack, pack_root)
+                with self.cache:
+                    self.cache.set_built(pack, True)
+                    self.cache.set_fetched(pack, True)
+                    self.cache.set_installed(pack, True)
+                    self.cache.set_root(pack, root)
+                continue
+
+            if os.path.exists(os.path.join(pack_root, '.code_manager_cache')):
+                with self.cache:
+                    logging.debug('Rebuilding cache for package \'%s\'', pack)
+                    self.cache.rebuild(pack, pack_root)
+
     def run_command(self, command, args):
         pass

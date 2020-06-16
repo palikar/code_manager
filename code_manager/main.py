@@ -303,6 +303,15 @@ a simple, one line manner',
         default=False, help='Clear the enitrety of the cache file.',
     )
 
+    rebuild_parser = subparsers.add_parser(
+        'rebuild-cache', help='Rebuild the main cache file from the per-package ones',
+    )
+
+    rebuild_parser.add_argument(
+        '--assume-installed', dest='assume_installed', action='store_true',
+        default=False, help='Assume all folders in the code directory have a valid installed project.',
+    )
+
     groups_parser = subparsers.add_parser('list-groups', help='List the avaialble groups or the packeges in them')
 
     groups_parser.add_argument(
@@ -405,7 +414,7 @@ def clear_cache(args, core):
                 cache.drop(pack)
 
 
-def edit(args, _):
+def edit_cache(args, _):
     if args.package is None:
         logging.info('Editing %s', CACHE)
         os.system('{} {}'.format(os.getenv('EDITOR'), CACHE))
@@ -430,6 +439,10 @@ def edit(args, _):
             json.dump(cont, fp, indent=4)
 
 
+def rebuild_cache(args, core):
+    core.rebuild_cache(args.assume_installed)
+
+
 def list_fetchers(_, core):
     print('Currently available fetchers:')
     for fetcher in core.get_fetchers():
@@ -445,7 +458,8 @@ def get_commands_map():
     commands['list-packages'] = list_packages
     commands['list-cache'] = list_cache
     commands['clear-cache'] = clear_cache
-    commands['edit-cache'] = edit
+    commands['rebuild-cache'] = rebuild_cache
+    commands['edit-cache'] = edit_cache
     commands['list-groups'] = list_groups
     commands['list-fetchers'] = list_fetchers
     commands['remove'] = remove

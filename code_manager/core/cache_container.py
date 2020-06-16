@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 
 from code_manager.core.configuration import ConfigurationAware
 
@@ -45,6 +46,13 @@ class CacheContainer(ConfigurationAware):
             self.cache, open(self.cache_file, 'w'),
             indent=4, separators=(',', ' : '),
         )
+
+        for pack, p in self.cache.items():
+            json.dump(
+                p, open(os.path.join(self.code_dir, p['root'], '.code_manager_cache'), 'w'),
+                indent=4, separators=(',', ' : '),
+            )
+
         self.dirty = False
 
     def update_cache(self, name, prop, value):
@@ -58,6 +66,12 @@ class CacheContainer(ConfigurationAware):
         self.cache[name][prop] = value
         self.dirty = True
         return True
+
+    def rebuild(self, pack, root):
+        with open(os.path.join(root, '.code_manager_cache')) as c:
+            node = json.load(c)
+        self.cache[pack] = node
+        self.dirty = True
 
     def check_cache(self, name, prop='installed'):
         assert name is not None
