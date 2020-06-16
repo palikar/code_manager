@@ -91,6 +91,7 @@ class Manager(ConfigurationAware):
 
         with self.cache as cache:
             if cache.is_fetched(pack) and not self.force:
+                logging.info("\'%s\' is already fetched", pack)
                 return 0
 
             if os.path.exists(root_dir) and self.force:

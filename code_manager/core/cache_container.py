@@ -19,6 +19,7 @@ class CacheContainer(ConfigurationAware):
         try:
             self.cache = json.load(open(self.cache_file))
             self.preupdate_cache()
+            self.loaded = True
         except json.decoder.JSONDecodeError:
             logging.debug('Invalid or empty cache. Starting with clean cache')
             self.cache = dict()
