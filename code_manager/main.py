@@ -651,7 +651,7 @@ def main():
     args, _ = parser.parse_known_args()
     opt = configparser.ConfigParser()
 
-    if '--' in args.rest:
+    if hasattr(args, 'rest') and '--' in args.rest:
         args.rest.remove('--')
 
     copy_config()

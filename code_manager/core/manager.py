@@ -310,8 +310,9 @@ Installation node is nor a list, nor a string.', pack,
         self.commands.load_commands()
         for pack, _ in self.packages.items():
 
-            if not self.cache.is_installed(pack):
+            if not self.cache.is_fetched(pack):
                 continue
+
             root = os.path.join(self.code_dir, self._get_root(pack))
             self.commands.execute_command(command, args, pack, root)
-            return 0
+        return 0
