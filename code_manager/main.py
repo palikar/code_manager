@@ -44,6 +44,16 @@ USR_DIR = None
 CODE_DIR = None
 INSTALL_SCRIPTS_DIR = None
 PACKAGES_FILE = None
+commands = dict()
+
+
+def command(name):
+    global commands
+
+    def inner(func):
+        commands[name] = func
+        return func
+    return inner
 
 
 def get_arg_parser():
@@ -290,8 +300,7 @@ a simple, one line manner',
     )
 
     edit_parser = subparsers.add_parser(
-        'edit-cache', help='Edit the cache - the entire\
- file of a section for specific package',
+        'edit-cache', help='Edit the cache file',
     )
 
     edit_parser.add_argument(
@@ -322,9 +331,25 @@ a simple, one line manner',
         help='Groups to list. Will list every group if not given',
     )
 
+    grep_parser = subparsers.add_parser('grep', help='Distributed grep over the fetched pakcages')
+    grep_parser.add_argument('rest', nargs=argparse.REMAINDER)
+
+    sed_parser = subparsers.add_parser('sed', help='Distributed sed over the fetched pakcages')
+    sed_parser.add_argument('rest', nargs=argparse.REMAINDER)
+
+    push_parser = subparsers.add_parser('push', help='Push every pacakge with git repo')
+    push_parser.add_argument('rest', nargs=argparse.REMAINDER)
+
+    pull_parser = subparsers.add_parser('pull', help='Pull every pacakge with git repo')
+    pull_parser.add_argument('rest', nargs=argparse.REMAINDER)
+
+    commit_parser = subparsers.add_parser('commit', help='Make commit for every pacakge with git repo')
+    commit_parser.add_argument('rest', nargs=argparse.REMAINDER)
+
     return parser
 
 
+@command('install')
 def install(args, core):
     if args.group is not None:
         core.install_thing(args.group, install=True)
@@ -332,6 +357,7 @@ def install(args, core):
         core.install_thing(args.packages, install=True)
 
 
+@command('fetch')
 def fetch(args, core):
     if args.group is not None:
         core.install_thing(args.group, fetch=True, force=args.force)
@@ -339,6 +365,7 @@ def fetch(args, core):
         core.install_thing(args.packages, fetch=True, force=args.force)
 
 
+@command('build')
 def build(args, core):
     if args.group is not None:
         core.install_thing(args.group, build=True)
@@ -346,10 +373,12 @@ def build(args, core):
         core.install_thing(args.packages, build=True)
 
 
+@command('remove')
 def remove(args, core):
     core.remove_package(args.packages)
 
 
+@command('list-packages')
 def list_packages(args, core):
     logging.debug('Available packages:')
     packs = flatten(CONFIG['packages_list'].values())
@@ -359,6 +388,7 @@ def list_packages(args, core):
     print('\n'.join(packs))
 
 
+@command('list-cache')
 def list_cache(args, core):
     logging.debug('Dumping cache file %s', CACHE)
 
@@ -387,6 +417,7 @@ def list_cache(args, core):
             print(string)
 
 
+@command('list-groups')
 def list_groups(args, core):
 
     if not args.groups:
@@ -400,6 +431,7 @@ def list_groups(args, core):
             print(string)
 
 
+@command('clear-cache')
 def clear_cache(args, core):
 
     if args.all:
@@ -414,6 +446,7 @@ def clear_cache(args, core):
                 cache.drop(pack)
 
 
+@command('edit-cache')
 def edit_cache(args, _):
     if args.package is None:
         logging.info('Editing %s', CACHE)
@@ -439,32 +472,41 @@ def edit_cache(args, _):
             json.dump(cont, fp, indent=4)
 
 
+@command('rebuild-cache')
 def rebuild_cache(args, core):
     core.rebuild_cache(args.assume_installed)
 
 
+@command('grep')
+def grep(args, core):
+    core.run_command('grep', args.rest)
+
+
+@command('sed')
+def sed(args, core):
+    core.run_command('sed', args)
+
+
+@command('push')
+def push(args, core):
+    core.run_command('push', args)
+
+
+@command('pull')
+def pull(args, core):
+    core.run_command('pull', args)
+
+
+@command('commit')
+def commit(args, core):
+    core.run_command('commit', args)
+
+
+@command('list-fetchers')
 def list_fetchers(_, core):
     print('Currently available fetchers:')
     for fetcher in core.get_fetchers():
         print(f'\t - {fetcher}')
-
-
-def get_commands_map():
-    commands = dict()
-
-    commands['install'] = install
-    commands['fetch'] = fetch
-    commands['build'] = build
-    commands['list-packages'] = list_packages
-    commands['list-cache'] = list_cache
-    commands['clear-cache'] = clear_cache
-    commands['rebuild-cache'] = rebuild_cache
-    commands['edit-cache'] = edit_cache
-    commands['list-groups'] = list_groups
-    commands['list-fetchers'] = list_fetchers
-    commands['remove'] = remove
-
-    return commands
 
 
 def copy_config():
@@ -606,8 +648,11 @@ def save_opt(opt):
 def main():
 
     parser = get_arg_parser()
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
     opt = configparser.ConfigParser()
+
+    if '--' in args.rest:
+        args.rest.remove('--')
 
     copy_config()
     opt.read(os.path.join(code_manager.CONFDIR, 'conf'))
@@ -626,8 +671,6 @@ def main():
     if args.command is None:
         parser.print_help()
         raise SystemExit
-
-    commands = get_commands_map()
 
     ConfigurationAware.set_configuration(CONFIG, INSTALL_SCRIPTS_DIR, CACHE, opt, args, extra_configs=args.packs)
 

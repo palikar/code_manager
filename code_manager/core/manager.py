@@ -4,6 +4,7 @@ import shutil
 import sys
 
 from code_manager.core.cache_container import CacheContainer
+from code_manager.core.command_container import CommandContainer
 from code_manager.core.configuration import CofigurationResolver
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.core.deb_dependency import Depender
@@ -29,6 +30,7 @@ class Manager(ConfigurationAware):
         self.depender = DebGrapher()
         self.dep_depender = Depender()
         self.resolver = CofigurationResolver()
+        self.commands = CommandContainer()
 
         self._setup_all()
 
@@ -52,7 +54,6 @@ class Manager(ConfigurationAware):
         return root
 
     def _setup_all(self):
-        self.installation.load_installer()
         self.cache.load_cache()
         self.depender.verify_packages_tree()
 
@@ -114,6 +115,9 @@ class Manager(ConfigurationAware):
             self._do_fetch(pack)
 
     def _invoke_build(self):
+
+        self.installation.load_installer()
+
         broken = []
         for pack in self.install_queue:
             if self.cache.is_installed(pack):
@@ -133,6 +137,9 @@ class Manager(ConfigurationAware):
                     cache.set_built(pack, True)
 
     def _invoke_install(self):
+
+        self.installation.load_installer()
+
         extended_queue = set(self.install_queue)
         for pack in self.install_queue:
             extended_queue.update(self.depender.get_deep_dependencies(pack))
@@ -300,4 +307,11 @@ Installation node is nor a list, nor a string.', pack,
                     self.cache.rebuild(pack, pack_root)
 
     def run_command(self, command, args):
-        pass
+        self.commands.load_commands()
+        for pack, _ in self.packages.items():
+
+            if not self.cache.is_installed(pack):
+                continue
+            root = os.path.join(self.code_dir, self._get_root(pack))
+            self.commands.execute_command(command, args, pack, root)
+            return 0
