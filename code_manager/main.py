@@ -8,6 +8,7 @@ import logging
 import os
 import subprocess
 import sys
+import tempfile
 from shutil import copyfile
 from shutil import copytree
 
@@ -288,6 +289,15 @@ a simple, one line manner',
         'packages', nargs='*', default=None, help='A list of packages to remove from cache.',
     )
 
+    edit_parser = subparsers.add_parser(
+        'edit-cache', help='Edit the cache - the entire\
+ file of a section for specific package',
+    )
+
+    edit_parser.add_argument(
+        'package', nargs='?', default=None, help='Package for which to edit the cahce file.',
+    )
+
     clear_parser.add_argument(
         '-a', '--all', dest='all', action='store_true',
         default=False, help='Clear the enitrety of the cache file.',
@@ -395,6 +405,31 @@ def clear_cache(args, core):
                 cache.drop(pack)
 
 
+def edit(args, _):
+    if args.package is None:
+        logging.info('Editing %s', CACHE)
+        os.system('{} {}'.format(os.getenv('EDITOR'), CACHE))
+    else:
+        pack = args.package
+        logging.info('Editing cache entry for %s', pack)
+
+        with open(CACHE) as c:
+            cont = json.load(c)
+
+        new_file, filename = tempfile.mkstemp()
+        with open(filename, 'w') as fp:
+            json.dump(cont[pack], fp, indent=4)
+
+        os.system('{} {}'.format(os.getenv('EDITOR'), filename))
+
+        with open(filename) as c:
+            new_entry = json.load(c)
+        cont[pack] = new_entry
+
+        with open(CACHE, 'w') as fp:
+            json.dump(cont, fp, indent=4)
+
+
 def list_fetchers(_, core):
     print('Currently available fetchers:')
     for fetcher in core.get_fetchers():
@@ -410,6 +445,7 @@ def get_commands_map():
     commands['list-packages'] = list_packages
     commands['list-cache'] = list_cache
     commands['clear-cache'] = clear_cache
+    commands['edit-cache'] = edit
     commands['list-groups'] = list_groups
     commands['list-fetchers'] = list_fetchers
     commands['remove'] = remove
