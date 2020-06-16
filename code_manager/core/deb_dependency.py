@@ -30,6 +30,7 @@ class Depender(ConfigurationAware):
         assert package is not None
 
         dependencies = self.packages[package].get('deb_packages', [])
+
         if not dependencies:
             return 0
         return self.install_deb_packages(dependencies)
@@ -52,7 +53,16 @@ class Depender(ConfigurationAware):
         if not deb:
             return 0
 
-        print('\n\tRun \'sudo apt-get install -y {}\'\n'.format(' '.join(deb)))
-        return 1
-        # options = "--allow-unauthenticated  --allow-change-held-packages"
-        # return os.system("sudo apt-get install -y  {} {}".format(deb, options))
+        if not self.args.apt:
+            print(
+                '\n\tRun \'sudo apt-get install -y --allow-unauthenticated\
+--allow-change-held-packages {}\'\n'.format(' '.join(deb)),
+            )
+            return 1
+
+        command = 'sudo apt-get install -y {}'.format(' '.join(deb))
+        logging.log('Installing apt packages: %s', command)
+        child = subprocess.Popen(command, shell=True)
+        _ = child.communicate()[0]
+        ret_code = child.returncode
+        return ret_code

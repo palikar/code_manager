@@ -151,7 +151,6 @@ class ConfigurationAware:
     @staticmethod
     def _load_pack_form_link(link):
         r = requests.get(link)
-        breakpoint()
         try:
             config = json.loads(r.content)
         except json.JSONDecodeError:
@@ -177,13 +176,14 @@ class ConfigurationAware:
         return ConfigurationAware.config['vars']
 
     @staticmethod
-    def set_configuration(config, install_scripts_dir, cache_file, opt, extra_configs=[]):
+    def set_configuration(config, install_scripts_dir, cache_file, opt, args, extra_configs=[]):
 
         ConfigurationAware.config_dir = sanitize_input_variable('${HOME}/.config/code_manager/')
         ConfigurationAware.usr_dir = sanitize_input_variable(opt['Config']['usr'])
         ConfigurationAware.code_dir = sanitize_input_variable(opt['Config']['code'])
 
         ConfigurationAware.opt = opt
+        ConfigurationAware.args = args
 
         ConfigurationAware.resolver = CofigurationResolver()
 

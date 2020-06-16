@@ -131,21 +131,33 @@ def get_arg_parser():
         help='Installs packages \
         (fetch, build and install)',
     )
+
     parser_install.add_argument(
         'packages', nargs='*', default=None, help='A list of packages to install',
     )
+
     parser_install.add_argument(
         '--reinstall',
         dest='reinstall',
         action='store_true',
         help='Should the packages be reinstalled',
     )
+
     parser_install.add_argument(
         '--group',
         action='store',
         metavar='group',
         default=None,
         help='Should the packages be reinstalled',
+    )
+
+    parser_install.add_argument(
+        '-n',
+        '--no-apt',
+        action='store_false',
+        dest='apt',
+        default=True,
+        help='If given, don\'t install apt packages automaticall but give a command to be executed.',
     )
 
     parser_fetch = subparsers.add_parser(
@@ -567,7 +579,7 @@ def main():
 
     commands = get_commands_map()
 
-    ConfigurationAware.set_configuration(CONFIG, INSTALL_SCRIPTS_DIR, CACHE, opt, extra_configs=args.packs)
+    ConfigurationAware.set_configuration(CONFIG, INSTALL_SCRIPTS_DIR, CACHE, opt, args, extra_configs=args.packs)
 
     logging.debug('Code dir: %s', CODE_DIR)
     logging.debug('Usr dir: %s', USR_DIR)

@@ -149,13 +149,14 @@ class Manager(ConfigurationAware):
 
             self._do_fetch(pack, root=root, node=node)
 
+            if self.dep_depender.check(pack) != 0:
+                raise SystemExit
+
             with self.cache as cache:
                 # if the package is not installed - install it
                 # installation means 'for the first time'
                 if not cache.is_installed(pack):
                     logging.info("Trying to install \'%s\'", pack)
-                    if self.dep_depender.check(pack) != 0:
-                        raise SystemExit
                     logging.debug('No missing debian packages.')
                     if self.installation.install(pack, cache.get_root(pack), node) == 0:
                         logging.info("\'%s\' was installed", pack)
