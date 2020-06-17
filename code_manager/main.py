@@ -332,7 +332,15 @@ a simple, one line manner',
     )
 
     grep_parser = subparsers.add_parser('grep', help='Distributed grep over the fetched pakcages')
-    grep_parser.add_argument('rest', nargs=argparse.REMAINDER)
+    grep_parser.add_argument(
+        '-t', '--thing', action='store', default=None, dest='thing',
+        help='Group or package to execute the grep for.',
+    )
+    grep_parser.add_argument(
+        '-n', '--no-color', action='store_true', default=None, dest='no_color',
+        help='Supress any color in the output',
+    )
+    grep_parser.add_argument('rest', nargs=argparse.REMAINDER, help='Arguments passed to the grep command')
 
     sed_parser = subparsers.add_parser('sed', help='Distributed sed over the fetched pakcages')
     sed_parser.add_argument('rest', nargs=argparse.REMAINDER)
@@ -479,7 +487,7 @@ def rebuild_cache(args, core):
 
 @command('grep')
 def grep(args, core):
-    core.run_command('grep', args.rest)
+    core.run_command('grep', args, thing=args.thing)
 
 
 @command('sed')

@@ -307,9 +307,17 @@ Installation node is nor a list, nor a string.', pack,
                     logging.debug('Rebuilding cache for package \'%s\'', pack)
                     self.cache.rebuild(pack, pack_root)
 
-    def run_command(self, command, args):
+    def run_command(self, command, args, thing=None, prim_args=None):
         self.commands.load_commands()
-        for pack, _ in self.packages.items():
+
+        if thing in self.packages.keys():
+            queue = [thing]
+        elif thing in self.packages_list.keys():
+            queue = self.config['packages_list'][thing]
+        else:
+            queue = self.packages.keys()
+
+        for pack in queue:
 
             if not self.cache.is_fetched(pack):
                 continue
