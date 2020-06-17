@@ -5,6 +5,7 @@ import re
 
 import requests
 
+from code_manager.utils.strings import is_link
 from code_manager.utils.utils import flatten
 from code_manager.utils.utils import recursive_items
 from code_manager.utils.utils import sanitize_input_variable
@@ -126,8 +127,6 @@ class CofigurationResolver:
 
 class ConfigurationAware:
 
-    URL_REGEX = re.compile(r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))")
-
     @staticmethod
     def _load_extra_pack(primary_config, config):
         primary_config.setdefault('vars', {})
@@ -190,7 +189,7 @@ class ConfigurationAware:
         if extra_configs:
             for pack in extra_configs:
 
-                if re.match(ConfigurationAware.URL_REGEX, pack):
+                if is_link(pack):
                     logging.debug('Loading extra packages.json from link: %s', pack)
                     con = ConfigurationAware._load_pack_form_link(pack)
                 elif os.path.exists(pack):
