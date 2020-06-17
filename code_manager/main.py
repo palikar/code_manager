@@ -408,6 +408,17 @@ a simple, one line manner',
     )
     find_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
+    root_parser = subparsers.add_parser('root', help='Find the root directory of package')
+    root_parser.add_argument(
+        '-t', '--thing', action='store', default=None, dest='thing',
+        help='Group or package to execute the command for.',
+    )
+    root_parser.add_argument(
+        '-n', '--no-color', action='store_true', default=None, dest='no_color',
+        help='Supress any color in the output',
+    )
+    root_parser.add_argument('rest', nargs=argparse.REMAINDER)
+
     return parser
 
 
@@ -567,6 +578,11 @@ def commit(args, core):
 @command('find')
 def find(args, core):
     core.run_command('find', args, thing=args.thing)
+
+
+@command('root')
+def root(args, core):
+    core.run_command('root', args, thing=args.thing)
 
 
 @command('list-fetchers')

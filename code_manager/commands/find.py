@@ -1,16 +1,13 @@
 import logging
-import sys
 import os
 import subprocess
+import sys
 
-
-from code_manager.core.configuration import ConfigurationAware
 from code_manager.utils.logger import RED
 from code_manager.utils.logger import RESET
-from code_manager.utils.logger import CYAN
 
 
-class FindCommand(ConfigurationAware):
+class FindCommand():
 
     name = 'find'
 
@@ -37,12 +34,11 @@ class FindCommand(ConfigurationAware):
 
         for file_name in files:
             if color:
-                sys.stdout.buffer.write(bytes(RED + self.pack + RESET + ':' , 'utf-8') + file_name + b'\n')
+                sys.stdout.buffer.write(bytes(RED + self.pack + RESET + ':', 'utf-8') + file_name + b'\n')
             else:
                 sys.stdout.buffer.write(bytes(self.pack + ':', 'utf-8') + file_name + b'\n')
-            
-        sys.stdout.buffer.flush()
 
+        sys.stdout.buffer.flush()
 
         return 0
 
