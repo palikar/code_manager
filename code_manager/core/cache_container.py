@@ -3,6 +3,7 @@ import logging
 import os
 
 from code_manager.core.configuration import ConfigurationAware
+from code_manager.utils.read_input import promt_yes_no
 
 
 class CacheContainer(ConfigurationAware):
@@ -14,16 +15,30 @@ class CacheContainer(ConfigurationAware):
     def __init__(self):
         pass
 
+    def _internal_rebuild(self):
+        for pack, _ in self.packages.items():
+            root = self._get_root(pack)
+            pack_root = os.path.join(self.code_dir, root)
+            if os.path.exists(os.path.join(pack_root, '.code_manager_cache')):
+                with open(os.path.join(root, '.code_manager_cache')) as c:
+                    node = json.load(c)
+                self.cache[pack] = node
+
     def load_cache(self):
         logging.debug('Loading cache from the cache file %s ', self.cache_file)
+
         try:
             self.cache = json.load(open(self.cache_file))
-            self.preupdate_cache()
-            self.loaded = True
         except json.decoder.JSONDecodeError:
             logging.debug('Invalid or empty cache. Starting with clean cache')
-            self.cache = dict()
-            self.preupdate_cache()
+
+            if not promt_yes_no('Cache file is invalid. Should it be erased and build again?'):
+                raise SystemExit
+
+            self._internal_rebuild()
+
+        self.preupdate_cache()
+        self.loaded = True
 
     def preupdate_cache(self):
         for group, packages in self.packages_list.items():
@@ -49,6 +64,9 @@ class CacheContainer(ConfigurationAware):
         )
 
         for pack, p in self.cache.items():
+            if not p['fetched']:
+                continue
+
             json.dump(
                 p, open(os.path.join(self.code_dir, p['root'], '.code_manager_cache'), 'w'),
                 indent=4, separators=(',', ' : '),

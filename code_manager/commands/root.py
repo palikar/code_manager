@@ -17,8 +17,8 @@ class RootCommand(ConfigurationAware):
         if self.color and not args.no_color:
             color = True
         elif args.no_color:
-            color = False            
-        
+            color = False
+
         line = bytes(path, 'utf-8')
         if color:
             sys.stdout.buffer.write(bytes(RED + self.pack + RESET + ':', 'utf-8') + line + b'\n')

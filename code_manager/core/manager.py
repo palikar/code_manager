@@ -34,25 +34,6 @@ class Manager(ConfigurationAware):
 
         self._setup_all()
 
-    def _get_group(self, pack):
-        for gr, packs in self.packages_list.items():
-            if pack in packs:
-                return gr
-
-    def _get_root(self, pack):
-        package = self.packages[pack]
-        root = pack
-
-        group = self._get_group(pack)
-        group_dirs = self.packages_config.get('group_dirs', {})
-        if group in group_dirs.keys():
-            root = os.path.join(group_dirs[group], root).strip('/')
-
-        if 'root' in package.keys():
-            root = os.path.join(package.get['root'], pack).strip('/')
-
-        return root
-
     def _setup_all(self):
         self.cache.load_cache()
         self.depender.verify_packages_tree()
