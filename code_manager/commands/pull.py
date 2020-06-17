@@ -1,3 +1,4 @@
+import logging
 import os
 import subprocess
 
@@ -12,7 +13,9 @@ class PullCommand:
     def execute(self, args, path):
         if not os.path.exists(os.path.join(path, '.git')):
             return 0
-        ret = subprocess.run(['git', 'pull', *args], stdout=subprocess.STDOUT, cwd=path)
+        push_command = ['git', 'pull', *args.rest]
+        logging.debug('Running command: [%s] in %s', ' '.join(push_command), path)
+        subprocess.run(push_command, stdout=subprocess.STDOUT, cwd=path)
         return 0
 
 

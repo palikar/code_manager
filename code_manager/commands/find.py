@@ -1,17 +1,18 @@
 import logging
+import sys
 import os
 import subprocess
-import sys
+
 
 from code_manager.core.configuration import ConfigurationAware
-from code_manager.utils.logger import CYAN
 from code_manager.utils.logger import RED
 from code_manager.utils.logger import RESET
+from code_manager.utils.logger import CYAN
 
 
-class SedCommand(ConfigurationAware):
+class FindCommand(ConfigurationAware):
 
-    name = 'sed'
+    name = 'find'
 
     def __init__(self):
         self.color = False if self.opt.get('Commands', 'sed-colors', fallback=True) == 'false' else True
@@ -35,24 +36,15 @@ class SedCommand(ConfigurationAware):
         files = ret.stdout.splitlines()
 
         for file_name in files:
-            file_name = file_name.decode('utf-8')
-            sed_command = ['sed']
-            if args.inplace:
-                sed_command.append('-i')
-            sed_command.extend(args.sed_args)
-            sed_command.extend(['-e', args.expression, file_name])
+            if color:
+                sys.stdout.buffer.write(bytes(RED + self.pack + RESET + ':' , 'utf-8') + file_name + b'\n')
+            else:
+                sys.stdout.buffer.write(bytes(self.pack + ':', 'utf-8') + file_name + b'\n')
+            
+        sys.stdout.buffer.flush()
 
-            logging.debug('Running command: [%s] in ', ' '.join(sed_command), path)
-            ret = subprocess.run(sed_command, stdout=subprocess.PIPE, cwd=path, check=False)
-
-            for line in ret.stdout.splitlines():
-                if color:
-                    sys.stdout.buffer.write(bytes(RED + self.pack + RESET + ':' + CYAN + file_name + RESET + ':', 'utf-8') + line + b'\n')
-                else:
-                    sys.stdout.buffer.write(bytes(self.pack + ':' + file_name + ':', 'utf-8') + line + b'\n')
-            sys.stdout.buffer.flush()
 
         return 0
 
 
-ExportedClass = SedCommand
+ExportedClass = FindCommand

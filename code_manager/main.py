@@ -322,7 +322,6 @@ a simple, one line manner',
     )
 
     groups_parser = subparsers.add_parser('list-groups', help='List the avaialble groups or the packeges in them')
-
     groups_parser.add_argument(
         'groups',
         action='store',
@@ -334,7 +333,7 @@ a simple, one line manner',
     grep_parser = subparsers.add_parser('grep', help='Distributed grep over the fetched pakcages')
     grep_parser.add_argument(
         '-t', '--thing', action='store', default=None, dest='thing',
-        help='Group or package to execute the grep for.',
+        help='Group or package to execute the command for.',
     )
     grep_parser.add_argument(
         '-n', '--no-color', action='store_true', default=None, dest='no_color',
@@ -343,16 +342,71 @@ a simple, one line manner',
     grep_parser.add_argument('rest', nargs=argparse.REMAINDER, help='Arguments passed to the grep command')
 
     sed_parser = subparsers.add_parser('sed', help='Distributed sed over the fetched pakcages')
+    sed_parser.add_argument(
+        '-t', '--thing', action='store', default=None, dest='thing',
+        help='Group or package to execute the command for.',
+    )
+    sed_parser.add_argument(
+        '-s', '--sed-args', action='append', default=[], dest='sed_args',
+        help='Extra argument for the sed command.',
+    )
+    sed_parser.add_argument(
+        '-i', '--in-place', action='store_true', default=False, dest='inplace',
+        help='Run the sed command with the \'-i\' flag.',
+    )
+    sed_parser.add_argument(
+        '-n', '--no-color', action='store_true', default=None, dest='no_color',
+        help='Supress any color in the output',
+    )
+    sed_parser.add_argument(
+        'expression', action='store',
+        help='Sed expression to use.',
+    )
+    sed_parser.add_argument(
+        'files', action='store',
+        help='A glob for filenames.',
+    )
     sed_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
     push_parser = subparsers.add_parser('push', help='Push every pacakge with git repo')
+    push_parser.add_argument(
+        '-t', '--thing', action='store', default=None, dest='thing',
+        help='Group or package to execute the command for.',
+    )
     push_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
     pull_parser = subparsers.add_parser('pull', help='Pull every pacakge with git repo')
+    pull_parser.add_argument(
+        '-t', '--thing', action='store', default=None, dest='thing',
+        help='Group or package to execute the command for.',
+    )
     pull_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
     commit_parser = subparsers.add_parser('commit', help='Make commit for every pacakge with git repo')
+    commit_parser.add_argument(
+        '-t', '--thing', action='store', default=None, dest='thing',
+        help='Group or package to execute the command for.',
+    )
+    commit_parser.add_argument(
+        'message', action='store',
+        help='Message for the newly created commit.',
+    )
     commit_parser.add_argument('rest', nargs=argparse.REMAINDER)
+
+    find_parser = subparsers.add_parser('find', help='Run distributed find command for every package.')
+    find_parser.add_argument(
+        '-t', '--thing', action='store', default=None, dest='thing',
+        help='Group or package to execute the command for.',
+    )
+    find_parser.add_argument(
+        '-n', '--no-color', action='store_true', default=None, dest='no_color',
+        help='Supress any color in the output',
+    )
+    find_parser.add_argument(
+        'files', action='store',
+        help='A glob for filenames.',
+    )
+    find_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
     return parser
 
@@ -492,22 +546,27 @@ def grep(args, core):
 
 @command('sed')
 def sed(args, core):
-    core.run_command('sed', args)
+    core.run_command('sed', args, thing=args.thing)
 
 
 @command('push')
 def push(args, core):
-    core.run_command('push', args)
+    core.run_command('push', args, thing=args.thing)
 
 
 @command('pull')
 def pull(args, core):
-    core.run_command('pull', args)
+    core.run_command('pull', args, thing=args.thing)
 
 
 @command('commit')
 def commit(args, core):
-    core.run_command('commit', args)
+    core.run_command('commit', args, thing=args.thing)
+
+
+@command('find')
+def find(args, core):
+    core.run_command('find', args, thing=args.thing)
 
 
 @command('list-fetchers')

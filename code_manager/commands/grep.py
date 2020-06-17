@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import sys
 
@@ -24,7 +25,9 @@ class GrepCommand(ConfigurationAware):
             grep_command.append('--color=never')
 
         grep_command.extend(args.rest)
-        ret = subprocess.run(grep_command, stdout=subprocess.PIPE, cwd=path)
+
+        logging.debug('Running command: [%s] in %s', ' '.join(grep_command), path)
+        ret = subprocess.run(grep_command, stdout=subprocess.PIPE, cwd=path, check=False)
 
         for line in ret.stdout.splitlines():
             if color:
