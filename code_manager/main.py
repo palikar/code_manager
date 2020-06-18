@@ -373,12 +373,20 @@ a simple, one line manner',
         '-t', '--thing', action='store', default=None, dest='thing',
         help='Group or package to execute the command for.',
     )
+    push_parser.add_argument(
+        '-n', '--no-color', action='store_true', default=None, dest='no_color',
+        help='Supress any color in the output',
+    )
     push_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
     pull_parser = subparsers.add_parser('pull', help='Pull every pacakge with git repo')
     pull_parser.add_argument(
         '-t', '--thing', action='store', default=None, dest='thing',
         help='Group or package to execute the command for.',
+    )
+    pull_parser.add_argument(
+        '-n', '--no-color', action='store_true', default=None, dest='no_color',
+        help='Supress any color in the output',
     )
     pull_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
@@ -390,6 +398,10 @@ a simple, one line manner',
     commit_parser.add_argument(
         'message', action='store',
         help='Message for the newly created commit.',
+    )
+    commit_parser.add_argument(
+        '-n', '--no-color', action='store_true', default=None, dest='no_color',
+        help='Supress any color in the output',
     )
     commit_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
