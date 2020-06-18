@@ -419,6 +419,24 @@ a simple, one line manner',
     )
     root_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
+    command_parser = subparsers.add_parser(
+        'command', help='Execute general shell command\
+ in the root directory of a package.',
+    )
+    command_parser.add_argument(
+        '-t', '--thing', action='store', default=None, dest='thing',
+        help='Group or package to execute the command for.',
+    )
+    command_parser.add_argument(
+        '-n', '--no-color', action='store_true', default=None, dest='no_color',
+        help='Supress any color in the output',
+    )
+    command_parser.add_argument(
+        '-g', '--git-only', action='store_true', default=None, dest='git',
+        help='Execute the command only for git repositories.',
+    )
+    command_parser.add_argument('rest', nargs=argparse.REMAINDER, help='The command to execute.')
+
     return parser
 
 
@@ -583,6 +601,11 @@ def find(args, core):
 @command('root')
 def root(args, core):
     core.run_command('root', args, thing=args.thing)
+
+
+@command('command')
+def execture(args, core):
+    core.run_command('command', args, thing=args.thing)
 
 
 @command('list-fetchers')
