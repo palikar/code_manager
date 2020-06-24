@@ -33,6 +33,7 @@ setup(
     entry_points={
         'console_scripts': [
             'code-manager = code_manager.main:main',
+            'gen-packages-node = code_manager.gen_packages_node:main',
         ],
     },
     classifiers=[
