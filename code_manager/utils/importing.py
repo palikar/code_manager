@@ -17,7 +17,9 @@ def import_file(path, name, core_package='code_manager'):
     elif sys.version_info >= (3, 3):
         # python 3.3 - 3.4
         from importlib.machinery import SourceFileLoader  # pylint: disable=C0415
-        imported = SourceFileLoader(f'code_manager.{name}', path).load_module()  # pylint: disable=W1505,E1120
+        imported = SourceFileLoader(
+            f'code_manager.{name}', path,
+        ).load_module()  # pylint: disable=W1505,E1120
     else:
         # python 2
         import imp  # pylint: disable=C0415

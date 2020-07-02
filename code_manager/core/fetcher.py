@@ -56,7 +56,9 @@ class Fetcher(ConfigurationAware):
             if self.download_methods[fetcher](name, package, root) is None:
                 return None
         else:
-            debug_red('The fetcher field of the package \'%s\' is invalid: %s', name, fetcher)
+            debug_red(
+                'The fetcher field of the package \'%s\' is invalid: %s', name, fetcher,
+            )
             return None
 
         self._try_extract(package)
@@ -81,7 +83,9 @@ class Fetcher(ConfigurationAware):
                 ]
                 extr_dir = dirs[0]
                 dest_dir = os.path.dirname(file_path)
-                logging.info('Moving the top level archive folder: %s -> %s', extr_dir, dest_dir)
+                logging.info(
+                    'Moving the top level archive folder: %s -> %s', extr_dir, dest_dir,
+                )
                 move_tree(extr_dir, dest_dir)
                 shutil.rmtree(extr_dir)
 
@@ -163,7 +167,9 @@ class Fetcher(ConfigurationAware):
             cmd.append('checkout')
             cmd.append(git_node['checkout'])
 
-            logging.debug('Checking out a git repository with "%s" ', ' '.join(cmd))
+            logging.debug(
+                'Checking out a git repository with "%s" ', ' '.join(cmd),
+            )
             res = subprocess.run(cmd, cwd=path)
             if res.returncode != 0:
                 debug_red('The checking out failed!')

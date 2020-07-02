@@ -24,9 +24,15 @@ class PathInstaller(BasicInstaller, ConfigurationAware):
         if isinstance(paths, str):
             paths = [paths]
 
-        paths = map(lambda p: 'export PATH=${{PATH}}:{}'.format(sanitize_input_variable(p)), paths)
+        paths = map(
+            lambda p: 'export PATH=${{PATH}}:{}'.format(
+                sanitize_input_variable(p),
+            ), paths,
+        )
 
-        target_file = '~/.bashrc' if in_bashrc else os.path.join(self.code_dir, 'setenv.sh')
+        target_file = '~/.bashrc' if in_bashrc else os.path.join(
+            self.code_dir, 'setenv.sh',
+        )
         target_file = sanitize_input_variable(target_file)
 
         with open(target_file) as target:

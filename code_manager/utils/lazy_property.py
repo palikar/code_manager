@@ -14,7 +14,8 @@ class lazy_property():  # pylint: disable=invalid-name,too-few-public-methods
         if not hasattr(input_obj, reset_function_name):
             def reset_function():
                 setattr(input_obj, self.__name__, self)
-                del input_obj.__dict__[self.__name__]  # force "__get__" being called
+                # force "__get__" being called
+                del input_obj.__dict__[self.__name__]
             input_obj.__dict__[reset_function_name] = reset_function
 
         result = self._method(input_obj)

@@ -75,7 +75,9 @@ will be loaded here\n')
 
     with open(emacs_init) as file:
         content = file.read()
-        match = re.search('(load-file \"~/.emacs.d/code-manager-packages.el\")', content)
+        match = re.search(
+            '(load-file \"~/.emacs.d/code-manager-packages.el\")', content,
+        )
 
     if not match:
         with open(emacs_init, 'a') as file:

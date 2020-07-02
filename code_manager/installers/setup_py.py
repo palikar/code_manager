@@ -22,7 +22,9 @@ class SetupPyInstaller(BasicInstaller, ConfigurationAware):
         setup_file = os.path.join(self.root, 'setup.py')
 
         if not os.path.isfile(setup_file):
-            debug_red('There isn\'t a setup.py file at the root of the package %s.', name)
+            debug_red(
+                'There isn\'t a setup.py file at the root of the package %s.', name,
+            )
             return None
 
         setup_command = ['python']

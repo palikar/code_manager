@@ -44,10 +44,14 @@ class CofigurationResolver:
 
             for var, val in config['vars'].items():
                 if not self._VAR_NAME_RE.fullmatch(var):
-                    logging.debug("The variable '%s' has invalid identifier.", var)
+                    logging.debug(
+                        "The variable '%s' has invalid identifier.", var,
+                    )
                     success = False
                 if not isinstance(val, str):
-                    logging.debug("The variable '%s' has invalid value '%s'.", var, val)
+                    logging.debug(
+                        "The variable '%s' has invalid value '%s'.", var, val,
+                    )
                     success = False
 
         packages_list = flatten(config['packages_list'].values())
@@ -177,9 +181,15 @@ class ConfigurationAware:
     @staticmethod
     def set_configuration(config, install_scripts_dir, cache_file, opt, args, extra_configs=[]):
 
-        ConfigurationAware.config_dir = sanitize_input_variable('${HOME}/.config/code_manager/')
-        ConfigurationAware.usr_dir = sanitize_input_variable(opt['Config']['usr'])
-        ConfigurationAware.code_dir = sanitize_input_variable(opt['Config']['code'])
+        ConfigurationAware.config_dir = sanitize_input_variable(
+            '${HOME}/.config/code_manager/',
+        )
+        ConfigurationAware.usr_dir = sanitize_input_variable(
+            opt['Config']['usr'],
+        )
+        ConfigurationAware.code_dir = sanitize_input_variable(
+            opt['Config']['code'],
+        )
 
         ConfigurationAware.opt = opt
         ConfigurationAware.args = args
@@ -190,10 +200,16 @@ class ConfigurationAware:
             for pack in extra_configs:
 
                 if is_link(pack):
-                    logging.debug('Loading extra packages.json from link: %s', pack)
+                    logging.debug(
+                        'Loading extra packages.json from link: %s', pack,
+                    )
                     con = ConfigurationAware._load_pack_form_link(pack)
                 elif os.path.exists(pack):
-                    logging.debug('Loading extra packages.json file: %s', os.path.abspath(pack))
+                    logging.debug(
+                        'Loading extra packages.json file: %s', os.path.abspath(
+                            pack,
+                        ),
+                    )
                     with open(pack) as config_file:
                         con = json.load(config_file)
                 else:
@@ -209,7 +225,9 @@ class ConfigurationAware:
         ConfigurationAware.packages_list = ConfigurationAware.config['packages_list']
         ConfigurationAware.packages = ConfigurationAware.config['packages']
 
-        ConfigurationAware.packages_config = ConfigurationAware.config.get('packages_config', {})
+        ConfigurationAware.packages_config = ConfigurationAware.config.get(
+            'packages_config', {},
+        )
 
         ConfigurationAware.variables = ConfigurationAware.resolver.variables
 
@@ -218,10 +236,12 @@ class ConfigurationAware:
         ConfigurationAware.cache_file = cache_file
 
         ConfigurationAware.debug = (
-            'debug' in opt['Config'].keys() and opt['Config']['debug'] == 'true'
+            'debug' in opt['Config'].keys(
+            ) and opt['Config']['debug'] == 'true'
         )
         ConfigurationAware.git_ssh = (
-            'git_ssh' in opt['Download'].keys() and opt['Download']['git_ssh'] == 'true'
+            'git_ssh' in opt['Download'].keys(
+            ) and opt['Download']['git_ssh'] == 'true'
         )
 
     def _get_group(self, pack):

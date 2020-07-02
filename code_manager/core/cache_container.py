@@ -68,7 +68,12 @@ class CacheContainer(ConfigurationAware):
                 continue
 
             json.dump(
-                p, open(os.path.join(self.code_dir, p['root'], '.code_manager_cache'), 'w'),
+                p, open(
+                    os.path.join(
+                        self.code_dir,
+                        p['root'], '.code_manager_cache',
+                    ), 'w',
+                ),
                 indent=4, separators=(',', ' : '),
             )
 

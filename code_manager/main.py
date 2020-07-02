@@ -293,7 +293,9 @@ a simple, one line manner',
         help='Disable the pager while printing the packeges in a table form.',
     )
 
-    clear_parser = subparsers.add_parser('clear-cache', help='Clears the entries in the cache file')
+    clear_parser = subparsers.add_parser(
+        'clear-cache', help='Clears the entries in the cache file',
+    )
 
     clear_parser.add_argument(
         'packages', nargs='*', default=None, help='A list of packages to remove from cache.',
@@ -321,7 +323,9 @@ a simple, one line manner',
         default=False, help='Assume all folders in the code directory have a valid installed project.',
     )
 
-    groups_parser = subparsers.add_parser('list-groups', help='List the avaialble groups or the packeges in them')
+    groups_parser = subparsers.add_parser(
+        'list-groups', help='List the avaialble groups or the packeges in them',
+    )
     groups_parser.add_argument(
         'groups',
         action='store',
@@ -330,7 +334,9 @@ a simple, one line manner',
         help='Groups to list. Will list every group if not given',
     )
 
-    grep_parser = subparsers.add_parser('grep', help='Distributed grep over the fetched pakcages')
+    grep_parser = subparsers.add_parser(
+        'grep', help='Distributed grep over the fetched pakcages',
+    )
     grep_parser.add_argument(
         '-t', '--thing', action='store', default=None, dest='thing',
         help='Group or package to execute the command for.',
@@ -339,9 +345,13 @@ a simple, one line manner',
         '-n', '--no-color', action='store_true', default=None, dest='no_color',
         help='Supress any color in the output',
     )
-    grep_parser.add_argument('rest', nargs=argparse.REMAINDER, help='Arguments passed to the grep command')
+    grep_parser.add_argument(
+        'rest', nargs=argparse.REMAINDER, help='Arguments passed to the grep command',
+    )
 
-    sed_parser = subparsers.add_parser('sed', help='Distributed sed over the fetched pakcages')
+    sed_parser = subparsers.add_parser(
+        'sed', help='Distributed sed over the fetched pakcages',
+    )
     sed_parser.add_argument(
         '-t', '--thing', action='store', default=None, dest='thing',
         help='Group or package to execute the command for.',
@@ -368,7 +378,9 @@ a simple, one line manner',
     )
     sed_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
-    push_parser = subparsers.add_parser('push', help='Push every pacakge with git repo')
+    push_parser = subparsers.add_parser(
+        'push', help='Push every pacakge with git repo',
+    )
     push_parser.add_argument(
         '-t', '--thing', action='store', default=None, dest='thing',
         help='Group or package to execute the command for.',
@@ -379,7 +391,9 @@ a simple, one line manner',
     )
     push_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
-    pull_parser = subparsers.add_parser('pull', help='Pull every pacakge with git repo')
+    pull_parser = subparsers.add_parser(
+        'pull', help='Pull every pacakge with git repo',
+    )
     pull_parser.add_argument(
         '-t', '--thing', action='store', default=None, dest='thing',
         help='Group or package to execute the command for.',
@@ -390,7 +404,9 @@ a simple, one line manner',
     )
     pull_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
-    commit_parser = subparsers.add_parser('commit', help='Make commit for every pacakge with git repo')
+    commit_parser = subparsers.add_parser(
+        'commit', help='Make commit for every pacakge with git repo',
+    )
     commit_parser.add_argument(
         '-t', '--thing', action='store', default=None, dest='thing',
         help='Group or package to execute the command for.',
@@ -405,7 +421,9 @@ a simple, one line manner',
     )
     commit_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
-    find_parser = subparsers.add_parser('find', help='Run distributed find command for every package.')
+    find_parser = subparsers.add_parser(
+        'find', help='Run distributed find command for every package.',
+    )
     find_parser.add_argument(
         '-t', '--thing', action='store', default=None, dest='thing',
         help='Group or package to execute the command for.',
@@ -420,7 +438,9 @@ a simple, one line manner',
     )
     find_parser.add_argument('rest', nargs=argparse.REMAINDER)
 
-    root_parser = subparsers.add_parser('root', help='Find the root directory of package')
+    root_parser = subparsers.add_parser(
+        'root', help='Find the root directory of package',
+    )
     root_parser.add_argument(
         '-t', '--thing', action='store', default=None, dest='thing',
         help='Group or package to execute the command for.',
@@ -447,7 +467,9 @@ a simple, one line manner',
         '-g', '--git-only', action='store_true', default=None, dest='git',
         help='Execute the command only for git repositories.',
     )
-    command_parser.add_argument('rest', nargs=argparse.REMAINDER, help='The command to execute.')
+    command_parser.add_argument(
+        'rest', nargs=argparse.REMAINDER, help='The command to execute.',
+    )
 
     return parser
 
@@ -669,7 +691,9 @@ def setup_config_files(args, opt):
         code_dir = os.environ.get('CODE_DIR')
         if code_dir is None:
             code_dir = os.path.abspath(
-                os.path.expanduser(sanitize_input_variable(opt['Config']['code'])),
+                os.path.expanduser(
+                    sanitize_input_variable(opt['Config']['code']),
+                ),
             )
 
     if args.usr_dir is not None:
@@ -678,11 +702,15 @@ def setup_config_files(args, opt):
         usr_dir = os.environ.get('USR_DIR')
         if usr_dir is None:
             usr_dir = os.path.abspath(
-                os.path.expanduser(sanitize_input_variable(opt['Config']['usr'])),
+                os.path.expanduser(
+                    sanitize_input_variable(opt['Config']['usr']),
+                ),
             )
 
     if args.packages_file is not None:
-        packages_file = os.path.abspath(sanitize_input_variable(args.packages_file))
+        packages_file = os.path.abspath(
+            sanitize_input_variable(args.packages_file),
+        )
     else:
         packages_file = os.path.join(code_manager.CONFDIR, 'packages.json')
 
@@ -714,14 +742,19 @@ def venv_check(args, opt):
 You have to source the 'setenv.sh' fist.")
             raise SystemExit
     else:
-        logging.info("No virtual environment is active. You have to source the 'setenv.sh' fist.")
+        logging.info(
+            "No virtual environment is active. You have to source the 'setenv.sh' fist.",
+        )
         raise SystemExit
 
 
 def venv_setup(args, opt):
 
     python_ver = promt('Python executable', 'python3')
-    env_root = promt('Virtual environment location', sanitize_input_variable(opt['Config']['venv']))
+    env_root = promt(
+        'Virtual environment location',
+        sanitize_input_variable(opt['Config']['venv']),
+    )
     opt['Config']['venv'] = env_root
 
     if not os.path.isdir(os.path.abspath(os.path.join(env_root, os.pardir))):
@@ -749,8 +782,12 @@ def venv_setup(args, opt):
 
 
 def dir_setup(args, opt):
-    opt['Config']['code'] = promt('Code direcotry:', sanitize_input_variable(opt['Config']['code'])).strip()
-    opt['Config']['usr'] = promt('Usr direcotry:', sanitize_input_variable(opt['Config']['usr'])).strip()
+    opt['Config']['code'] = promt(
+        'Code direcotry:', sanitize_input_variable(opt['Config']['code']),
+    ).strip()
+    opt['Config']['usr'] = promt(
+        'Usr direcotry:', sanitize_input_variable(opt['Config']['usr']),
+    ).strip()
 
     with contextlib.suppress(FileExistsError):
         os.makedirs(opt['Config']['code'])
@@ -790,7 +827,9 @@ def main():
         parser.print_help()
         raise SystemExit
 
-    ConfigurationAware.set_configuration(CONFIG, INSTALL_SCRIPTS_DIR, CACHE, opt, args, extra_configs=args.packs)
+    ConfigurationAware.set_configuration(
+        CONFIG, INSTALL_SCRIPTS_DIR, CACHE, opt, args, extra_configs=args.packs,
+    )
 
     logging.debug('Code dir: %s', CODE_DIR)
     logging.debug('Usr dir: %s', USR_DIR)

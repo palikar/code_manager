@@ -42,17 +42,25 @@ def setup_logging(args, opt):
             os.makedirs(path_to_log_directory)
 
         # Rotating file logging
-        formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
+        formatter = logging.Formatter(
+            '%(asctime)s [%(levelname)s] %(message)s',
+        )
         log_filename = datetime.datetime.now().strftime('%Y-%m-%d') + '.log'
         log_filename = os.path.join(path_to_log_directory, log_filename)
 
-        rot = logging.handlers.RotatingFileHandler(log_filename, maxBytes=100 * 1024 * 1024, backupCount=10)
+        rot = logging.handlers.RotatingFileHandler(
+            log_filename, maxBytes=100 * 1024 * 1024, backupCount=10,
+        )
         rot.setLevel(logging.VERBOSE)
         rot.setFormatter(formatter)
         logger.addHandler(rot)
 
     # Info Logging
-    formatter = logging.Formatter('{1}%(asctime)s{2} [{0}%(levelname)s{2}] %(message)s'.format(CYAN, GREEN, RESET))
+    formatter = logging.Formatter(
+        '{1}%(asctime)s{2} [{0}%(levelname)s{2}] %(message)s'.format(
+            CYAN, GREEN, RESET,
+        ),
+    )
     sh_info = logging.StreamHandler(sys.stdout)
     sh_info.setFormatter(formatter)
     logger.addHandler(sh_info)

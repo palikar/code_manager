@@ -24,7 +24,9 @@ class BashrcInstaller(BasicInstaller, ConfigurationAware):
             with os.fdopen(temp_fd, 'w') as tmp:
                 tmp.write(line)
             with open(os.devnull, 'w') as null:
-                proc = subprocess.Popen(['bash', path], stdout=null, stderr=null)
+                proc = subprocess.Popen(
+                    ['bash', path], stdout=null, stderr=null,
+                )
                 _ = proc.communicate()[0]
                 return_code = proc.returncode
         finally:
@@ -42,7 +44,9 @@ class BashrcInstaller(BasicInstaller, ConfigurationAware):
         else:
             bash_lines = map(sanitize_input_variable, bash_lines)
 
-        target_file = '~/.bashrc' if in_bashrc else os.path.join(self.code_dir, 'setenv.sh')
+        target_file = '~/.bashrc' if in_bashrc else os.path.join(
+            self.code_dir, 'setenv.sh',
+        )
         target_file = sanitize_input_variable(target_file)
 
         with open(target_file) as target:

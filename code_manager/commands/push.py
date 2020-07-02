@@ -13,7 +13,9 @@ class PushCommand(ConfigurationAware):
     name = 'push'
 
     def __init__(self):
-        self.color = False if self.opt.get('Commands', 'push-colors', fallback=True) == 'false' else True
+        self.color = False if self.opt.get(
+            'Commands', 'push-colors', fallback=True,
+        ) == 'false' else True
 
     def execute(self, args, path):
         if not os.path.exists(os.path.join(path, '.git')):
@@ -25,21 +27,40 @@ class PushCommand(ConfigurationAware):
             color = False
 
         push_command = ['git', 'push', *args.rest]
-        logging.debug('Running command: [%s] in %s', ' '.join(push_command), path)
-        ret = subprocess.run(push_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path)
+        logging.debug(
+            'Running command: [%s] in %s',
+            ' '.join(push_command), path,
+        )
+        ret = subprocess.run(
+            push_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path,
+        )
 
         for line in ret.stdout.splitlines():
             if color:
-                sys.stdout.buffer.write(bytes(RED + self.pack + RESET + ':', 'utf-8') + line + b'\n')
+                sys.stdout.buffer.write(
+                    bytes(
+                        RED + self.pack + RESET
+                        + ':', 'utf-8',
+                    ) + line + b'\n',
+                )
             else:
-                sys.stdout.buffer.write(bytes(self.pack + ':', 'utf-8') + line + b'\n')
+                sys.stdout.buffer.write(
+                    bytes(self.pack + ':', 'utf-8') + line + b'\n',
+                )
         sys.stdout.buffer.flush()
 
         for line in ret.stderr.splitlines():
             if color:
-                sys.stderr.buffer.write(bytes(RED + self.pack + RESET + ':', 'utf-8') + line + b'\n')
+                sys.stderr.buffer.write(
+                    bytes(
+                        RED + self.pack + RESET
+                        + ':', 'utf-8',
+                    ) + line + b'\n',
+                )
             else:
-                sys.stderr.buffer.write(bytes(self.pack + ':', 'utf-8') + line + b'\n')
+                sys.stderr.buffer.write(
+                    bytes(self.pack + ':', 'utf-8') + line + b'\n',
+                )
         sys.stderr.buffer.flush()
 
         return 0

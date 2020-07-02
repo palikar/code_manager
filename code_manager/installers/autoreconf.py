@@ -21,7 +21,10 @@ class AutoreconfInstaller(BasicInstaller, ConfigurationAware):
 
         self.append_optional('autoreconf_args', autoreconf_command)
 
-        logging.debug('Running autoreconf with: %s', ' '.join(autoreconf_command))
+        logging.debug(
+            'Running autoreconf with: %s',
+            ' '.join(autoreconf_command),
+        )
         logging.debug('Build directory: %s', build_dir)
 
         if execute_sanitized('Autoreconf', autoreconf_command, self.root) is None:

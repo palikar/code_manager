@@ -25,11 +25,23 @@ def main():
     )
 
     parser.add_argument('name', help='Name of the package.')
-    parser.add_argument('fetch', default=None, nargs='?', help='URL to fetch the package from.')
-    parser.add_argument('-g', '--git', default=False, action='store_true', help='Signify that the fetch url is git url.')
+    parser.add_argument(
+        'fetch', default=None, nargs='?',
+        help='URL to fetch the package from.',
+    )
+    parser.add_argument(
+        '-g', '--git', default=False, action='store_true',
+        help='Signify that the fetch url is git url.',
+    )
 
-    parser.add_argument('-m', '--make', default=False, action='store_true', help='Signify usage of the make installer.')
-    parser.add_argument('-c', '--cmake', default=False, action='store_true', help='Signify usage of the cmake installer.')
+    parser.add_argument(
+        '-m', '--make', default=False, action='store_true',
+        help='Signify usage of the make installer.',
+    )
+    parser.add_argument(
+        '-c', '--cmake', default=False, action='store_true',
+        help='Signify usage of the cmake installer.',
+    )
 
     args = parser.parse_args()
 
@@ -50,7 +62,13 @@ def main():
         node_dict[args.name].setdefault('install', [])
         node_dict[args.name]['install'].append('make')
 
-    print(f'"{args.name}" : ' + json.dumps(node_dict[args.name], indent=4, separators=(',', ' : ')) + ',')
+    print(
+        f'"{args.name}" : '
+        + json.dumps(
+            node_dict[args.name], indent=4,
+            separators=(',', ' : '),
+        ) + ',',
+    )
 
 
 if __name__ == '__main__':

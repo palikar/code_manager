@@ -20,7 +20,9 @@ class ScriptInstaller(BasicInstaller, ConfigurationAware):
 
         script_command = ['sh']
 
-        script_file = os.path.join(self.install_scripts_dir, self.node['script'])
+        script_file = os.path.join(
+            self.install_scripts_dir, self.node['script'],
+        )
         script_file = os.path.abspath(script_file)
 
         if not os.path.isfile(script_file):

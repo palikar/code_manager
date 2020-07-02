@@ -15,7 +15,9 @@ class CommandContainer(ConfigurationAware):
         self.commands_dir = os.path.dirname(code_manager.commands.__file__)
 
     def load_commands(self):
-        import_modules_from_folder(self.commands_dir, 'code_manager.commands', self._add_command)
+        import_modules_from_folder(
+            self.commands_dir, 'code_manager.commands', self._add_command,
+        )
 
     def _add_command(self, command, file):
         assert command is not None
@@ -32,7 +34,10 @@ class CommandContainer(ConfigurationAware):
         CommandClass = command.ExportedClass  # pylint: disable=C0103
 
         if CommandClass.name in self.commands.keys():
-            debug_red('Command with the name \'%s\' already exists', CommandClass.name)
+            debug_red(
+                'Command with the name \'%s\' already exists',
+                CommandClass.name,
+            )
 
         debug_cyan('Loading command: \'%s\'', CommandClass.name)
 
@@ -49,5 +54,7 @@ class CommandContainer(ConfigurationAware):
         command_obj.args = args
         command_obj.pack = pack
 
-        logging.debug('Executing command: \'%s\' on package \'%s\'', command, pack)
+        logging.debug(
+            'Executing command: \'%s\' on package \'%s\'', command, pack,
+        )
         command_obj.execute(args, root)

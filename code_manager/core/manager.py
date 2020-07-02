@@ -82,7 +82,9 @@ class Manager(ConfigurationAware):
             if not cache.is_fetched(pack) or self.force:
                 cache.set_fetched(pack, False)
 
-                node = self._expand_node(self.packages[pack]) if node is None else node
+                node = self._expand_node(
+                    self.packages[pack],
+                ) if node is None else node
 
                 if self.fetcher.download(pack, root, node) is None:
                     logging.critical("The fetching of '%s' failed.", root)
@@ -105,7 +107,9 @@ class Manager(ConfigurationAware):
             if self.cache.is_installed(pack):
                 broken.append(pack)
         if broken:
-            logging.critical('The packages [%s] are not installed.', ','.join(broken))
+            logging.critical(
+                'The packages [%s] are not installed.', ','.join(broken),
+            )
 
         for pack in self.install_queue:
             with self.cache as cache:
@@ -275,7 +279,9 @@ Installation node is nor a list, nor a string.', pack,
             pack_root = os.path.join(self.code_dir, root)
 
             if asume_installed and os.path.exists(pack_root) and os.path.isdir(pack_root):
-                logging.debug('Assuming \'%s\' is installed in \'%s\'', pack, pack_root)
+                logging.debug(
+                    'Assuming \'%s\' is installed in \'%s\'', pack, pack_root,
+                )
                 with self.cache:
                     self.cache.set_built(pack, True)
                     self.cache.set_fetched(pack, True)
