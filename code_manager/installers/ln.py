@@ -30,7 +30,6 @@ class LinkInstaller(BasicInstaller, ConfigurationAware):
             ln_command += [dest]
 
             logging.debug('Running copy command: [%s]', ' '.join(ln_command))
-
             if execute_sanitized('ln', ln_command, self.root) is None:
                 return None
 

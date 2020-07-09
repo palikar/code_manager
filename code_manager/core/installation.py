@@ -165,7 +165,7 @@ but it is not in the package node of %s.', attr, installer_obj.name, name,
             return 0
 
         self.update = update
-        self.root = root
+        self.root = os.path.join(self.code_dir, root)
 
         self.resolver.variables['root'] = self.root
 
