@@ -5,6 +5,8 @@ import sys
 
 
 def sanitize_input_variable(var):
+    if var is None:
+        return None
     var = os.path.expanduser(var)
     var = os.path.expandvars(var)
     return var

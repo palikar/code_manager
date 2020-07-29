@@ -1,8 +1,11 @@
 [Config]
         code = ${HOME}/core.d/code
         usr = ${HOME}/core.d/usr
-				venv = ${HOME}/core.d/Env
-				debug = true
+        venv = ${HOME}/core.d/Env
+	debug = true
+        cache = ${HOME}/.config/cache
+        install_scripts = ${HOME}/.config/install_scripts
+        
 
 [Download]
         git_ssh = true

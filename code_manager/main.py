@@ -88,19 +88,11 @@ def get_arg_parser():
 
     parser.add_argument(
         '--packages-file',
-        dest='packages_file',
-        action='store',
-        help='File to read the packages from',
-        metavar='PACK_FILE',
-    )
-
-    parser.add_argument(
-        '--pack',
         '-p',
-        dest='packs',
+        dest='package',
         action='append',
         default=[],
-        help='Extra packages.json files to load packages from.',
+        help='packages.json files to load packages from.',
     )
 
     parser.add_argument(
@@ -655,6 +647,7 @@ def copy_config():
 
     if not os.path.isdir(code_manager.CONFDIR):
         os.mkdir(code_manager.CONFDIR)
+        
     if not os.path.isfile(os.path.join(code_manager.CONFDIR, 'packages.json')):
         copyfile(
             os.path.join(private_data_dir, 'packages.json'),
@@ -665,72 +658,13 @@ def copy_config():
         copyfile(
             os.path.join(private_data_dir, 'conf'),
             os.path.join(code_manager.CONFDIR, 'conf'),
-        )
+        )    
 
     if not os.path.isdir(os.path.join(code_manager.CONFDIR, 'install_scripts')):
         copytree(
             os.path.join(code_manager.CMDIR, 'install_scripts'),
             os.path.join(code_manager.CONFDIR, 'install_scripts'),
         )
-
-
-def setup_config_files(args, opt):
-
-    global CACHE
-    global CONFIG
-    global USR_DIR
-    global CODE_DIR
-    global INSTALL_SCRIPTS_DIR
-    global PACKAGES_FILE
-
-    INSTALL_SCRIPTS_DIR = os.path.join(code_manager.CONFDIR, 'install_scripts')
-
-    if args.code_dir is not None:
-        code_dir = os.path.abspath(sanitize_input_variable(args.code_dir))
-    else:
-        code_dir = os.environ.get('CODE_DIR')
-        if code_dir is None:
-            code_dir = os.path.abspath(
-                os.path.expanduser(
-                    sanitize_input_variable(opt['Config']['code']),
-                ),
-            )
-
-    if args.usr_dir is not None:
-        usr_dir = os.path.abspath(sanitize_input_variable(args.usr_dir))
-    else:
-        usr_dir = os.environ.get('USR_DIR')
-        if usr_dir is None:
-            usr_dir = os.path.abspath(
-                os.path.expanduser(
-                    sanitize_input_variable(opt['Config']['usr']),
-                ),
-            )
-
-    if args.packages_file is not None:
-        packages_file = os.path.abspath(
-            sanitize_input_variable(args.packages_file),
-        )
-    else:
-        packages_file = os.path.join(code_manager.CONFDIR, 'packages.json')
-
-    CACHE = os.path.join(code_manager.CONFDIR, 'cache')
-    if not os.path.isfile(CACHE):
-        logging.info(CACHE)
-        handle = open(CACHE, 'a+')
-        handle.close()
-
-    if not os.path.isdir(usr_dir):
-        raise SystemError(f'The code direcotry does not exist:{usr_dir}')
-    if not os.path.isdir(code_dir):
-        raise SystemError(f'The usr direcotry does not exist:{usr_dir}')
-
-    CODE_DIR = code_dir
-    USR_DIR = usr_dir
-    PACKAGES_FILE = packages_file
-
-    with open(packages_file) as config_file:
-        CONFIG = json.load(config_file)
 
 
 def venv_check(args, opt):
@@ -827,19 +761,13 @@ def main():
         parser.print_help()
         raise SystemExit
 
-    ConfigurationAware.set_configuration(
-        CONFIG, INSTALL_SCRIPTS_DIR, CACHE, opt, args, extra_configs=args.packs,
-    )
-
-    logging.debug('Code dir: %s', CODE_DIR)
-    logging.debug('Usr dir: %s', USR_DIR)
-    logging.debug('Packages file: %s', PACKAGES_FILE)
-    logging.debug('Install script directory: %s', INSTALL_SCRIPTS_DIR)
-    logging.debug('Cache file: %s', CACHE)
-
+    ConfigurationAware.set_configuration(opt, args)
+    
     core_manager = Manager()
 
     commands[args.command](args, core_manager)
+
+    return 0
 
 
 if __name__ == '__main__':

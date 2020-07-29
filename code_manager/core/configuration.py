@@ -161,6 +161,27 @@ class ConfigurationAware:
         return config
 
     @staticmethod
+    def _load_pack(self, pack, config):
+        
+        if is_link(pack):
+            logging.debug(
+                'Loading extra packages.json from link: %s', pack,
+            )
+            con = ConfigurationAware._load_pack_form_link(pack)
+        elif os.path.exists(pack) and os.path.isfile(pack):
+            logging.debug(
+                'Loading extra packages.json file: %s', os.path.abspath(
+                    pack,
+                ),
+            )
+            with open(pack) as config_file:
+                con = json.load(config_file)
+                
+        if con is not None:
+            config = ConfigurationAware._load_extra_pack(config, con)
+
+
+    @staticmethod
     def var(name):
         if name in ConfigurationAware.resovler.variables.keys():
             return ConfigurationAware.resovler.variables[name]
@@ -179,44 +200,48 @@ class ConfigurationAware:
         return ConfigurationAware.config['vars']
 
     @staticmethod
-    def set_configuration(config, install_scripts_dir, cache_file, opt, args, extra_configs=[]):
-
-        ConfigurationAware.config_dir = sanitize_input_variable(
-            '${HOME}/.config/code_manager/',
-        )
-        ConfigurationAware.usr_dir = sanitize_input_variable(
-            opt['Config']['usr'],
-        )
-        ConfigurationAware.code_dir = sanitize_input_variable(
-            opt['Config']['code'],
-        )
+    def set_configuration(opt, args):
 
         ConfigurationAware.opt = opt
         ConfigurationAware.args = args
 
+        ConfigurationAware.config_dir = sanitize_input_variable(code_manager.CONFDIR)
+
+        ConfigurationAware.usr_dir = sanitize_input_variable(opt['Config']['usr'])
+        ConfigurationAware.code_dir = sanitize_input_variable(opt['Config']['code'])
+
+        code_dir_env = os.environ['CODE_DIR']
+        if code_dir_env:
+            ConfigurationAware.code_dir = sanitize_input_variable(code_dir_env)
+        
+        usr_dir_env = os.environ['USR_DIR']
+        if usr_dir_env:
+            ConfigurationAware.usr_dir = sanitize_input_variable(usr_dir_env)
+
+        if args.code_dir:
+            ConfigurationAware.code_dir = sanitize_input_variable(args.code_dir)
+        
+        if args.usr_dir:
+            ConfigurationAware.code_dir = sanitize_input_variable(args.code_dir)
+
         ConfigurationAware.resolver = CofigurationResolver()
 
-        if extra_configs:
-            for pack in extra_configs:
+        config = {}
+        config['vars'] = {}
+        config['packages_list'] = {}
+        config['debian_packages'] = {}
+        config['packages_config'] = {}
+        config['packages'] = {}
 
-                if is_link(pack):
-                    logging.debug(
-                        'Loading extra packages.json from link: %s', pack,
-                    )
-                    con = ConfigurationAware._load_pack_form_link(pack)
-                elif os.path.exists(pack):
-                    logging.debug(
-                        'Loading extra packages.json file: %s', os.path.abspath(
-                            pack,
-                        ),
-                    )
-                    with open(pack) as config_file:
-                        con = json.load(config_file)
-                else:
-                    con = None
 
-                if con is not None:
-                    config = ConfigurationAware._load_extra_pack(config, con)
+        package_sources = os.path.join(code_manager.CONFDIR, 'package_sources')
+        if os.path.isfile(package_sources):
+            with open(package_sources, 'r') as source_fd:
+                ConfigurationAware._load_pack(pack, config)
+                
+        if args.packs:
+            for pack in args.packs:
+                ConfigurationAware._load_pack(pack, config)
 
         ConfigurationAware.config = ConfigurationAware.resolver.configuration_dict(
             config,
@@ -231,9 +256,9 @@ class ConfigurationAware:
 
         ConfigurationAware.variables = ConfigurationAware.resolver.variables
 
-        ConfigurationAware.install_scripts_dir = install_scripts_dir
+        ConfigurationAware.install_scripts_dir = sanitize_input_variable(opt['Config']['install_scripts'])
 
-        ConfigurationAware.cache_file = cache_file
+        ConfigurationAware.cache_file = sanitize_input_variable(opt['Config']['cache'])
 
         ConfigurationAware.debug = (
             'debug' in opt['Config'].keys(
