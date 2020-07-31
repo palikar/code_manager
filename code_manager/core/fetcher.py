@@ -110,7 +110,7 @@ class Fetcher(ConfigurationAware):
         git_node = package['git']
         url = git_node['url']
         # TODO: Do not join the root here but pass it from above
-        path = os.path.join(self.code_dir, root)
+        path = root
 
         cmd = []
         cmd.extend([self.GIT_COMMAND, 'clone'])
@@ -189,7 +189,7 @@ class Fetcher(ConfigurationAware):
 
         curl_node = package['curl']
         url = curl_node['url']
-        path = os.path.join(self.code_dir, root)
+        path = root
         file_name = file_name = url.split('/')[-1]
 
         with suppress(OSError):

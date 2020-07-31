@@ -647,7 +647,7 @@ def copy_config():
 
     if not os.path.isdir(code_manager.CONFDIR):
         os.mkdir(code_manager.CONFDIR)
-        
+
     if not os.path.isfile(os.path.join(code_manager.CONFDIR, 'packages.json')):
         copyfile(
             os.path.join(private_data_dir, 'packages.json'),
@@ -658,12 +658,18 @@ def copy_config():
         copyfile(
             os.path.join(private_data_dir, 'conf'),
             os.path.join(code_manager.CONFDIR, 'conf'),
-        )    
+        )
 
     if not os.path.isdir(os.path.join(code_manager.CONFDIR, 'install_scripts')):
         copytree(
             os.path.join(code_manager.CMDIR, 'install_scripts'),
             os.path.join(code_manager.CONFDIR, 'install_scripts'),
+        )
+
+    if not os.path.isfile(os.path.join(code_manager.CONFDIR, 'sources')):
+        copyfile(
+            os.path.join(private_data_dir, 'sources'),
+            os.path.join(code_manager.CONFDIR, 'sources'),
         )
 
 
@@ -754,7 +760,6 @@ def main():
         save_opt(opt)
         raise SystemExit
 
-    setup_config_files(args, opt)
     venv_check(args, opt)
 
     if args.command is None:
@@ -762,7 +767,7 @@ def main():
         raise SystemExit
 
     ConfigurationAware.set_configuration(opt, args)
-    
+
     core_manager = Manager()
 
     commands[args.command](args, core_manager)

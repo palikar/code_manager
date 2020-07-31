@@ -5,6 +5,7 @@ import re
 
 import requests
 
+import code_manager
 from code_manager.utils.strings import is_link
 from code_manager.utils.utils import flatten
 from code_manager.utils.utils import recursive_items
@@ -149,6 +150,10 @@ class ConfigurationAware:
         for pack_name, pack_node in config.get('packages', {}).items():
             primary_config['packages'].setdefault(pack_name, pack_node)
 
+        primary_config.setdefault('packages_config', {})
+        for prop_name, prop_value in config.get('packages_config', {}).items():
+            primary_config['packages_config'].setdefault(prop_name, prop_value)
+
         return primary_config
 
     @staticmethod
@@ -161,8 +166,8 @@ class ConfigurationAware:
         return config
 
     @staticmethod
-    def _load_pack(self, pack, config):
-        
+    def _load_pack(pack, config):
+        con = None
         if is_link(pack):
             logging.debug(
                 'Loading extra packages.json from link: %s', pack,
@@ -170,16 +175,15 @@ class ConfigurationAware:
             con = ConfigurationAware._load_pack_form_link(pack)
         elif os.path.exists(pack) and os.path.isfile(pack):
             logging.debug(
-                'Loading extra packages.json file: %s', os.path.abspath(
+                'Loading extra packages file: %s', os.path.abspath(
                     pack,
                 ),
             )
             with open(pack) as config_file:
                 con = json.load(config_file)
-                
+
         if con is not None:
             config = ConfigurationAware._load_extra_pack(config, con)
-
 
     @staticmethod
     def var(name):
@@ -207,20 +211,23 @@ class ConfigurationAware:
 
         ConfigurationAware.config_dir = sanitize_input_variable(code_manager.CONFDIR)
 
-        ConfigurationAware.usr_dir = sanitize_input_variable(opt['Config']['usr'])
-        ConfigurationAware.code_dir = sanitize_input_variable(opt['Config']['code'])
+        try:
+            ConfigurationAware.usr_dir = sanitize_input_variable(opt['Config']['usr'])
+            ConfigurationAware.code_dir = sanitize_input_variable(opt['Config']['code'])
+        except KeyError:
+            logging.fatal('\'usr\' and \'code\' are manditory fields in the configuration')
 
         code_dir_env = os.environ['CODE_DIR']
         if code_dir_env:
             ConfigurationAware.code_dir = sanitize_input_variable(code_dir_env)
-        
+
         usr_dir_env = os.environ['USR_DIR']
         if usr_dir_env:
             ConfigurationAware.usr_dir = sanitize_input_variable(usr_dir_env)
 
         if args.code_dir:
             ConfigurationAware.code_dir = sanitize_input_variable(args.code_dir)
-        
+
         if args.usr_dir:
             ConfigurationAware.code_dir = sanitize_input_variable(args.code_dir)
 
@@ -233,13 +240,13 @@ class ConfigurationAware:
         config['packages_config'] = {}
         config['packages'] = {}
 
-
-        package_sources = os.path.join(code_manager.CONFDIR, 'package_sources')
+        package_sources = sanitize_input_variable(opt['Config']['sources'])
         if os.path.isfile(package_sources):
-            with open(package_sources, 'r') as source_fd:
-                ConfigurationAware._load_pack(pack, config)
-                
-        if args.packs:
+            with open(package_sources) as source_fd:
+                for pack in source_fd.read().splitlines():
+                    ConfigurationAware._load_pack(pack.strip(), config)
+
+        if hasattr(args, 'packs'):
             for pack in args.packs:
                 ConfigurationAware._load_pack(pack, config)
 
@@ -256,9 +263,9 @@ class ConfigurationAware:
 
         ConfigurationAware.variables = ConfigurationAware.resolver.variables
 
-        ConfigurationAware.install_scripts_dir = sanitize_input_variable(opt['Config']['install_scripts'])
+        ConfigurationAware.install_scripts_dir = sanitize_input_variable(opt['Config'].get('install_scripts', code_manager.SCRIPTSDIR))
 
-        ConfigurationAware.cache_file = sanitize_input_variable(opt['Config']['cache'])
+        ConfigurationAware.cache_file = sanitize_input_variable(opt['Config'].get('cache', code_manager.CACHEFILE))
 
         ConfigurationAware.debug = (
             'debug' in opt['Config'].keys(
@@ -286,6 +293,7 @@ class ConfigurationAware:
         if 'root' in package.keys():
             root = os.path.join(package.get['root'], pack).strip('/')
 
+        root = os.path.join(self.code_dir, root)
         return root
 
     def __getattr__(self, item):

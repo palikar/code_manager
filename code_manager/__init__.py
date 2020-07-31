@@ -9,3 +9,6 @@ __email__ = 'stanislav_ts@abv.bg'
 # Setup constants
 CMDIR = os.path.dirname(__file__)
 CONFDIR = os.path.expanduser('~/.config/code_manager')
+CACHEFILE = os.path.expanduser('~/.config/code_manager/cache')
+SOURCEFILE = os.path.expanduser('~/.config/code_manager/sources')
+SCRIPTSDIR = os.path.expanduser('~/.config/code_manager/install_scripts/')

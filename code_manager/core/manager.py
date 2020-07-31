@@ -39,7 +39,7 @@ class Manager(ConfigurationAware):
         self.depender.verify_packages_tree()
 
         for pack in self.packages.keys():
-            pack_root = os.path.join(self.code_dir, self._get_root(pack))
+            pack_root = self._get_root(pack)
             self.resolver.variables['root_' + pack] = pack_root
 
     def _expand_node(self, node):
@@ -67,8 +67,7 @@ class Manager(ConfigurationAware):
             self._invoke_build()
 
     def _do_fetch(self, pack, root=None, node=None):
-        root = self._get_root(pack) if root is None else root
-        root_dir = os.path.join(self.code_dir, root)
+        root_dir = self._get_root(pack)
 
         with self.cache as cache:
             if cache.is_fetched(pack) and not self.force:
@@ -76,7 +75,7 @@ class Manager(ConfigurationAware):
                 return 0
 
             if os.path.exists(root_dir) and self.force:
-                logging.info('Force mode. Removing folder: %s', root)
+                logging.info('Force mode. Removing folder: %s', root_dir)
                 shutil.rmtree(root_dir)
 
             if not cache.is_fetched(pack) or self.force:
@@ -87,7 +86,7 @@ class Manager(ConfigurationAware):
                 ) if node is None else node
 
                 if self.fetcher.download(pack, root, node) is None:
-                    logging.critical("The fetching of '%s' failed.", root)
+                    logging.critical("The fetching of '%s' in '%s'failed.", pack, root_dir)
                     cache.set_fetched(pack, True)
                     cache.set_root(pack, root_dir)
 
@@ -275,8 +274,7 @@ Installation node is nor a list, nor a string.', pack,
     def rebuild_cache(self, asume_installed=True):
 
         for pack, _ in self.packages.items():
-            root = self._get_root(pack)
-            pack_root = os.path.join(self.code_dir, root)
+            pack_root = self._get_root(pack)
 
             if asume_installed and os.path.exists(pack_root) and os.path.isdir(pack_root):
                 logging.debug(
@@ -286,7 +284,7 @@ Installation node is nor a list, nor a string.', pack,
                     self.cache.set_built(pack, True)
                     self.cache.set_fetched(pack, True)
                     self.cache.set_installed(pack, True)
-                    self.cache.set_root(pack, root)
+                    self.cache.set_root(pack, pack_root)
                 continue
 
             if os.path.exists(os.path.join(pack_root, '.code_manager_cache')):
@@ -309,6 +307,6 @@ Installation node is nor a list, nor a string.', pack,
             if not self.cache.is_fetched(pack):
                 continue
 
-            root = os.path.join(self.code_dir, self._get_root(pack))
+            root = self._get_root(pack)
             self.commands.execute_command(command, args, pack, root)
         return 0

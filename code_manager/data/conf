@@ -5,7 +5,7 @@
 	debug = true
         cache = ${HOME}/.config/cache
         install_scripts = ${HOME}/.config/install_scripts
-        
+
 
 [Download]
         git_ssh = true
