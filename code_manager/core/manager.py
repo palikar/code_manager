@@ -19,6 +19,7 @@ class Manager(ConfigurationAware):
     install = False
     build = False
     fetching = False
+    force = False
 
     def __init__(self):
 
@@ -72,7 +73,7 @@ class Manager(ConfigurationAware):
         with self.cache as cache:
             if cache.is_fetched(pack) and not self.force:
                 logging.info("\'%s\' is already fetched", pack)
-                return 0
+                return
 
             if os.path.exists(root_dir) and self.force:
                 logging.info('Force mode. Removing folder: %s', root_dir)
@@ -89,7 +90,6 @@ class Manager(ConfigurationAware):
                     logging.critical("The fetching of '%s' in '%s'failed.", pack, root_dir)
                     cache.set_fetched(pack, True)
                     cache.set_root(pack, root_dir)
-
             else:
                 logging.info("\'%s\' is already fetched", pack)
 
@@ -115,8 +115,8 @@ class Manager(ConfigurationAware):
                 cache.set_built(pack, False)
                 node = self._expand_node(self.packages[pack])
                 if self.installation.install(
-                    pack, cache.get_root(pack), node,
-                    update=True,
+                        pack, cache.get_root(pack), node,
+                        update=True,
                 ) == 0:
                     logging.info("\'%s\' was build", pack)
                     cache.set_built(pack, True)
@@ -160,10 +160,10 @@ class Manager(ConfigurationAware):
                     logging.info("Trying to update \'%s\'", pack)
                     cache.set_built(pack, False)
                     if self.installation.install(
-                        pack,
-                        cache.get_root(pack),
-                        node,
-                        update=True,
+                            pack,
+                            cache.get_root(pack),
+                            node,
+                            update=True,
                     ) == 0:
                         logging.info("\'%s\' was build", pack)
                         cache.set_built(pack, True)
@@ -246,7 +246,7 @@ Installation node is nor a list, nor a string.', pack,
     def get_group_packages(self, group):
         if group not in self.packages_list.keys():
             return []
-        return self.packages_list[group]
+        return self.packages_list[group]  # pylint: disable=E1136
 
     def get_groups(self):
         return list(self.packages_list.keys())
@@ -292,7 +292,7 @@ Installation node is nor a list, nor a string.', pack,
                     logging.debug('Rebuilding cache for package \'%s\'', pack)
                     self.cache.rebuild(pack, pack_root)
 
-    def run_command(self, command, args, thing=None, prim_args=None):
+    def run_command(self, command, args, thing=None):
         self.commands.load_commands()
 
         if thing in self.packages.keys():

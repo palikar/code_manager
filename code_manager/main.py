@@ -38,20 +38,14 @@ VERSION_MSG = [
 ]
 
 # pylint: disable=W0603
-CACHE = None
-CONFIG = None
-USR_DIR = None
-CODE_DIR = None
-INSTALL_SCRIPTS_DIR = None
-PACKAGES_FILE = None
-commands = dict()
+COMMANDS = dict()
 
 
 def command(name):
-    global commands
+    global COMMANDS
 
     def inner(func):
-        commands[name] = func
+        COMMANDS[name] = func
         return func
     return inner
 
@@ -498,7 +492,7 @@ def remove(args, core):
 @command('list-packages')
 def list_packages(args, core):
     logging.debug('Available packages:')
-    packs = flatten(CONFIG['packages_list'].values())
+    packs = flatten(core.packages_list.values())
     if len(packs) > 10 and not args.no_pager:
         less(bytes('\n'.join(packs), 'utf-8'))
         return
@@ -507,7 +501,7 @@ def list_packages(args, core):
 
 @command('list-cache')
 def list_cache(args, core):
-    logging.debug('Dumping cache file %s', CACHE)
+    logging.debug('Dumping cache file %s', core.cache_file)
 
     cache = core.get_cache_content()
     header = ['Name', 'Fetched', 'Built', 'Installed', 'Root']
@@ -552,41 +546,41 @@ def list_groups(args, core):
 def clear_cache(args, core):
 
     if args.all:
-        logging.info('Clearing cache file %s', CACHE)
+        logging.info('Clearing cache file %s', core.cache_file)
         if promt_yes_no('Are you sure you want to clear the cache?'):
-            handle = open(CACHE, 'w')
+            handle = open(core.cache_file, 'w')
             handle.close()
     if args.packages is not None:
         for pack in args.packages:
-            logging.info('Removing %s from the cache file %s', pack, CACHE)
+            logging.info('Removing %s from the cache file %s', pack, core.cache_file)
             with core.get_cache() as cache:
                 cache.drop(pack)
 
 
 @command('edit-cache')
-def edit_cache(args, _):
+def edit_cache(args, core):
     if args.package is None:
-        logging.info('Editing %s', CACHE)
-        os.system('{} {}'.format(os.getenv('EDITOR'), CACHE))
+        logging.info('Editing %s', core.cache_file)
+        os.system('{} {}'.format(os.getenv('EDITOR'), core.cache_file))
     else:
         pack = args.package
         logging.info('Editing cache entry for %s', pack)
 
-        with open(CACHE) as c:
-            cont = json.load(c)
+        with open(core.cache_file) as file_desc:
+            cont = json.load(file_desc)
 
-        new_file, filename = tempfile.mkstemp()
-        with open(filename, 'w') as fp:
-            json.dump(cont[pack], fp, indent=4)
+        _, filename = tempfile.mkstemp()
+        with open(filename, 'w') as file_desc:
+            json.dump(cont[pack], file_desc, indent=4)
 
         os.system('{} {}'.format(os.getenv('EDITOR'), filename))
 
-        with open(filename) as c:
-            new_entry = json.load(c)
+        with open(filename) as file_desc:
+            new_entry = json.load(file_desc)
         cont[pack] = new_entry
 
-        with open(CACHE, 'w') as fp:
-            json.dump(cont, fp, indent=4)
+        with open(core.cache_file, 'w') as file_desc:
+            json.dump(cont, file_desc, indent=4)
 
 
 @command('rebuild-cache')
@@ -673,7 +667,7 @@ def copy_config():
         )
 
 
-def venv_check(args, opt):
+def venv_check(opt):
     if is_venv():
         env = venv()
         cm_env = sanitize_input_variable(opt['Config']['venv'])
@@ -688,7 +682,7 @@ You have to source the 'setenv.sh' fist.")
         raise SystemExit
 
 
-def venv_setup(args, opt):
+def venv_setup(opt):
 
     python_ver = promt('Python executable', 'python3')
     env_root = promt(
@@ -715,13 +709,13 @@ def venv_setup(args, opt):
     subprocess.Popen(venv_command).wait()
 
     with open(os.path.join(opt['Config']['code'], 'setenv.sh'), 'w') as file_handle:
-        file_handle.write(get_default_setenv(args, opt))
+        file_handle.write(get_default_setenv(opt))
 
     logging.info('The environment is now ready. You should source the\
 \'setenv.sh\' file to use code_manager')
 
 
-def dir_setup(args, opt):
+def dir_setup(opt):
     opt['Config']['code'] = promt(
         'Code direcotry:', sanitize_input_variable(opt['Config']['code']),
     ).strip()
@@ -755,12 +749,12 @@ def main():
 
     if args.setup:
         logging.info('Setting up direcories and file for code_manger.')
-        dir_setup(args, opt)
-        venv_setup(args, opt)
+        dir_setup(opt)
+        venv_setup(opt)
         save_opt(opt)
         raise SystemExit
 
-    venv_check(args, opt)
+    venv_check(opt)
 
     if args.command is None:
         parser.print_help()
@@ -770,7 +764,7 @@ def main():
 
     core_manager = Manager()
 
-    commands[args.command](args, core_manager)
+    COMMANDS[args.command](args, core_manager)
 
     return 0
 

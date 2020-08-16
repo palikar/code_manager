@@ -15,12 +15,13 @@ def promt_yes_no(text, tries=5):
             line = input(f'{text} [Yes/No]: ').lower()
         except KeyboardInterrupt:
             return False
+
         if line in YES_OPT:
             return True
-        elif line in NO_OPT:
+
+        if line in NO_OPT:
             return False
-        else:
-            continue
+
     return False
 
 

@@ -98,5 +98,5 @@ def is_venv():
 def venv():
     if is_venv():
         return sys.prefix
-    else:
-        return None
+
+    return None

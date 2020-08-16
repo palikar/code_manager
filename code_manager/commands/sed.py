@@ -14,9 +14,9 @@ class SedCommand(ConfigurationAware):
     name = 'sed'
 
     def __init__(self):
-        self.color = False if self.opt.get(
+        self.color = self.opt.get(
             'Commands', 'sed-colors', fallback=True,
-        ) == 'false' else True
+        ) == 'true'
 
     def execute(self, args, path):
 

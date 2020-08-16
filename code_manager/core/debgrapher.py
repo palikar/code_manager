@@ -14,15 +14,16 @@ class DebGrapher(ConfigurationAware):
     def get_packages(self, group=''):  # pylint: disable=R1705
         if group == '':
             return flatten(self.packages_list.values())
-        else:
-            if group in self.packages_list.keys():
-                return self.packages_list[group]  # pylint: disable=E1136
-            else:
-                logging.critical(
-                    'There is no group\
-                with the name %s.', group,
-                )
-                return None
+
+        if group in self.packages_list.keys():
+            return self.packages_list[group]  # pylint: disable=E1136
+
+        logging.critical(
+            'There is no group\
+            with the name %s.', group,
+        )
+
+        return None
 
     def verify_package_list(self, package_names):
         all_packs = set(flatten(self.packages_list.values()))
@@ -90,8 +91,8 @@ is not in the packages.json.', package,
             sys.exit(1)
         if 'dependencies' in self.packages[package].keys():
             return self.packages[package]['dependencies']  # pylint: disable=E1136
-        else:
-            return []
+
+        return []
 
     def get_deep_dependencies(self, package):
         assert package is not None

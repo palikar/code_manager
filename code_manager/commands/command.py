@@ -13,9 +13,9 @@ class CommandCommand(ConfigurationAware):
     name = 'command'
 
     def __init__(self):
-        self.color = False if self.opt.get(
+        self.color = self.opt.get(
             'Commands', 'command-colors', fallback=True,
-        ) == 'false' else True
+        ) == 'true'
 
     def execute(self, args, path):
 

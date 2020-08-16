@@ -1,7 +1,7 @@
 from os import path
 
 
-def get_default_setenv(args, opt):
+def get_default_setenv(opt):
     content = []
 
     content += ['export CODE_DIR={}'.format(opt['Config']['code'])]

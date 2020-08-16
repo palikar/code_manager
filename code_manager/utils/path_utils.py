@@ -2,7 +2,7 @@ import os
 import shutil
 
 
-def move_tree(src, dst, symlinks=False, ignore=None):
+def move_tree(src, dst):
     assert src is not None
     assert dst is not None
 

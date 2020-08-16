@@ -35,7 +35,7 @@ class Fetcher(ConfigurationAware):
         self.archive_extensions = Fetcher.ARCH_EXTENSIONS
         self.extract_queue = []
 
-    def download(self, name, root, node):   # pylint: disable=R0201,R0915
+    def download(self, name, root, _):   # pylint: disable=R0201,R0915
         assert name is not None
         assert root is not None
 

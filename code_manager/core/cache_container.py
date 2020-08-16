@@ -20,8 +20,8 @@ class CacheContainer(ConfigurationAware):
             root = self._get_root(pack)
             pack_root = os.path.join(self.code_dir, root)
             if os.path.exists(os.path.join(pack_root, '.code_manager_cache')):
-                with open(os.path.join(root, '.code_manager_cache')) as c:
-                    node = json.load(c)
+                with open(os.path.join(root, '.code_manager_cache')) as cache_disc:
+                    node = json.load(cache_disc)
                 self.cache[pack] = node
 
     def load_cache(self):
@@ -63,15 +63,15 @@ class CacheContainer(ConfigurationAware):
             indent=4, separators=(',', ' : '),
         )
 
-        for pack, p in self.cache.items():
-            if not p['fetched']:
+        for _, package_dict in self.cache.items():
+            if not package_dict['fetched']:
                 continue
 
             json.dump(
-                p, open(
+                package_dict, open(
                     os.path.join(
                         self.code_dir,
-                        p['root'], '.code_manager_cache',
+                        package_dict['root'], '.code_manager_cache',
                     ), 'w',
                 ),
                 indent=4, separators=(',', ' : '),
@@ -92,8 +92,8 @@ class CacheContainer(ConfigurationAware):
         return True
 
     def rebuild(self, pack, root):
-        with open(os.path.join(root, '.code_manager_cache')) as c:
-            node = json.load(c)
+        with open(os.path.join(root, '.code_manager_cache')) as cache_disc:
+            node = json.load(cache_disc)
         self.cache[pack] = node
         self.dirty = True
 

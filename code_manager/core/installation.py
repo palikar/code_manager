@@ -175,14 +175,15 @@ but it is not in the package node of %s.', attr, installer_obj.name, name,
         if isinstance(installer, str):
             self.run_installer(package, installer, node)
             return 0
-        elif isinstance(installer, list):
+
+        if isinstance(installer, list):
             for inst in installer:
                 self.run_installer(package, inst, node)
             return 0
-        else:
-            logging.critical(
-                'Can\'t install %s.\
+
+        logging.critical(
+            'Can\'t install %s.\
 Installation node is nor a list, nor a string.', package,
-            )
-            sys.exit(1)
-            return None
+        )
+        sys.exit(1)
+        return None

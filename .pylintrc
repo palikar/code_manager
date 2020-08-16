@@ -8,6 +8,8 @@ max-branches=20
 
 [FORMAT]
 max-line-length = 120
-disable=locally-disabled,locally-enabled,missing-docstring,duplicate-code,fixme,cyclic-import,redefined-variable-type,stop-iteration-return, R1705, E1136, W0613, R0902
+disable=locally-disabled,locally-enabled,missing-docstring,duplicate-code,fixme,cyclic-import,redefined-variable-type,stop-iteration-return, too-many-instance-attributes, too-few-public-methods, bare-except, bad-except-order, logging-too-many-args, subprocess-run-check, no-member, too-many-nested-blocks, too-many-statements, too-many-locals
+
+
 
 [TYPECHECK]

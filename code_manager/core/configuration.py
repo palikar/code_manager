@@ -158,9 +158,9 @@ class ConfigurationAware:
 
     @staticmethod
     def _load_pack_form_link(link):
-        r = requests.get(link)
+        result = requests.get(link)
         try:
-            config = json.loads(r.content)
+            config = json.loads(result.content)
         except json.JSONDecodeError:
             return None
         return config
@@ -263,7 +263,12 @@ class ConfigurationAware:
 
         ConfigurationAware.variables = ConfigurationAware.resolver.variables
 
-        ConfigurationAware.install_scripts_dir = sanitize_input_variable(opt['Config'].get('install_scripts', code_manager.SCRIPTSDIR))
+        ConfigurationAware.install_scripts_dir = sanitize_input_variable(
+            opt['Config'].get(
+                'install_scripts',
+                code_manager.SCRIPTSDIR,
+            ),
+        )
 
         ConfigurationAware.cache_file = sanitize_input_variable(opt['Config'].get('cache', code_manager.CACHEFILE))
 
@@ -277,9 +282,10 @@ class ConfigurationAware:
         )
 
     def _get_group(self, pack):
-        for gr, packs in self.packages_list.items():
+        for group, packs in self.packages_list.items():
             if pack in packs:
-                return gr
+                return group
+        return None
 
     def _get_root(self, pack):
         package = self.packages[pack]

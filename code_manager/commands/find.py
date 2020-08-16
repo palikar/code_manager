@@ -12,9 +12,9 @@ class FindCommand():
     name = 'find'
 
     def __init__(self):
-        self.color = False if self.opt.get(
-            'Commands', 'sed-colors', fallback=True,
-        ) == 'false' else True
+        self.color = self.opt.get(
+            'Commands', 'find-colors', fallback=True,
+        ) == 'true'
 
     def execute(self, args, path):
 

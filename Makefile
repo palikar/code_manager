@@ -27,6 +27,7 @@ CWD = $(shell pwd)
 TEST_PATHS =  $(shell find ./code_manager -mindepth 1 -maxdepth 1 -type d \
 			! -name '__pycache__' \
 			! -path './code_manager/data' \
+			! -path './code_manager/.mypy_cache'\
 			! -path './code_manager/install_scripts')\
 			./code_manager/main.py \
 			./tests \
