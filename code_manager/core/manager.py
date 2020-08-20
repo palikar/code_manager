@@ -67,7 +67,7 @@ class Manager(ConfigurationAware):
         if self.build:
             self._invoke_build()
 
-    def _do_fetch(self, pack, root=None, node=None):
+    def _do_fetch(self, pack, node=None):
         root_dir = self._get_root(pack)
 
         with self.cache as cache:
@@ -86,7 +86,7 @@ class Manager(ConfigurationAware):
                     self.packages[pack],
                 ) if node is None else node
 
-                if self.fetcher.download(pack, root, node) is None:
+                if self.fetcher.download(pack, root_dir) is None:
                     logging.critical("The fetching of '%s' in '%s'failed.", pack, root_dir)
                     cache.set_fetched(pack, True)
                     cache.set_root(pack, root_dir)
@@ -136,10 +136,9 @@ class Manager(ConfigurationAware):
         self._check_install_nodes(ordered_packages)
 
         for pack in ordered_packages:
-            root = self._get_root(pack)
             node = self._expand_node(self.packages[pack])
 
-            self._do_fetch(pack, root=root, node=node)
+            self._do_fetch(pack, node=node)
 
             if self.dep_depender.check(pack) != 0:
                 raise SystemExit
