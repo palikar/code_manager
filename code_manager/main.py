@@ -18,14 +18,17 @@ import code_manager
 from code_manager.core.configuration import ConfigurationAware
 from code_manager.core.manager import Manager
 from code_manager.utils.logger import setup_logging
+from code_manager.utils.logger import RED
 from code_manager.utils.printing import less
 from code_manager.utils.read_input import promt
 from code_manager.utils.read_input import promt_yes_no
 from code_manager.utils.setenv import get_default_setenv
 from code_manager.utils.utils import flatten
 from code_manager.utils.utils import is_venv
+from code_manager.utils.printing import colorize
 from code_manager.utils.utils import sanitize_input_variable
 from code_manager.utils.utils import venv
+from code_manager.utils.strings import is_link
 from code_manager.version import VERSION
 
 
@@ -457,6 +460,22 @@ a simple, one line manner',
         'rest', nargs=argparse.REMAINDER, help='The command to execute.',
     )
 
+    
+    list_sources_parser = subparsers.add_parser(
+        'list-sources', help='List the package files that wil#l be loaded.',
+    )
+
+    list_sources_parser.add_argument(
+        '-n', '--no-color', action='store_true', default=None, dest='no_color',
+        help='Supress any color in the output',
+    )
+
+    list_sources_parser.add_argument(
+        '-t', '--no-type', action='store_true', default=None, dest='no_type',
+        help='Don\'t  show the type of the loaded package file (file or link)',
+    )
+
+
     return parser
 
 
@@ -633,6 +652,27 @@ def list_fetchers(_, core):
     print('Currently available fetchers:')
     for fetcher in core.get_fetchers():
         print(f'\t - {fetcher}')
+
+
+@command('list-sources')
+def list_sources(args, core):
+
+    if args.no_type:
+        for pack in core.sources:
+            sys.stdout.buffer.write(bytes(pack + '\n', 'utf-8'))
+        sys.stdout.buffer.flush()
+        return
+    
+    for pack in core.sources:
+        if is_link(pack):
+            sys.stdout.buffer.write(bytes(colorize('link:', RED, not args.no_color) + pack + '\n', 'utf-8'))
+        elif os.path.isfile(pack):
+            sys.stdout.buffer.write(bytes(colorize('file:', RED, not args.no_color) + pack + '\n', 'utf-8'))
+        else:
+            sys.stdout.buffer.write(bytes('    :' + pack + '\n', 'utf-8'))
+
+    sys.stdout.buffer.flush()
+    return
 
 
 def copy_config():

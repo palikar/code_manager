@@ -180,6 +180,8 @@ class ConfigurationAware:
 
     @staticmethod
     def _load_pack(pack, config):
+        ConfigurationAware.sources.append(sanitize_input_variable(pack))
+
         con = None
         if is_link(pack):
             logging.debug(
@@ -252,6 +254,7 @@ class ConfigurationAware:
         config['packages_config'] = {}
         config['packages'] = {}
 
+        ConfigurationAware.sources = []
         package_sources = sanitize_input_variable(opt['Config'].get('sources', code_manager.SOURCEFILE))
         if os.path.isfile(package_sources):
             with open(package_sources) as source_fd:
