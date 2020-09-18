@@ -1,13 +1,998 @@
 {
-    "vars" : {
 
+    "vars" : {
+        "arnaud_base" : "git@github.com:palikar",
+        "github_base" : "git@github.com:",
+        "emacs_version": "26.3",
+        "ranger_version": "1.9.2",
+        "i3gaps_version": "4.18",
+        "urxvt_version": "9.22"
     },
 
     "packages_list": {
 
+        "personal" : [
+            "tictacminimax",
+            "mandelbrotworks",
+            "advancedresoucemenaging",
+            "promanager",
+            "navigationcore",
+            "stateconifiggui",
+            "gameengine",
+            "blog-hugo-files",
+            "jgrapher",
+            "MARS",
+            "rabbitholer",
+            "pollution",
+            "projector",
+            "smarthomeworks",
+            "smart_memory_location",
+            "arffpar",
+            "mflower",
+            "ctgraph",
+            "anything",
+            "alisp",
+            "flow_predict"
+        ],
+
+        "elisp" : [
+            "arnaud-framer",
+            "vsexp",
+            "python-req-installer"
+        ],
+        
+        "system" : [
+            "i3-gaps",
+            "mons",
+            "pamixer",
+            "ranger",
+            "networkmanager-dmenu",
+            "xkblayout-state",
+            "rxvt-unicode",
+            "emacs",
+            "firefox",
+            "dragon",
+            "notify-send-py",
+            "nerd-fonts",
+            "pamixer",
+            "discord",
+            "dropbox",
+            "vim",
+            "fzf",
+            "pywal"
+        ],
+
+        "misc" : [
+            "easyloggingpp",
+            "opencv",
+            "opencv-contrib",
+            "scull",
+            "edward",
+            "facebook-chat-api",
+            "fbash",
+            "speech_recognition",
+            "prelude",
+            "easyloggingpp",
+            "emacs-neotree",
+            "googletest",
+            "crow",
+            "rewire",
+            "pip-requirements",
+            "voidrice",
+            "google-speech-v2-api",
+            "instagram-web-api",
+            "tensorflow",
+            "keras",
+            "linux-4.19",
+            "ov.el",
+            "cask",
+            "company-smart-elisp",
+            "all-the-icons",
+            "pystache",
+            "vue-mode",
+            "mlpack",
+            "armadillo",
+            "navigationfx",
+            "jwtxx",
+            "blender"
+        ],
+
+        "source" : [
+            "all-repos",
+            "projectile",
+            "cpp-httplib",
+            "libhttpserver",
+            "uWebSockets",
+            "tabbed-distrotube",
+            "st-distrotube",
+            "restbed",
+            "v8",
+            "libuv",
+            "cpr"
+        ]
+
     },
 
-    "debian_packages": [],
+    "debian_packages": {
 
-    "packages": {}
+        "system" : [
+            "libboost-all-dev",
+            "build-essential",
+            "git",
+            "cmake",
+            "cmake-curses-gui",
+            "krb5-config",
+            "krb5-user",
+            "libfile-homedir-perl",
+            "libpath-class-perl",
+            "libswitch-perl",
+            "virtualenv",
+            "htop",
+            "gitk",
+            "ssh",
+            "ntp",
+            "ntpdate",
+            "ntpstat",
+            "sudo",
+            "net-tools",
+            "inetutils-ping",
+            "curl",
+            "wget",
+            "libglew-dev",
+            "libxt-dev",
+            "libgtk-3-dev"],
+
+        "application": [
+            "feh",
+            "i3blocks",
+            "i3lock",
+            "dmunu",
+            "rofi",
+            "ibus",
+            "libgtk2.0-dev",
+            "youtube-dl"
+        ]
+
+    },
+
+    "packages_config" : {
+
+        "group_dirs" : {
+            "personal" : "personal",
+            "elisp" : "elisp",
+            "system" : "system",
+            "misc" : "misc",
+            "source" : "source"
+        }
+
+    },
+
+    "packages": {
+
+        "libuv" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/libuv/libuv"
+            }
+        },
+
+
+        "v8" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/v8/v8"
+            }
+        },
+
+
+        "restbed" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/Corvusoft/restbed/"
+            }
+        },
+
+
+        "tabbed-distrotube" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://gitlab.com/dwt1/tabbed-distrotube"
+            },
+            "install": "make"
+        },
+
+        "st-distrotube" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://gitlab.com/dwt1/st-distrotube"
+            },
+            "install": "make"
+        },
+
+        "uWebSockets" : {
+            
+            "fetch" :  "git",
+            "git" : {
+                "url" : "https://github.com/uNetworking/uWebSockets"
+            }
+            
+        },
+
+        "libhttpserver":  {
+            "fetch" :  "git",
+            "git" : {
+                "url" : "https://github.com/etr/libhttpserver"
+            }
+        },
+        
+        "cpp-httplib" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/yhirose/cpp-httplib"
+            }
+
+        },
+
+        "projectile" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/bbatsov/projectile/"
+            }
+        },
+
+        "all-repos" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/asottile/all-repos"
+            },
+
+            "install" : "setup.py",
+            "setup_args" : ["--optimize=1", "--record=install_log.txt"]
+        },
+
+        "vim" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/amix/vimrc"
+            },
+            "install" : "command",
+            "command": ["sh", "install_awesome_parameterized.sh", "$(pwd)", "--all"]
+        },
+
+        "fzf" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/junegunn/fzf"
+            },
+            "install" : "command",
+            "command": ["bash", "install", "--key-bindings", "--no-completion", "--update-rc"]
+        },
+
+        "dropbox" : {
+            "fetch" : "curl",
+            "curl" : {
+                "url" : "https://linux.dropbox.com/packages/ubuntu/dropbox_2020.03.04_amd64.deb",
+                "output": "dropbox.deb"
+            },
+            "install" : "command",
+            "command": [
+                ["sudo", "dpkg", "--ignore-depends=libpango1.0-0", "-i", "./dropbox*.deb"]
+            ]
+        },
+
+        "discord" : {
+            "fetch" : "curl",
+            "curl" : {
+                "url" : "https://dl.discordapp.net/apps/linux/0.0.10/discord-0.0.10.deb",
+                "output": "discord.deb"
+            },
+            "install" : "command",
+            "command": ["sudo", "dpkg", "-i", "discord.deb"]
+        },
+
+        "blender" : {
+            "fetch" : "curl",
+            "curl" : {
+                "url" : "https://ftp.halifax.rwth-aachen.de/blender/release/Blender2.83/blender-2.83.0-linux64.tar.xz"
+            },
+            "extract" : true,
+            "install" : "path",
+            "path": [
+                "lkaösd"
+            ]
+
+        },
+
+        "nerd-fonts" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/cdemoulins/pamixer"
+            },
+            "install" : "make",
+            "make_args": "-j3"
+        },
+
+        "nerd-fonts" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/ryanoasis/nerd-fonts"
+            },
+            "install" : "command",
+            "command" : "./install.sh"
+        },
+
+        "notify-send-py" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/phuhl/notify-send.py"
+            },
+            "install" : ["command"],
+            "command": [
+                ["pip", "install", "."]
+            ]
+        },
+
+        "dragon" : {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/mwh/dragon"
+            },
+            "install" : ["make"],
+            "make_extra_targets" : ["install"],
+            "make_args": "-j3"
+        },
+
+        "alisp" : {
+            "fetch": "git",
+            "git":{
+                "url" :  "@arnaud_base@/alisp"
+            },
+
+            "install": ["cmake", "make"],
+            "cmake_args": "-DBUILD_SHARED=True -DCMAKE_BUILD_TYPE=Debug",
+            "make_args": "-j8",
+            "make_extra_targets" : ["install"]
+        },
+
+        "anything" : {
+
+            "fetch": "git",
+            "git":{
+                "url" :  "@arnaud_base@/anything"
+            },
+
+            "install": ["cmake", "make"],
+            "cmake_args": "",
+            "make_args": "-j4",
+            "make_extra_targets" : ["install"]
+
+        },
+
+        "arnaud-framer": {
+            "root_dir" : "arnaud",
+            "install_dir" : "~/core.d/usr/arnaud/",
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/arnaud-framer.git"
+            },
+            "install": "emacs",
+            "el_files" : ["arnaud-framer.el"]
+        },
+
+        "vsexp": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/arnaud-sexp"
+            },
+            "install": "emacs",
+            "el_files" : ["vsexp.el"]
+        },
+
+        "emacs-neotree": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/jaypei/emacs-neotree/",
+                "checkout": "dev"
+            },
+            "install": "emacs",
+            "el_files" : ["neotree.el"]
+        },
+
+        "jgrapher": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/jgrapher.git"
+            },
+            "install": "command",
+            "command": "echo 'No install command'"
+        },
+
+        "MARS": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/BodenUnits/MARS",
+                "checkout" : "stanislav"
+            },
+            "install": "make",
+            "install": "make",
+            "make_extra_targets" : ["all"],
+            "make_args": ["-j4"]
+        },
+
+        "blog-hugo-files": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/blog-hugo-files.git"
+            },
+            "install": "command",
+            "command": "hugo"
+        },
+
+        "pollution": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/PollutionDev"
+            },
+            "install": "command",
+            "command": "echo The thesis can be generated with sh ./Thesis/compile.sh"
+        },
+
+        "projector": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/projector.git"
+            },
+            "install": "setup.py",
+            "setup_args": []
+        },
+
+        "smarthomeworks": {
+            "fetch": "git",
+            "git":{
+                "url" : "https://github.com/palikar/HomeworksSmart"
+            },
+            "install": "command",
+            "command": "webpack-cli --progress"
+        },
+
+        "smart_memory_location": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/smart_memory_location.git"
+            },
+            "install": ["cmake", "make"],
+            "make_args": ["-j4"],
+            "make_extra_targets" : []
+        },
+
+        "navigationfx": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/NavigationFX"
+            },
+            "install": "command",
+            "command": "echo install navigationfx with java"
+        },
+
+        "gameengine": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/GameEngine"
+            },
+            "install": "command",
+            "command": "echo install navigationfx with java"
+        },
+
+        "advancedresoucemenaging": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/AdvancedResouceMenaging"
+            },
+            "install": "command",
+            "reinstall_command": "echo 'No install command'"
+        },
+
+        "arffpar": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/ArffPar"
+            },
+            "install": ["cmake", "make"],
+            "make_args" : "-j4",
+            "make_extra_targets": []
+        },
+
+        "tictacminimax": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/TicTacMiniMax"
+            },
+            "install": "command",
+            "command": "echo install the project with java"
+        },
+
+        "stateconifiggui": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/StateConifigGUI"
+            },
+            "install": "command",
+            "command": "echo install the project with java"
+        },
+
+        "promanager": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/ProManager"
+            },
+            "install": "command",
+            "command": "webpack-cli --progress"
+        },
+
+        "mandelbrotworks": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/MandelbrotWorks"
+            },
+            "install": ["cmake", "make"],
+            "make_args" : "-j4",
+            "make_extra_targets": []
+        },
+
+        "navigationcore": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/NavigationCore"
+            },
+            "install": "command",
+            "command": "echo install the project with java"
+        },
+
+        "i3-gaps": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://www.github.com/Airblader/i3",
+                "checkout" : "4.18"
+            },
+            "install": "script",
+            "script": "install_i3gaps.sh",
+            "script_args": "",
+            "dependencies": [],
+            "deb_packages": ["libxcb1-dev", "libxcb-keysyms1-dev", "libpango1.0-dev",
+                             "libxcb-util0-dev", "libxcb-icccm4-dev", "libyajl-dev",
+                             "libstartup-notification0-dev", "libxcb-randr0-dev",
+                             "libev-dev", "libxcb-cursor-dev", "libxcb-xinerama0-dev",
+                             "libxcb-xkb-dev", "libxkbcommon-dev" ,"libxkbcommon-x11-dev",
+                             "autoconf", "libxcb-xrm-dev"]
+        },
+
+        "mons": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/Ventto/mons.git",
+                "args" : "--recursive"
+            },
+            "install": "command",
+            "command": [
+                ["sudo", "make", "install"]
+            ]
+        },
+
+        "pamixer": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/cdemoulins/pamixer.git"
+            },
+            "install": "command",
+            "command": [
+                [ "make"],
+                ["sudo make install"]
+            ],
+            "deb_packages": ["libpulse-dev"]
+        },
+
+        "ranger": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/ranger/ranger"
+            },
+            "install": "setup.py",
+            "setup_args" : ["--optimize=1", "--record=install_log.txt"],
+            "deb_packages": ["file", "caca-utils", "atool", "mediainfo", "odt2txt"]
+        },
+
+        "networkmanager-dmenu": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/firecat53/networkmanager-dmenu"
+            },
+            "install": "command",
+            "command": "echo setup the commands for the script"
+        },
+
+        "xkblayout-state": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/nonpop/xkblayout-state"
+            },
+            "install": "command",
+            "command": "make && sudo make install"
+        },
+
+        "rxvt-unicode": {
+            "fetch" : "curl",
+            "curl":{
+                "url" :  "http://dist.schmorp.de/rxvt-unicode/Attic/rxvt-unicode-9.22.tar.bz2"
+            },
+            "extract" : true,
+            "install": "script",
+            "script": "install_rxvt-unicode.sh",
+            "script_args": "-p /usr"
+        },
+
+        "opencv": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/opencv/opencv"
+            },
+            "tag": "3.2.0",
+            "install": "cmake",
+            "cmake_args": "-DCMAKE_OPENCV_ENABLE_NONFREE=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF -DWITH_CUDA=OFF -DBUILD_CUDA_STUBS=OFF -DWITH_OPENMP=ON -DWITH_QT=OFF -DWITH_VTK=ON  -DOPENCV_EXTRA_MODULES_PATH='~/core.d/code/opencv-contrib/modules -DBUILD_TIFF=ON -DBUILD_JASPER=ON -DWITH_V4L=OFF -DBUILD_opencv_aruco=ON -DBUILD_opencv_sfm=OFF -DBUILD_opencv_dnn=OFF -DBUILD_opencv_cnn_3dobj=OFF'",
+            "make_args": "-j4",
+            "dependencies": ["opencv-contrib"],
+            "deb_packages": ["gcc","cmake","pkg-config", "libgtk2.0-dev", "ffmpeg",
+                             "libtbb-dev","libdc1394",
+                             "libjpeg-dev", "libpng-dev", "libtiff-dev", "libjasper-dev",
+                             "libdc1394-22-dev"]
+        },
+
+        "opencv-contrib": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/opencv/opencv_contrib"
+            },
+            "commit": "tags/3.2.0",
+            "install": "command",
+            "command": "echo this package is not to be installed"
+        },
+
+        "easyloggingpp": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/muflihun/easyloggingpp"
+            },
+            "install": ["cmake", "make"],
+            "cmake_args": "",
+            "make_args": "-j2"
+        },
+
+        "scull": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/starpos/scull"
+            },
+            "install": ["make"],
+            "make_args" : ["-j4"],
+            "make_extra_targets": ["all"]
+        },
+
+        "edward": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/blei-lab/edward"
+            },
+            "install": "command",
+            "command": "echo install edward through pip"
+        },
+
+        "facebook-chat-api": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/Schmavery/facebook-chat-api"
+            },
+            "install": "command",
+            "command": "npm install"
+        },
+
+        "fbash": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/avikj/fbash"
+            },
+            "install": "command",
+            "command": "npm install"
+        },
+
+        "speech_recognition": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/Uberi/speech_recognition"
+            },
+            "install": "setup.py",
+            "setup_args": []
+        },
+
+        "jwtxx": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/madf/jwtxx"
+            },
+            "install": ["cmake", "make"],
+            "cmake_args": "-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fPIC",
+            "make_args": "-j2",
+            "deb_packages": ["libjansson-dev", "openssl", "libssl-dev"]
+        },
+
+        "prelude": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/bbatsov/prelude"
+            },
+            "install": "command",
+            "command": "echo 'No install'"
+        },
+
+        "emacs": {
+            "fetch": "curl",
+            "curl":{
+                "url" :  "https://alpha.gnu.org/gnu/emacs/pretest/emacs-27.0.91.tar.xz"
+            },
+            "extract" : true,
+            "install": "script",
+            "script": "install_emacs.sh",
+            "deb_packages": ["build-essential","libm17n-dev",
+                             "libmagickcore-dev", "libgtk-3-dev",
+                             "libxml2-dev"]
+        },
+
+        "googletest": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/google/googletest"
+            },
+            "install": ["cmake", "make"],
+            "cmake_args": "-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fPIC",
+            "make_args": "-j2",
+            "deb_packages": []
+        },
+
+        "crow": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/ipkn/crow"
+            },
+            "install": ["cmake", "make"],
+            "cmake_args": "-DCMAKE_BUILD_TYPE=Release",
+            "make_args": "-j2",
+            "deb_packages": []
+        },
+
+        "pywal": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/dylanaraps/pywal"
+            },
+            "install": "setup.py",
+            "setup_args": "--verbose"
+        },
+
+        "rewire": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/jhnns/rewire"
+            },
+            "install": "command",
+            "command": "npm install -g rewire"
+        },
+
+        "pip-requirements": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/Wilfred/pip-requirements.el"
+            },
+            "install": "emacs",
+            "el_files": ["pip-requirements.el"]
+        },
+
+        "voidrice": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/voidrice"
+            },
+            "install": "command",
+            "command": "echo 'No install'"
+        },
+
+        "google-speech-v2-api": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/gillesdemey/google-speech-v2"
+            },
+            "install": "command",
+            "command": "echo 'No install'"
+        },
+
+        "instagram-web-api": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/jlobos/instagram-web-api"
+            },
+            "install": "command",
+            "command": "npm install"
+        },
+
+        "tensorflow": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/tensorflow/tensorflow"
+            },
+            "install": "command",
+            "command": "echo 'No install'"
+        },
+
+        "keras": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/keras-team/keras"
+            },
+            "install": "command",
+            "command": "echo 'No install'"
+        },
+
+        "linux-4.19": {
+            "fetch": "curl",
+            "curl":{
+                "url" :  "https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.tar.xz"
+            },
+            "extract" : true,
+            "install" : "command",
+            "command": "echo No install"
+        },
+
+        "python-req-installer": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/palikar/python-requirements-installer"
+            },
+            "install": "emacs",
+            "el_files" : ["pri.el"]
+        },
+
+        "ov.el": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/ShingoFukuyama/ov.el/"
+            },
+            "install": "emacs",
+            "el_files": ["ov.el"]
+        },
+
+        "cask": {
+            "fetch" : "curl",
+            "curl":{
+                "url" :  "https://raw.githubusercontent.com/cask/cask/master/go"
+            },
+            "install": "command",
+            "command": "python go"
+        },
+
+        "company-smart-elisp": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/Wilfred/company-smart-elisp"
+            },
+            "install": "emacs",
+            "el_files": ["company-smart-elisp.el"]
+        },
+
+        "all-the-icons": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/domtronn/all-the-icons.el"
+            },
+            "install": "emacs",
+            "el_files": ["all-the-icons.el", "all-the-icons-faces.el"]
+        },
+
+        "pystache": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/defunkt/pystache"
+            },
+            "install": "setup.py",
+            "setup_args": "--verbose --user"
+        },
+
+        "vue-mode": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/AdamNiederer/vue-mode"
+            },
+            "install": "emacs",
+            "el_files": ["vue-mode.el"]
+        },
+
+        "mlpack": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://github.com/mlpack/mlpack"
+            },
+            "install": "cmake",
+            "cmake_args": "",
+            "make_args": "-j3"
+        },
+
+        "armadillo": {
+            "fetch": "git",
+            "git":{
+                "url" :  "https://gitlab.com/conradsnicta/armadillo-code"
+            },
+            "install": ["cmake", "make"],
+            "cmake_args": "",
+            "make_args": "-j3"
+        },
+
+        "mflower": {
+            "fetch": "git",
+            "git":{
+                "url" :  "@arnaud_base@/mflower"
+            },
+            "install": ["cmake", "make"],
+            "cmake_args": "",
+            "make_args": "-j3"
+        },
+
+        "ctgraph": {
+            "fetch": "git",
+            "git":{
+                "url" :  "@arnaud_base@/ctgraph"
+            },
+            "install": ["cmake", "make"],
+            "cmake_args": "",
+            "make_extra_targets" : ["install"],
+            "make_args": "-j3"
+        },
+
+        "firefox" : {
+            "fetch"   : "curl",
+            "curl": {
+                "url" : "https://files03.tchspt.com/temp/firefox-77.0.1x86_64.tar.bz2"
+            },
+            "extract" : true,
+            "install" : "ln",
+            "ln" : [
+                {
+                    "source" : "firefox/firefox",
+                    "dest" : "/usr/bin/firefox"
+                }
+            ]
+        },
+
+        "rabbitholer"  : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/palikar/rabbitholer"
+            },
+            "install" : "setup.py",
+            "setup_args" : "",
+            "prefix" : false
+        },
+
+        "flow_predict" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "@arnaud_base@/flow_predict"
+            }
+        },
+
+        "cpr" : {
+            "fetch" : "git",
+            "git" : {
+                "url" : "https://github.com/whoshuu/cpr/"
+            }
+        }
+        
+
+
+    }
 }
