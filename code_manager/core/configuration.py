@@ -157,13 +157,26 @@ class ConfigurationAware:
         return primary_config
 
     @staticmethod
-    def _load_pack_form_link(link):
+    def _load_pack_from_link(link):
         result = requests.get(link)
+
+        if result.status_code != 200:
+            return None
+        
         try:
             config = json.loads(result.content)
         except json.JSONDecodeError:
             return None
         return config
+
+    
+    @staticmethod
+    def _load_pack_from_file(path):
+        try:
+            with open(pack, 'r') as config_file:
+                con = json.load(config_file)
+        except FileNotFoundError:
+            return None
 
     @staticmethod
     def _load_pack(pack, config):
@@ -172,15 +185,14 @@ class ConfigurationAware:
             logging.debug(
                 'Loading extra packages.json from link: %s', pack,
             )
-            con = ConfigurationAware._load_pack_form_link(pack)
+            con = ConfigurationAware._load_pack_from_link(pack)
         elif os.path.exists(pack) and os.path.isfile(pack):
             logging.debug(
                 'Loading extra packages file: %s', os.path.abspath(
                     pack,
                 ),
             )
-            with open(pack) as config_file:
-                con = json.load(config_file)
+            con = ConfigurationAware._load_pack_from_file(pack)
 
         if con is not None:
             config = ConfigurationAware._load_extra_pack(config, con)
@@ -240,7 +252,7 @@ class ConfigurationAware:
         config['packages_config'] = {}
         config['packages'] = {}
 
-        package_sources = sanitize_input_variable(opt['Config']['sources'])
+        package_sources = sanitize_input_variable(opt['Config'].get('sources', code_manager.SOURCEFILE))
         if os.path.isfile(package_sources):
             with open(package_sources) as source_fd:
                 for pack in source_fd.read().splitlines():
