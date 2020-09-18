@@ -639,7 +639,7 @@ def copy_config():
 
     private_data_dir = os.path.join(code_manager.CMDIR, 'data')
 
-    if not os.path.isdir(code_manager.CONFDIR):
+    with contextlib.suppress(FileExistsError):
         os.mkdir(code_manager.CONFDIR)
 
     if not os.path.isfile(os.path.join(code_manager.CONFDIR, 'packages.json')):
@@ -691,7 +691,7 @@ def venv_setup(opt):
     )
     opt['Config']['venv'] = env_root
 
-    if not os.path.isdir(os.path.abspath(os.path.join(env_root, os.pardir))):
+    with contextlib.suppress(FileExistsError):
         os.makedirs(os.path.abspath(os.path.join(env_root, os.pardir)))
 
     logging.info('Python version: %s', python_ver)
@@ -766,7 +766,7 @@ def main():
 
     COMMANDS[args.command](args, core_manager)
 
-    return 0
+    raise SystemExit
 
 
 if __name__ == '__main__':
