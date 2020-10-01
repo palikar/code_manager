@@ -3,6 +3,7 @@ import logging.handlers
 import os
 import sys
 
+from code_manager.utils.utils import sanitize_input_variable
 
 RESET = '\033[0m'
 BOLD = '\033[1m'
@@ -37,7 +38,7 @@ def setup_logging(args, opt):
 
     if 'Logging' in opt.keys() and 'direcory' in opt['Logging']:
 
-        path_to_log_directory = opt['Logging']['Direcory']
+        path_to_log_directory = sanitize_input_variable(opt['Logging']['Direcory'])
         if not os.path.exists(path_to_log_directory):
             os.makedirs(path_to_log_directory)
 
