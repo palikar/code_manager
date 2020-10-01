@@ -23,7 +23,7 @@ class CommandCommand(ConfigurationAware):
             return 0
 
         color = self.color and not args.no_color
-        
+
         command = args.rest
         logging.debug('Running command: [%s] in %s', ' '.join(command), path)
         ret = subprocess.run(

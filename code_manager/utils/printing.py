@@ -12,9 +12,9 @@ def less(data):
     except OSError:
         pass
 
+
 def colorize(string, color, enable=True):
     if enable:
         return color + string + RESET
     else:
         return string
-    

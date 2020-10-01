@@ -40,7 +40,7 @@
             "vsexp",
             "python-req-installer"
         ],
-        
+
         "system" : [
             "i3-gaps",
             "mons",
@@ -210,12 +210,12 @@
         },
 
         "uWebSockets" : {
-            
+
             "fetch" :  "git",
             "git" : {
                 "url" : "https://github.com/uNetworking/uWebSockets"
             }
-            
+
         },
 
         "libhttpserver":  {
@@ -224,7 +224,7 @@
                 "url" : "https://github.com/etr/libhttpserver"
             }
         },
-        
+
         "cpp-httplib" : {
             "fetch" : "git",
             "git" : {
@@ -991,7 +991,7 @@
                 "url" : "https://github.com/whoshuu/cpr/"
             }
         }
-        
+
 
 
     }

@@ -172,7 +172,7 @@ class ConfigurationAware:
     @staticmethod
     def _load_pack_from_file(path):
         try:
-            with open(path, 'r') as config_file:
+            with open(path) as config_file:
                 con = json.load(config_file)
         except FileNotFoundError:
             return None
