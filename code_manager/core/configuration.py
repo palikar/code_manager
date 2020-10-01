@@ -162,21 +162,21 @@ class ConfigurationAware:
 
         if result.status_code != 200:
             return None
-        
+
         try:
             config = json.loads(result.content)
         except json.JSONDecodeError:
             return None
         return config
 
-    
     @staticmethod
     def _load_pack_from_file(path):
         try:
-            with open(pack, 'r') as config_file:
+            with open(path, 'r') as config_file:
                 con = json.load(config_file)
         except FileNotFoundError:
             return None
+        return con
 
     @staticmethod
     def _load_pack(pack, config):
