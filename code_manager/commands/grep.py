@@ -22,7 +22,7 @@ class GrepCommand(ConfigurationAware):
         if self.color and not args.no_color:
             color = True
             grep_command.append('--color=always')
-        elif args.no_color:
+        else:
             color = False
             grep_command.append('--color=never')
 

@@ -22,11 +22,8 @@ class CommandCommand(ConfigurationAware):
         if args.git and not os.path.exists(os.path.join(path, '.git')):
             return 0
 
-        if self.color and not args.no_color:
-            color = True
-        elif args.no_color:
-            color = False
-
+        color = self.color and not args.no_color
+        
         command = args.rest
         logging.debug('Running command: [%s] in %s', ' '.join(command), path)
         ret = subprocess.run(

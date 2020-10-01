@@ -16,10 +16,7 @@ class RootCommand(ConfigurationAware):
 
     def execute(self, args, path):
 
-        if self.color and not args.no_color:
-            color = True
-        elif args.no_color:
-            color = False
+        color = self.color and not args.no_color
 
         line = bytes(path, 'utf-8')
         if color:

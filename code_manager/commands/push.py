@@ -21,10 +21,7 @@ class PushCommand(ConfigurationAware):
         if not os.path.exists(os.path.join(path, '.git')):
             return 0
 
-        if self.color and not args.no_color:
-            color = True
-        elif args.no_color:
-            color = False
+        color = self.color and not args.no_color
 
         push_command = ['git', 'push', *args.rest]
         logging.debug(

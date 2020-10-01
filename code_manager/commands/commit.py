@@ -21,10 +21,7 @@ class CommitCommand(ConfigurationAware):
         if not os.path.exists(os.path.join(path, '.git')):
             return 0
 
-        if self.color and not args.no_color:
-            color = True
-        elif args.no_color:
-            color = False
+        color = self.color and not args.no_color
 
         msg = args.message
         msg += '\n\n\nCreated by code-manager'

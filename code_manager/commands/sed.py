@@ -20,10 +20,7 @@ class SedCommand(ConfigurationAware):
 
     def execute(self, args, path):
 
-        if self.color and not args.no_color:
-            color = True
-        elif args.no_color:
-            color = False
+        color = self.color and not args.no_color
 
         if not os.path.exists(os.path.join(path, '.git')):
             find_command = ['find', '-name', args.files]
